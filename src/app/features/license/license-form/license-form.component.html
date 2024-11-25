@@ -1,0 +1,72 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>医院名称</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请输入医院名称">
+        <input nz-input formControlName="hospitalName" placeholder="请输入医院名称" />
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>系统</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请选择系统">
+        <nz-select formControlName="systemId" (ngModelChange)="onSystemChange($event)">
+          <nz-option *ngFor="let sys of systems" [nzValue]="sys.id" [nzLabel]="sys.name"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>模块</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请选择模块">
+        <nz-select formControlName="moduleIds" nzMode="multiple">
+          <nz-option *ngFor="let module of modules" [nzValue]="module.id" [nzLabel]="module.name"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>并发限制</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请输入并发限制数量">
+        <nz-input-number formControlName="concurrentLimit" [nzMin]="1"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-divider>终端列表</nz-divider>
+  
+    <div formArrayName="terminals">
+      <div *ngFor="let terminal of terminals.controls; let i=index" [formGroupName]="i">
+        <nz-row [nzGutter]="8">
+          <nz-col [nzSpan]="10">
+            <nz-form-item>
+              <nz-form-control nzErrorTip="请输入正确的MAC地址">
+                <input nz-input formControlName="macAddress" placeholder="MAC地址 (XX:XX:XX:XX:XX:XX)" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col [nzSpan]="10">
+            <nz-form-item>
+              <nz-form-control>
+                <input nz-input formControlName="description" placeholder="终端描述" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col [nzSpan]="4">
+            <button nz-button nzType="link" nzDanger (click)="removeTerminal(i)">
+              <i nz-icon nzType="delete"></i>
+            </button>
+          </nz-col>
+        </nz-row>
+      </div>
+    </div>
+  
+    <button nz-button type="button" (click)="addTerminal()" style="margin-bottom: 16px;">
+      <i nz-icon nzType="plus"></i>添加终端
+    </button>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>有效期</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请选择有效期">
+        <nz-range-picker formControlName="validFrom" formControlName="validTo"></nz-range-picker>
+      </nz-form-control>
+    </nz-form-item>
+  </form>

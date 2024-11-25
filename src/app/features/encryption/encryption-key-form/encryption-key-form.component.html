@@ -1,0 +1,61 @@
+<!-- components/encryption-key-form/encryption-key-form.component.html -->
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>密钥名称</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请输入密钥名称">
+        <input nz-input formControlName="name" placeholder="请输入密钥名称">
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>密钥值</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请输入密钥值">
+        <nz-input-group [nzSuffix]="suffixTemplate">
+          <input
+            [type]="showKey ? 'text' : 'password'"
+            nz-input
+            formControlName="key"
+            placeholder="请输入密钥值">
+        </nz-input-group>
+        <ng-template #suffixTemplate>
+          <i
+            nz-icon
+            [nzType]="showKey ? 'eye-invisible' : 'eye'"
+            (click)="showKey = !showKey">
+          </i>
+        </ng-template>
+        <button 
+          type="button" 
+          nz-button 
+          nzSize="small" 
+          class="generate-btn" 
+          (click)="generateKey()">
+          生成密钥
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">描述</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <textarea 
+          nz-input 
+          formControlName="description" 
+          placeholder="请输入描述信息"
+          [nzAutosize]="{ minRows: 3, maxRows: 5 }">
+        </textarea>
+      </nz-form-control>
+    </nz-form-item>
+  
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">设为默认</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <nz-switch formControlName="isDefault"></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+  
+    <div class="form-footer">
+      <button nz-button (click)="cancel()">取消</button>
+      <button nz-button nzType="primary" type="submit" [disabled]="!form.valid">确定</button>
+    </div>
+  </form>

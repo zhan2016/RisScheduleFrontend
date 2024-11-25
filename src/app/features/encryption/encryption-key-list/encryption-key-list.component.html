@@ -1,0 +1,91 @@
+<div class="encryption-key-list">
+    <div class="action-bar">
+      <button nz-button [nzType]="'primary'" (click)="showCreateModal()">
+        <i nz-icon nzType="plus"></i>添加密钥
+      </button>
+    </div>
+  
+    <nz-card>
+      <form nz-form [nzLayout]="'inline'" class="search-form">
+        <nz-form-item>
+          <nz-form-label>密钥名称</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="queryParams.name" name="name" placeholder="请输入密钥名称">
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label>状态</nz-form-label>
+          <nz-form-control>
+            <nz-select [(ngModel)]="queryParams.status" name="status" nzAllowClear nzPlaceHolder="请选择状态">
+              <nz-option [nzValue]="KeyStatus.ACTIVE" nzLabel="启用"></nz-option>
+              <nz-option [nzValue]="KeyStatus.INACTIVE" nzLabel="禁用"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-control>
+            <button nz-button [nzType]="'primary'" (click)="onSearch()">搜索</button>
+            <button nz-button (click)="onReset()">重置</button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+  
+      <ng-container *ngIf="keysData$ | async as keysData">
+        <nz-table
+          #basicTable
+          [nzData]="keysData.data"
+          [nzTotal]="keysData.total"
+          [nzPageIndex]="keysData.page"
+          [nzPageSize]="keysData.pageSize"
+          (nzPageIndexChange)="onPageChange($event)">
+          <thead>
+            <tr>
+              <th>密钥名称</th>
+              <th>密钥值</th>
+              <th>是否默认</th>
+              <th>状态</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let key of basicTable.data">
+              <td>{{ key.name }}</td>
+              <td>
+                <nz-tag>{{ key.key | slice:0:8 }}...</nz-tag>
+                <a (click)="showKeyDetail(key)">查看完整密钥</a>
+              </td>
+              <td>
+                <nz-tag [nzColor]="key.isDefault ? 'blue' : ''">
+                  {{ key.isDefault ? '默认' : '非默认' }}
+                </nz-tag>
+              </td>
+              <td>
+                <nz-tag [nzColor]="key.status === KeyStatus.ACTIVE ? 'success' : 'error'">
+                  {{ key.status === KeyStatus.ACTIVE ? '启用' : '禁用' }}
+                </nz-tag>
+              </td>
+              <td>{{ key.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+              <td>
+                <a *ngIf="!key.isDefault" (click)="setDefault(key.id)">设为默认</a>
+                <nz-divider nzType="vertical"></nz-divider>
+                <a *ngIf="key.status === KeyStatus.INACTIVE" 
+                   (click)="updateStatus(key.id, KeyStatus.ACTIVE)">启用</a>
+                <a *ngIf="key.status === KeyStatus.ACTIVE" 
+                   (click)="updateStatus(key.id, KeyStatus.INACTIVE)">禁用</a>
+                <nz-divider nzType="vertical"></nz-divider>
+                <a (click)="showEditModal(key)">编辑</a>
+                <nz-divider nzType="vertical"></nz-divider>
+                <a nz-popconfirm
+                   nzPopconfirmTitle="确定要删除此密钥吗？"
+                   (nzOnConfirm)="deleteKey(key.id)"
+                   class="delete-link">删除</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </ng-container>
+    </nz-card>
+  </div>

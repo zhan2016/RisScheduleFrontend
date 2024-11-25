@@ -1,0 +1,69 @@
+<!-- patch-license-list.component.html -->
+<nz-table
+  #basicTable
+  [nzData]="patchLicenses"
+  [nzLoading]="loading"
+  [nzShowSizeChanger]="true"
+  [nzPageSizeOptions]="[10, 20, 30, 40, 50]"
+  [nzShowTotal]="rangeTemplate">
+  
+  <thead>
+    <tr>
+      <th nzWidth="40px"></th>
+      <th>医院名称</th>
+      <th>系统</th>
+      <th>并发限制</th>
+      <th>终端数量</th>
+      <th>有效期</th>
+      <th>状态</th>
+      <th>创建时间</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    <ng-template ngFor let-data [ngForOf]="basicTable.data">
+      <tr>
+        <td [nzExpand]="expandSet.has(data.id)" (nzExpandChange)="onExpandChange(data.id, $event)"></td>
+        <td>{{ data.hospitalName }}</td>
+        <td>{{ systems[data.systemId]?.name }}</td>
+        <td>{{ data.concurrentLimit }}</td>
+        <td>{{ data.terminals.length }}</td>
+        <td>{{ data.validFrom | date }} 至 {{ data.validTo | date }}</td>
+        <td>
+          <nz-tag [nzColor]="data.status === 'ACTIVE' ? 'green' : 'red'">
+            {{ data.status === 'ACTIVE' ? '有效' : '过期' }}
+          </nz-tag>
+        </td>
+        <td>{{ data.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>
+          <a (click)="downloadLicense(data)">下载授权文件</a>
+        </td>
+      </tr>
+      <tr [nzExpand]="expandSet.has(data.id)">
+        <td colspan="9">
+          <div class="inner-table">
+            <nz-table #innerTable [nzData]="data.terminals" [nzShowPagination]="false">
+              <thead>
+                <tr>
+                  <th>MAC地址</th>
+                  <th>描述</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let terminal of innerTable.data">
+                  <td>{{ terminal.macAddress }}</td>
+                  <td>{{ terminal.description }}</td>
+                </tr>
+              </tbody>
+            </nz-table>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </tbody>
+</nz-table>
+
+<ng-template #rangeTemplate let-range="range" let-total>
+  {{ range[0] }}-{{ range[1] }} 共 {{ total }} 条
+</ng-template>

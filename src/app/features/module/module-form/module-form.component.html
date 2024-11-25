@@ -1,0 +1,74 @@
+<form nz-form [formGroup]="moduleForm" (ngSubmit)="submitForm()">
+    <nz-form-item *ngIf="parentModule">
+        <nz-form-label [nzSpan]="6">父模块</nz-form-label>
+        <nz-form-control [nzSpan]="16">
+          <input nz-input [value]="parentModule.name" disabled />
+        </nz-form-control>
+      </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>模块名称</nz-form-label>
+      <nz-form-control [nzSpan]="16" nzErrorTip="请输入模块名称">
+        <input nz-input formControlName="name" placeholder="请输入模块名称" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">描述</nz-form-label>
+      <nz-form-control [nzSpan]="16">
+        <textarea 
+          nz-input 
+          formControlName="description" 
+          placeholder="请输入描述"
+          [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+        ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>授权类型</nz-form-label>
+      <nz-form-control [nzSpan]="16">
+        <nz-radio-group formControlName="authType">
+          <label nz-radio [nzValue]="AuthorizationType.CONCURRENT">并发授权</label>
+          <label nz-radio [nzValue]="AuthorizationType.TERMINAL">终端授权</label>
+          <label nz-radio [nzValue]="AuthorizationType.BOTH">两种均可</label>
+        </nz-radio-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>是否单独授权</nz-form-label>
+      <nz-form-control [nzSpan]="16">
+        <nz-switch 
+          formControlName="independentAuth"
+          [nzCheckedChildren]="'是'"
+          [nzUnCheckedChildren]="'否'"
+        ></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>状态</nz-form-label>
+      <nz-form-control [nzSpan]="16">
+        <nz-switch 
+          formControlName="status"
+          [nzCheckedChildren]="'激活'"
+          [nzUnCheckedChildren]="'未激活'"
+        ></nz-switch>
+      </nz-form-control>
+    </nz-form-item>
+
+    <div class="form-footer">
+      <button nz-button nzType="default" type="button" (click)="cancel()">
+        取消
+      </button>
+      <button 
+        nz-button 
+        nzType="primary" 
+        type="submit" 
+        [nzLoading]="submitting"
+        [disabled]="!moduleForm.valid"
+      >
+        保存
+      </button>
+    </div>
+  </form>

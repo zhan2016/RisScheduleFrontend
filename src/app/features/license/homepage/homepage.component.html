@@ -1,0 +1,126 @@
+<div class="license-list-container">
+    <div class="operations" *ngIf="authService.hasPermission('LICENSE_CREATE')">
+      <button nz-button nzType="primary" (click)="createLicense()">
+        <i nz-icon nzType="plus"></i>创建授权
+      </button>
+    </div>
+  
+    <nz-table
+      #basicTable
+      [nzData]="licenses"
+      [nzLoading]="loading"
+      [nzShowSizeChanger]="true"
+      [nzPageSizeOptions]="[10, 20, 30, 40, 50]"
+      [nzShowTotal]="rangeTemplate">
+      
+      <thead>
+        <tr>
+          <th nzWidth="40px"></th>
+          <th>医院名称</th>
+          <th>系统</th>
+          <th>模块</th>
+          <th>并发限制</th>
+          <th>终端数量</th>
+          <th>补丁授权数</th>
+          <th>有效期</th>
+          <th>状态</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        <ng-template ngFor let-data [ngForOf]="basicTable.data">
+          <!-- 主授权行 -->
+          <tr>
+            <td [nzExpand]="expandSet.has(data.id)" (nzExpandChange)="onExpandChange(data.id, $event)"></td>
+            <td>{{ data.hospitalName }}</td>
+            <!-- <td>{{ data.systemName }}</td>  -->
+             <!--<td>
+              <nz-tag *ngFor="let module of data.modules">
+                {{ module.name }}
+              </nz-tag>
+            </td> -->
+            <td>{{ data.concurrentLimit }}</td>
+            <td>{{ data.terminals.length }}</td>
+            <td>{{ data.patchLicenseCount || 0 }}</td>
+            <td>{{ data.validFrom | date }} 至 {{ data.validTo | date }}</td>
+            <td>
+              <nz-tag [nzColor]="getLicenseStatusColor(data)">
+                {{ getLicenseStatusText(data) }}
+              </nz-tag>
+            </td>
+            <td>{{ data.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td>
+              <a nz-dropdown [nzDropdownMenu]="menu">
+                操作
+                <i nz-icon nzType="down"></i>
+              </a>
+              <nz-dropdown-menu #menu="nzDropdownMenu">
+                <ul nz-menu>
+                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_DOWNLOAD')"
+                      (click)="downloadLicense(data)">
+                    <i nz-icon nzType="download"></i>下载授权文件
+                  </li>
+                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_CREATE_PATCH') && isLicenseActive(data)"
+                      (click)="createPatchLicense(data)">
+                    <i nz-icon nzType="plus-circle"></i>创建补丁授权
+                  </li>
+                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_REVOKE') && isLicenseActive(data)"
+                      (click)="revokeLicense(data)">
+                    <i nz-icon nzType="stop"></i>撤销授权
+                  </li>
+                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_DELETE')"
+                      (click)="deleteLicense(data)">
+                    <i nz-icon nzType="delete"></i>删除授权
+                  </li>
+                </ul>
+              </nz-dropdown-menu>
+            </td>
+          </tr>
+  
+          <!-- 展开行：显示终端信息和补丁授权 -->
+          <tr [nzExpand]="expandSet.has(data.id)">
+            <td colspan="11">
+              <nz-tabset>
+                <!-- 终端信息标签页 -->
+                <nz-tab nzTitle="终端信息">
+                  <nz-table #innerTable
+                           [nzData]="data.terminals"
+                           [nzShowPagination]="false"
+                           nzSize="small">
+                    <thead>
+                      <tr>
+                        <th>MAC地址</th>
+                        <th>描述</th>
+                        <th>添加时间</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let terminal of innerTable.data">
+                        <td>{{ terminal.macAddress }}</td>
+                        <td>{{ terminal.description }}</td>
+                        <td>{{ terminal.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                      </tr>
+                    </tbody>
+                  </nz-table>
+                </nz-tab>
+  
+                <!-- 补丁授权标签页 -->
+                <nz-tab nzTitle="补丁授权"
+                        *ngIf="authService.hasPermission('LICENSE_VIEW_PATCH')">
+                  <app-patch-license-list
+                    [mainLicenseId]="data.id">
+                  </app-patch-license-list>
+                </nz-tab>
+              </nz-tabset>
+            </td>
+          </tr>
+        </ng-template>
+      </tbody>
+    </nz-table>
+  
+    <ng-template #rangeTemplate let-range="range" let-total>
+      {{ range[0] }}-{{ range[1] }} 共 {{ total }} 条
+    </ng-template>
+  </div>
