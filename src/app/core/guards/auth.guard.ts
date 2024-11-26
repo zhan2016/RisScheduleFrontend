@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { map, take } from 'rxjs/operators';
 
 /*
 const routes: Routes = [
@@ -37,17 +38,17 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): boolean | UrlTree {
-    if (!this.authService.isLoggedIn()) {
-      return this.router.createUrlTree(['/login']);
-    }
-
-    const requiredPermission = route.data['permission'] as string;
-    if (requiredPermission && !this.authService.hasPermission(requiredPermission)) {
-      return this.router.createUrlTree(['/403']);
-    }
-
-    return true;
+  ) {
+    return this.authService.isAuthenticated$.pipe(
+      take(1),
+      map(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/login']);
+          return false;
+        }
+        return true;
+      })
+    );
   }
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,

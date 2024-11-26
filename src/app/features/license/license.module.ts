@@ -22,6 +22,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
     NzDividerModule,
     NzTabsModule,
     NzDropDownModule,
-    NzModalModule
+    NzModalModule,
+    NzCheckboxModule
   ]
 })
 export class LicenseModule { }

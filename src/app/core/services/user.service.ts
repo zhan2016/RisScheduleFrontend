@@ -2,15 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { User } from '../models/user-manage';
 import { Observable } from 'rxjs';
+import { BaseApiService } from './base-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UserService extends BaseApiService {
 
   private apiUrl = 'api/users';
 
-  constructor(private http: HttpClient) { }
+  constructor(protected override http: HttpClient) {
+    super(http);
+  }
 
   // 获取用户列表
   getUser(): Observable<User[]> {  // 注意这里改为返回数组，匹配 UserListComponent 的调用
@@ -40,5 +43,12 @@ export class UserService {
   // 重置密码
   resetPassword(id: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/reset-password`, {});
+  }
+  
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/users/change-password`, {
+      currentPassword,
+      newPassword
+    });
   }
 }

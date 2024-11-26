@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzModalRef } from 'ng-zorro-antd/modal';
+import { KeyStatus } from 'src/app/core/models/common-models';
 import { EncryptionKey } from 'src/app/core/models/encryption-key';
 
 @Component({
@@ -10,58 +11,61 @@ import { EncryptionKey } from 'src/app/core/models/encryption-key';
 })
 export class EncryptionKeyFormComponent implements OnInit {
 
-  @Input() key?: EncryptionKey;
-  form!: FormGroup;
-  showKey = false;
-
-  constructor(
-    private fb: FormBuilder,
-    private modal: NzModalRef
-  ) {}
-
-  ngOnInit() {
-    this.form = this.fb.group({
-      name: [this.key?.name || '', [Validators.required, Validators.maxLength(50)]],
-      key: [this.key?.key || '', [Validators.required, Validators.minLength(32)]],
-      description: [this.key?.description || ''],
-      isDefault: [this.key?.isDefault || false]
-    });
-  }
-
-  generateKey() {
-    // 生成32位随机密钥
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let key = '';
-    for (let i = 0; i < 32; i++) {
-      key += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    this.form.patchValue({ key });
-  }
-
-  submitForm() {
-    if (this.form.valid) {
-      const formData = this.form.value;
-      if (this.key) {
-        // 编辑模式：合并原有数据
-        this.modal.close({
-          ...this.key,
-          ...formData
-        });
-      } else {
-        // 创建模式：直接使用表单数据
-        this.modal.close(formData);
-      }
+  @Input()
+  set data(value: EncryptionKey | null | undefined) {
+    if (value) {
+      console.log(value?.status, value?.status);
+      this.form.patchValue({
+        name: value.name,
+        isDefault: value.isDefault,
+        validRange: [new Date(value.validFrom), new Date(value.validTo)],
+        description: value.description,
+        status: value?.status || KeyStatus.ACTIVE
+      });
     } else {
-      Object.values(this.form.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsTouched();
-        }
+      this.form.reset({
+        isDefault: false
       });
     }
   }
 
-  cancel() {
-    this.modal.close();
+  @Output() formValid = new EventEmitter<boolean>();
+  @Output() formValue = new EventEmitter<any>();
+
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      name: ['', [Validators.required]],
+      isDefault: [false],
+      validRange: [null, [Validators.required]],
+      description: [''],
+      status: KeyStatus.ACTIVE,
+    });
+  }
+
+  ngOnInit(): void {
+    // 监听表单状态变化
+    this.form.statusChanges.subscribe(status => {
+      this.formValid.emit(status ===  'VALID');
+    });
+
+    // 监听表单值变化
+    this.form.valueChanges.subscribe(value => {
+      this.formValue.emit(value);
+    });
+  }
+
+  getFormValue(): any {
+    const formValue = this.form.value;
+    return {
+      name: formValue.name,
+      isDefault: formValue.isDefault,
+      validFrom: formValue.validRange[0],
+      validTo: formValue.validRange[1],
+      description: formValue.description,
+      status: formValue.status 
+    };
   }
 
 }

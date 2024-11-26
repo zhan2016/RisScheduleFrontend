@@ -1,126 +1,182 @@
-<div class="license-list-container">
-    <div class="operations" *ngIf="authService.hasPermission('LICENSE_CREATE')">
-      <button nz-button nzType="primary" (click)="createLicense()">
-        <i nz-icon nzType="plus"></i>创建授权
-      </button>
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <!-- 基本信息 -->
+    <div class="form-section">
+      <h2>基本信息</h2>
+      <div class="form-row">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">医院名称</nz-form-label>
+          <nz-form-control [nzSpan]="14" [nzErrorTip]="'请输入医院名称'">
+            <input nz-input formControlName="hospitalName" placeholder="请输入医院名称">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
   
-    <nz-table
-      #basicTable
-      [nzData]="licenses"
-      [nzLoading]="loading"
-      [nzShowSizeChanger]="true"
-      [nzPageSizeOptions]="[10, 20, 30, 40, 50]"
-      [nzShowTotal]="rangeTemplate">
-      
-      <thead>
-        <tr>
-          <th nzWidth="40px"></th>
-          <th>医院名称</th>
-          <th>系统</th>
-          <th>模块</th>
-          <th>并发限制</th>
-          <th>终端数量</th>
-          <th>补丁授权数</th>
-          <th>有效期</th>
-          <th>状态</th>
-          <th>创建时间</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      
-      <tbody>
-        <ng-template ngFor let-data [ngForOf]="basicTable.data">
-          <!-- 主授权行 -->
-          <tr>
-            <td [nzExpand]="expandSet.has(data.id)" (nzExpandChange)="onExpandChange(data.id, $event)"></td>
-            <td>{{ data.hospitalName }}</td>
-            <!-- <td>{{ data.systemName }}</td>  -->
-             <!--<td>
-              <nz-tag *ngFor="let module of data.modules">
-                {{ module.name }}
-              </nz-tag>
-            </td> -->
-            <td>{{ data.concurrentLimit }}</td>
-            <td>{{ data.terminals.length }}</td>
-            <td>{{ data.patchLicenseCount || 0 }}</td>
-            <td>{{ data.validFrom | date }} 至 {{ data.validTo | date }}</td>
-            <td>
-              <nz-tag [nzColor]="getLicenseStatusColor(data)">
-                {{ getLicenseStatusText(data) }}
-              </nz-tag>
-            </td>
-            <td>{{ data.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-            <td>
-              <a nz-dropdown [nzDropdownMenu]="menu">
-                操作
-                <i nz-icon nzType="down"></i>
-              </a>
-              <nz-dropdown-menu #menu="nzDropdownMenu">
-                <ul nz-menu>
-                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_DOWNLOAD')"
-                      (click)="downloadLicense(data)">
-                    <i nz-icon nzType="download"></i>下载授权文件
-                  </li>
-                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_CREATE_PATCH') && isLicenseActive(data)"
-                      (click)="createPatchLicense(data)">
-                    <i nz-icon nzType="plus-circle"></i>创建补丁授权
-                  </li>
-                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_REVOKE') && isLicenseActive(data)"
-                      (click)="revokeLicense(data)">
-                    <i nz-icon nzType="stop"></i>撤销授权
-                  </li>
-                  <li nz-menu-item *ngIf="authService.hasPermission('LICENSE_DELETE')"
-                      (click)="deleteLicense(data)">
-                    <i nz-icon nzType="delete"></i>删除授权
-                  </li>
-                </ul>
-              </nz-dropdown-menu>
-            </td>
-          </tr>
+    <!-- 系统选择 -->
+    <div class="form-section">
+      <h2>系统选择</h2>
+      <div class="form-row">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">选择系统</nz-form-label>
+          <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择系统'">
+            <nz-select formControlName="softwareId" (ngModelChange)="onSoftwareChange($event)">
+              <nz-option *ngFor="let software of softwares" 
+                        [nzValue]="software.id" 
+                        [nzLabel]="software.name">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
   
-          <!-- 展开行：显示终端信息和补丁授权 -->
-          <tr [nzExpand]="expandSet.has(data.id)">
-            <td colspan="11">
-              <nz-tabset>
-                <!-- 终端信息标签页 -->
-                <nz-tab nzTitle="终端信息">
-                  <nz-table #innerTable
-                           [nzData]="data.terminals"
-                           [nzShowPagination]="false"
-                           nzSize="small">
-                    <thead>
-                      <tr>
-                        <th>MAC地址</th>
-                        <th>描述</th>
-                        <th>添加时间</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let terminal of innerTable.data">
-                        <td>{{ terminal.macAddress }}</td>
-                        <td>{{ terminal.description }}</td>
-                        <td>{{ terminal.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-                      </tr>
-                    </tbody>
-                  </nz-table>
-                </nz-tab>
+      <!-- 系统授权类型 -->
+      <div class="form-row" *ngIf="form.get('softwareId')?.value">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">授权类型</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-radio-group formControlName="authType">
+              <label nz-radio [nzValue]="authTypes.TERMINAL">终端授权</label>
+              <label nz-radio [nzValue]="authTypes.CONCURRENT">并发授权</label>
+              <label nz-radio [nzValue]="authTypes.BOTH">终端和并发授权</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
   
-                <!-- 补丁授权标签页 -->
-                <nz-tab nzTitle="补丁授权"
-                        *ngIf="authService.hasPermission('LICENSE_VIEW_PATCH')">
-                  <app-patch-license-list
-                    [mainLicenseId]="data.id">
-                  </app-patch-license-list>
-                </nz-tab>
-              </nz-tabset>
-            </td>
-          </tr>
-        </ng-template>
-      </tbody>
-    </nz-table>
+      <!-- 系统并发数 -->
+      <div class="form-row" *ngIf="isSoftwareConcurrentAuth()">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">系统并发数</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-input-number formControlName="concurrentLimit" 
+                            [nzMin]="1" 
+                            [nzMax]="getMaxConcurrent()">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
   
-    <ng-template #rangeTemplate let-range="range" let-total>
-      {{ range[0] }}-{{ range[1] }} 共 {{ total }} 条
-    </ng-template>
-  </div>
+      <!-- 系统有效期 -->
+      <div class="form-row">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">系统有效期</nz-form-label>
+          <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择有效期'">
+            <nz-range-picker formControlName="validRange"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  
+    <!-- 系统终端列表 -->
+    <div class="form-section" *ngIf="isSoftwareTerminalAuth()">
+      <h2>系统终端列表</h2>
+      <button nz-button nzType="dashed" (click)="addSystemTerminal()">
+        <i nz-icon nzType="plus"></i>添加终端
+      </button>
+  
+      <div formArrayName="systemTerminals">
+        <div *ngFor="let terminal of systemTerminalsArray.controls; let i=index" 
+             [formGroupName]="i" 
+             class="terminal-item">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">终端名称</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <input nz-input formControlName="name" placeholder="请输入终端名称">
+            </nz-form-control>
+          </nz-form-item>
+  
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">MAC地址</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <input nz-input formControlName="macAddress" placeholder="请输入MAC地址">
+            </nz-form-control>
+          </nz-form-item>
+  
+          <button nz-button nzType="link" nzDanger (click)="removeSystemTerminal(i)">
+            <i nz-icon nzType="delete"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 模块列表 -->
+    <div class="form-section">
+      <h2>模块列表</h2>
+      <div formArrayName="modules">
+        <div *ngFor="let module of modulesArray.controls; let i=index" 
+             [formGroupName]="i" 
+             class="module-item">
+             <div class="module-header">
+                <label nz-checkbox formControlName="enabled">
+                  {{module.get('name')?.value}}
+                </label>
+                <span class="auth-type">
+                  授权类型: {{getAuthTypeDisplay(module.get('authType')?.value)}}
+                </span>
+              </div>
+  
+          <div *ngIf="module.get('enabled')?.value" class="module-content">
+            <!-- 模块并发数 -->
+            <div *ngIf="isModuleConcurrentAuth(module)">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="6">模块并发数</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                  <nz-input-number formControlName="concurrentLimit" 
+                                  [nzMin]="1" 
+                                  [nzMax]="getMaxConcurrent()">
+                  </nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+  
+            <!-- 模块有效期 -->
+            <nz-form-item>
+              <nz-form-label [nzSpan]="6">模块有效期</nz-form-label>
+              <nz-form-control [nzSpan]="14">
+                <nz-range-picker formControlName="validRange"></nz-range-picker>
+              </nz-form-control>
+            </nz-form-item>
+  
+            <!-- 模块终端列表 -->
+            <div *ngIf="isModuleTerminalAuth(module)">
+              <div class="module-terminals">
+                <h3>模块终端列表</h3>
+                <button nz-button nzType="dashed" (click)="addModuleTerminal(i)">
+                  <i nz-icon nzType="plus"></i>添加终端
+                </button>
+  
+                <div formArrayName="moduleTerminals">
+                  <div *ngFor="let terminal of getModuleTerminals(i).controls; let j=index">
+                       [formGroupName]="j" 
+                       class="terminal-item">
+                    <nz-form-item>
+                      <nz-form-label [nzSpan]="6">终端名称</nz-form-label>
+                      <nz-form-control [nzSpan]="14">
+                        <input nz-input formControlName="name" placeholder="请输入终端名称">
+                      </nz-form-control>
+                    </nz-form-item>
+  
+                    <nz-form-item>
+                      <nz-form-label [nzSpan]="6">MAC地址</nz-form-label>
+                      <nz-form-control [nzSpan]="14">
+                        <input nz-input formControlName="macAddress" placeholder="请输入MAC地址">
+                      </nz-form-control>
+                    </nz-form-item>
+  
+                    <button nz-button nzType="link" nzDanger (click)="removeModuleTerminal(i, j)">
+                      <i nz-icon nzType="delete"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 提交按钮 -->
+    <div class="form-footer">
+      <button nz-button nzType="primary" type="submit">提交</button>
+    </div>
+  </form>

@@ -1,0 +1,18 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  .search-form {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .danger {
+    color: #ff4d4f;
+  }

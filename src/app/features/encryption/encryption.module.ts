@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -15,16 +15,20 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzSwitchModule } from 'ng-zorro-antd/switch'; 
 
 import { EncryptionRoutingModule } from './encryption-routing.module';
 import { EncryptionKeyListComponent } from './encryption-key-list/encryption-key-list.component';
 import { EncryptionKeyFormComponent } from './encryption-key-form/encryption-key-form.component';
+import { EncryptionKeyDetailModalComponent } from './encryption-key-detail-modal/encryption-key-detail-modal.component';
 
 
 @NgModule({
   declarations: [
     EncryptionKeyListComponent,
-    EncryptionKeyFormComponent
+    EncryptionKeyFormComponent,
+    EncryptionKeyDetailModalComponent
   ],
   imports: [
     CommonModule,
@@ -43,10 +47,13 @@ import { EncryptionKeyFormComponent } from './encryption-key-form/encryption-key
     NzDividerModule,
     NzIconModule,
     NzPopconfirmModule,
-    NzRadioModule
+    NzRadioModule,
+    NzDatePickerModule,
+    NzSwitchModule
   ],
   exports: [
     EncryptionKeyListComponent
-  ]
+  ],
+  providers: [DatePipe]
 })
 export class EncryptionModule { }

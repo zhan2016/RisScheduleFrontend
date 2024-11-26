@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EncryptionKey, KeyStatus } from '../models/encryption-key';
-import { PaginatedResponse } from '../models/common-models';
+import { EncryptionKey } from '../models/encryption-key';
+import { KeyStatus, PaginatedResponse } from '../models/common-models';
 import { Observable } from 'rxjs';
 
 @Injectable({

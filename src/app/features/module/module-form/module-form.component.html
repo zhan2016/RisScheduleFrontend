@@ -5,6 +5,19 @@
           <input nz-input [value]="parentModule.name" disabled />
         </nz-form-control>
       </nz-form-item>
+       <!-- 添加系统选择下拉框 -->
+  <nz-form-item>
+    <nz-form-label [nzSpan]="6" nzRequired>所属系统</nz-form-label>
+    <nz-form-control [nzSpan]="16" nzErrorTip="请选择所属系统">
+      <nz-select formControlName="systemId" nzPlaceHolder="请选择所属系统">
+        <nz-option
+          *ngFor="let system of systems"
+          [nzValue]="system.id"
+          [nzLabel]="system.name"
+        ></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
     <nz-form-item>
       <nz-form-label [nzSpan]="6" nzRequired>模块名称</nz-form-label>
       <nz-form-control [nzSpan]="16" nzErrorTip="请输入模块名称">

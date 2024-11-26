@@ -1,3 +1,5 @@
+import { KeyStatus } from "./common-models";
+
   
  export interface Terminal {
     id: string;
@@ -20,7 +22,7 @@
     createdAt: Date;
     licenseType: 'MAIN' | 'PATCH';
     parentLicenseId?: string;  // 如果是patch授权，关联主授权ID
-    status: 'ACTIVE' | 'EXPIRED'|'REVOKED';
+    status: KeyStatus;
     downloadUrl?: string;
   }
   

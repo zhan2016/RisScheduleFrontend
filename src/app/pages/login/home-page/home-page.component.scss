@@ -1,0 +1,88 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+    background-color: #303030;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.login-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #303030;
+  position: relative;
+}
+
+.login-card {
+  width: 368px;
+  margin: 0 auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+.login-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 40px;
+}
+
+nz-form-item {
+  margin-bottom: 24px;
+}
+
+.login-button {
+  width: 100%;
+  height: 40px;
+}
+
+.regular-image-container {
+  position: fixed;
+  left: 80px;
+  top: 50px;
+  max-width: 250px;
+}
+
+.login-copyright {
+  position: fixed;
+  bottom: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+/* 输入框图标样式 */
+:host ::ng-deep .ant-input-prefix {
+  color: rgba(0, 0, 0, 0.25);
+  margin-right: 8px;
+}
+
+/* 禁用按钮样式 */
+button:disabled {
+  opacity: 0.7;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 576px) {
+  .login-card {
+    width: 95%;
+    padding: 16px;
+  }
+  
+  .regular-image-container {
+    position: static;
+    margin-bottom: 24px;
+    max-width: 200px;
+  }
+}

@@ -84,7 +84,7 @@ export class ListManageComponent implements OnInit {
       nzOkType: 'primary',
       nzOkDanger:true,
       nzOnOk: () => {
-        this.systemService.deleteSystem(system.id).subscribe(
+        this.systemService.batchDeleteSystems([system.id]).subscribe(
           () => {
             this.message.success('删除成功');
             this.loadSystems();

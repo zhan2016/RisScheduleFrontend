@@ -62,13 +62,13 @@ export class SystemService {
     return this.http.patch<void>(`${this.apiUrl}/batch/status`, { ids, status });
   }
 
-  batchDeleteSystems(ids: string[]): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/batch-delete`, { ids });
+  batchDeleteSystems(ids: number[]): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/batch-delete`, ids);
   }
 
   // 模块相关方法
   getModules(params?: {
-    systemId?: string;
+    systemId?: number;
     name?: string;
     status?: string;
     authType?: string;

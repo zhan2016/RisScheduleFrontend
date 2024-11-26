@@ -1,0 +1,82 @@
+<ng-container>
+    <nz-layout class="app-layout">
+      <nz-sider class="menu-sidebar"
+                nzCollapsible
+                nzWidth="256px"
+                nzBreakpoint="md"
+                [(nzCollapsed)]="isCollapsed"
+                [nzTrigger]="null">
+        <div class="sidebar-logo">
+          <a href="https://ng.ant.design/" target="_blank">
+            <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+            <h1>授权管理系统</h1>
+          </a>
+        </div>
+        <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+          <li nz-submenu nzOpen nzTitle="授权管理" nzIcon="dashboard">
+            <ul>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/licenses">授权生成</a>
+              </li>
+            </ul>
+          </li>
+          <li nz-submenu nzOpen nzTitle="维护" nzIcon="form">
+            <ul>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/systems">软件系统管理</a>
+              </li>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/modules">软件系统模块</a>
+              </li>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/encryptionKeys">加密key管理</a>
+              </li>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/users">用户管理</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nz-sider>
+      <nz-layout>
+        <nz-header>
+            <div class="app-header">
+                <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+                  <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+                </span>
+                <div class="header-right">
+                  <a nz-dropdown [nzDropdownMenu]="menu">
+                    <div class="user-info">
+                      <nz-avatar nzIcon="user" [nzSize]="32"></nz-avatar>
+                      <span class="username">{{ currentUser?.username }}</span>
+                      <i nz-icon nzType="down"></i>
+                    </div>
+                  </a>
+                  <nz-dropdown-menu #menu="nzDropdownMenu">
+                    <ul nz-menu>
+                      <li nz-menu-item (click)="showUserInfoModal()">
+                        <i nz-icon nzType="user" nzTheme="outline"></i>
+                        个人信息
+                      </li>
+                      <li nz-menu-item (click)="showChangePasswordModal()">
+                        <i nz-icon nzType="lock" nzTheme="outline"></i>
+                        修改密码
+                      </li>
+                      <li nz-menu-divider></li>
+                      <li nz-menu-item (click)="logout()">
+                        <i nz-icon nzType="logout" nzTheme="outline"></i>
+                        退出登录
+                      </li>
+                    </ul>
+                  </nz-dropdown-menu>
+                </div>
+              </div>
+        </nz-header>
+        <nz-content>
+          <div class="inner-content">
+            <router-outlet></router-outlet>
+          </div>
+        </nz-content>
+      </nz-layout>
+    </nz-layout>
+  </ng-container>

@@ -40,8 +40,8 @@
         <td>{{ user.email }}</td>
         <td>{{ user.phone }}</td>
         <td>
-          <nz-tag [nzColor]="user.status === 'active' ? 'success' : 'error'">
-            {{ user.status === 'active' ? '启用' : '禁用' }}
+          <nz-tag [nzColor]="user.status === KeyStatusDict.ACTIVE ? 'success' : 'error'">
+            {{ user.status === KeyStatusDict.ACTIVE ? '启用' : '禁用' }}
           </nz-tag>
         </td>
         <td>
@@ -54,7 +54,7 @@
           <a (click)="showQuotaModal(user)">配额</a>
           <nz-divider nzType="vertical"></nz-divider>
           <a (click)="toggleStatus(user)">
-            {{ user.status === 'active' ? '禁用' : '启用' }}
+            {{ user.status === KeyStatusDict.ACTIVE ? '禁用' : '启用' }}
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a (click)="resetPassword(user)">重置密码</a>

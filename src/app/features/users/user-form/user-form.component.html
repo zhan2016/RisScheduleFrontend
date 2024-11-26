@@ -5,14 +5,34 @@
         <input nz-input formControlName="username" placeholder="请输入用户名">
       </nz-form-control>
     </nz-form-item>
-  
+
+    <nz-form-item *ngIf="!user">
+        <nz-form-label [nzSpan]="6" nzRequired>密码</nz-form-label>
+        <nz-form-control [nzSpan]="14" nzErrorTip="密码长度至少6位">
+          <input nz-input type="password" formControlName="password" placeholder="请输入密码">
+        </nz-form-control>
+      </nz-form-item>
+
     <nz-form-item>
       <nz-form-label [nzSpan]="6" nzRequired>姓名</nz-form-label>
       <nz-form-control [nzSpan]="14" nzErrorTip="请输入姓名">
         <input nz-input formControlName="realName" placeholder="请输入姓名">
       </nz-form-control>
     </nz-form-item>
-  
+
+    <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>角色</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <nz-select formControlName="roleId" 
+                     nzPlaceHolder="请选择角色">
+            <nz-option *ngFor="let role of roles"
+                       [nzValue]="role.id"
+                       [nzLabel]="role.name">
+            </nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
     <nz-form-item>
       <nz-form-label [nzSpan]="6" nzRequired>邮箱</nz-form-label>
       <nz-form-control [nzSpan]="14" nzErrorTip="请输入有效的邮箱地址">
@@ -42,8 +62,8 @@
       <nz-form-label [nzSpan]="6">状态</nz-form-label>
       <nz-form-control [nzSpan]="14">
         <nz-radio-group formControlName="status">
-          <label nz-radio-button nzValue="active">启用</label>
-          <label nz-radio-button nzValue="disabled">禁用</label>
+          <label nz-radio-button nzValue="ACTIVE">启用</label>
+          <label nz-radio-button nzValue="INACTIVE">禁用</label>
         </nz-radio-group>
       </nz-form-control>
     </nz-form-item>

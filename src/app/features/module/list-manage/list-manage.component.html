@@ -14,7 +14,17 @@
             <ng-template #suffixIcon>
               <i nz-icon nzType="search"></i>
             </ng-template>
-            
+               <!-- 添加软件系统筛选 -->
+                <nz-select
+                *nzSpaceItem
+                [(ngModel)]="queryParams.softwareId"
+                (ngModelChange)="onSearch()"
+                style="width: 160px;"
+                nzPlaceHolder="选择软件系统"
+            >
+                <nz-option [nzValue]="null" nzLabel="全部软件"></nz-option>
+                <nz-option *ngFor="let software of softwares" [nzValue]="software.id" [nzLabel]="software.name"></nz-option>
+            </nz-select>
             <nz-select
               *nzSpaceItem
               [(ngModel)]="queryParams.status"
@@ -23,8 +33,8 @@
               nzPlaceHolder="模块状态"
             >
               <nz-option [nzValue]="null" nzLabel="全部状态"></nz-option>
-              <nz-option [nzValue]="ModuleStatus.ACTIVE" nzLabel="已激活"></nz-option>
-              <nz-option [nzValue]="ModuleStatus.INACTIVE" nzLabel="未激活"></nz-option>
+              <nz-option [nzValue]="KeyStatusDict.ACTIVE" nzLabel="已激活"></nz-option>
+              <nz-option [nzValue]="KeyStatusDict.INACTIVE" nzLabel="未激活"></nz-option>
             </nz-select>
 
             <nz-select
@@ -58,6 +68,7 @@
       >
         <thead>
           <tr>
+            <th>软件系统</th>
             <th>模块名称</th>
             <th>描述</th>
             <th>授权方式</th>
@@ -70,6 +81,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let data of basicTable.data">
+            <td>{{ data.software?.name || '-' }}</td>
             <td>{{ data.name }}</td>
             <td>{{ data.description || '-' }}</td>
             <td>
@@ -86,8 +98,8 @@
             </td>
             <td>
               <nz-badge
-                [nzStatus]="data.status === ModuleStatus.ACTIVE ? 'success' : 'default'"
-                [nzText]="data.status === ModuleStatus.ACTIVE ? '已激活' : '未激活'"
+                [nzStatus]="data.status === KeyStatusDict.ACTIVE ? 'success' : 'default'"
+                [nzText]="data.status === KeyStatusDict.ACTIVE ? '已激活' : '未激活'"
               >
               </nz-badge>
             </td>

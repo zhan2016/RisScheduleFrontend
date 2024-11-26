@@ -1,3 +1,4 @@
+import { KeyStatus } from "./common-models";
 
 export interface User {
     id: number;
@@ -5,8 +6,8 @@ export interface User {
     realName: string;
     email: string;
     phone: string;
-    role: 'admin' | 'user';
-    status: 'active' | 'disabled';
+    roleId: 'admin' | 'user';
+    status: KeyStatus;
     validFrom: Date;
     validTo: Date;
     createdAt: Date;

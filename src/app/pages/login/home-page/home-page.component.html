@@ -1,0 +1,55 @@
+<div class="login-wrapper">
+    <img
+      id="tool-tip"
+      class="regular-image-container"
+      src="../../../../assets/images/xqz_logo.png"
+    />
+    <div class="login-card">
+      <h1 class="login-title">软件统一授权平台</h1>
+      <form [formGroup]="form" (ngSubmit)="login()">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-input-group [nzPrefix]="userIcon">
+              <input
+                type="text"
+                nz-input
+                placeholder="用户名"
+                formControlName="username"
+              />
+            </nz-input-group>
+            <ng-template #userIcon>
+              <span nz-icon nzType="user"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-control>
+            <nz-input-group [nzPrefix]="lockIcon">
+              <input
+                type="password"
+                nz-input
+                placeholder="密码"
+                formControlName="password"
+              />
+            </nz-input-group>
+            <ng-template #lockIcon>
+              <span nz-icon nzType="lock"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <button
+          nz-button
+          [nzType]="'primary'"
+          [disabled]="form.invalid"
+          class="login-button"
+        >
+          登录
+        </button>
+      </form>
+    </div>
+    <div class="login-copyright">
+      {{ copyrights }}
+    </div>
+  </div>

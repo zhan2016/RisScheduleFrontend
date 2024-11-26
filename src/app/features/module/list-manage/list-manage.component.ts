@@ -1,11 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { AuthorizationType, Module, ModuleStatus } from 'src/app/core/models/license-module';
+import {Module } from 'src/app/core/models/license-module';
 import { ModuleService } from 'src/app/core/services/module.service';
 import { ModuleFormComponent } from '../module-form/module-form.component';
 import { finalize } from 'rxjs/operators';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
+import { SystemService } from 'src/app/core/services/system.service';
+import { System, SystemAuthorizationType } from 'src/app/core/models/license-systems';
+import { KeyStatus } from 'src/app/core/models/common-models';
 
 @Component({
   selector: 'app-list-manage',
@@ -16,9 +19,8 @@ export class ListManageComponent implements OnInit {
 
   @Input() systemId?: string;
   
-  ModuleStatus = ModuleStatus;
-  AuthorizationType = AuthorizationType;
-  
+  AuthorizationType = SystemAuthorizationType;
+  KeyStatusDict = KeyStatus;
   modules: Module[] = [];
   loading = false;
   searchValue = '';
@@ -28,36 +30,46 @@ export class ListManageComponent implements OnInit {
   pageIndex = 1;
   pageSize = 10;
   total = 0;
+  softwares: System[] = [];
 
   queryParams = {
-    status: null as ModuleStatus | null,
-    authType: null as AuthorizationType | null
+    softwareId: null,
+    status: null as KeyStatus | null,
+    authType: null as SystemAuthorizationType | null
   };
 
   constructor(
     private moduleService: ModuleService,
     private modal: NzModalService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private softwareService: SystemService
   ) {}
 
   ngOnInit() {
     this.loadModules();
+    this.loadSoftwares();
   }
-
-  getAuthTypeLabel(type: AuthorizationType): string {
+  loadSoftwares() {
+    this.softwareService.getSystems({page:1, pageSize:10000}).subscribe(
+      data => {
+        this.softwares = data.data;
+      }
+    );
+  }
+  getAuthTypeLabel(type: SystemAuthorizationType): string {
     const labels = {
-      [AuthorizationType.CONCURRENT]: '并发授权',
-      [AuthorizationType.TERMINAL]: '终端授权',
-      [AuthorizationType.BOTH]: '两种均可'
+      [SystemAuthorizationType.CONCURRENT]: '并发授权',
+      [SystemAuthorizationType.TERMINAL]: '终端授权',
+      [SystemAuthorizationType.BOTH]: '两种均可'
     };
     return labels[type];
   }
 
-  getAuthTypeColor(type: AuthorizationType): string {
+  getAuthTypeColor(type: SystemAuthorizationType): string {
     const colors = {
-      [AuthorizationType.CONCURRENT]: 'blue',
-      [AuthorizationType.TERMINAL]: 'green',
-      [AuthorizationType.BOTH]: 'purple'
+      [SystemAuthorizationType.CONCURRENT]: 'blue',
+      [SystemAuthorizationType.TERMINAL]: 'green',
+      [SystemAuthorizationType.BOTH]: 'purple'
     };
     return colors[type];
   }

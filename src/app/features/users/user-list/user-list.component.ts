@@ -5,6 +5,7 @@ import { User } from 'src/app/core/models/user-manage';
 import { UserFormComponent } from '../user-form/user-form.component';
 import { UserService } from 'src/app/core/services/user.service';
 import { UserQuotaComponent } from '../user-quota/user-quota.component';
+import { KeyStatus } from 'src/app/core/models/common-models';
 
 @Component({
   selector: 'app-user-list',
@@ -16,7 +17,7 @@ export class UserListComponent implements OnInit {
   users: User[] = [];
   loading = false;
   searchText = '';
-
+  KeyStatusDict = KeyStatus;
   constructor(
     private userService: UserService,
     private modal: NzModalService,
@@ -103,14 +104,14 @@ export class UserListComponent implements OnInit {
   }
 
   toggleStatus(user: User) {
-    const newStatus = user.status === 'active' ? 'disabled' : 'active';
+    const newStatus = user.status === this.KeyStatusDict.ACTIVE ? this.KeyStatusDict.INACTIVE : this.KeyStatusDict.ACTIVE;
     this.userService.updateStatus(user.id, newStatus).subscribe({
       next: () => {
-        this.message.success(`${newStatus === 'active' ? '启用' : '禁用'}用户成功`);
+        this.message.success(`${newStatus === this.KeyStatusDict.ACTIVE ? '启用' : '禁用'}用户成功`);
         this.loadUsers();
       },
       error: (error) => {
-        this.message.error(`${newStatus === 'active' ? '启用' : '禁用'}用户失败: ${error.message}`);
+        this.message.error(`${newStatus === this.KeyStatusDict.ACTIVE ? '启用' : '禁用'}用户失败: ${error.message}`);
       }
     });
   }

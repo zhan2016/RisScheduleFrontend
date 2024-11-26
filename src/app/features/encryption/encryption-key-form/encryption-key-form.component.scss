@@ -1,17 +1,3 @@
-:host {
-    display: block;
-    padding: 24px;
-  }
-  
-  .generate-btn {
-    margin-top: 8px;
-  }
-  
-  .form-footer {
-    margin-top: 24px;
-    text-align: right;
-  
-    button + button {
-      margin-left: 8px;
-    }
+:host ::ng-deep .ant-form-item:last-child {
+    margin-bottom: 0;
   }
