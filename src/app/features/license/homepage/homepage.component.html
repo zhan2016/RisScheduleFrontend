@@ -106,70 +106,10 @@
         <div *ngFor="let module of modulesArray.controls; let i=index" 
              [formGroupName]="i" 
              class="module-item">
-             <div class="module-header">
-                <label nz-checkbox formControlName="enabled">
-                  {{module.get('name')?.value}}
-                </label>
-                <span class="auth-type">
-                  授权类型: {{getAuthTypeDisplay(module.get('authType')?.value)}}
-                </span>
-              </div>
-  
-          <div *ngIf="module.get('enabled')?.value" class="module-content">
-            <!-- 模块并发数 -->
-            <div *ngIf="isModuleConcurrentAuth(module)">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="6">模块并发数</nz-form-label>
-                <nz-form-control [nzSpan]="14">
-                  <nz-input-number formControlName="concurrentLimit" 
-                                  [nzMin]="1" 
-                                  [nzMax]="getMaxConcurrent()">
-                  </nz-input-number>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-  
-            <!-- 模块有效期 -->
-            <nz-form-item>
-              <nz-form-label [nzSpan]="6">模块有效期</nz-form-label>
-              <nz-form-control [nzSpan]="14">
-                <nz-range-picker formControlName="validRange"></nz-range-picker>
-              </nz-form-control>
-            </nz-form-item>
-  
-            <!-- 模块终端列表 -->
-            <div *ngIf="isModuleTerminalAuth(module)">
-              <div class="module-terminals">
-                <h3>模块终端列表</h3>
-                <button nz-button nzType="dashed" (click)="addModuleTerminal(i)">
-                  <i nz-icon nzType="plus"></i>添加终端
-                </button>
-  
-                <div formArrayName="moduleTerminals">
-                  <div *ngFor="let terminal of getModuleTerminals(i).controls; let j=index">
-                       [formGroupName]="j" 
-                       class="terminal-item">
-                    <nz-form-item>
-                      <nz-form-label [nzSpan]="6">终端名称</nz-form-label>
-                      <nz-form-control [nzSpan]="14">
-                        <input nz-input formControlName="name" placeholder="请输入终端名称">
-                      </nz-form-control>
-                    </nz-form-item>
-  
-                    <nz-form-item>
-                      <nz-form-label [nzSpan]="6">MAC地址</nz-form-label>
-                      <nz-form-control [nzSpan]="14">
-                        <input nz-input formControlName="macAddress" placeholder="请输入MAC地址">
-                      </nz-form-control>
-                    </nz-form-item>
-  
-                    <button nz-button nzType="link" nzDanger (click)="removeModuleTerminal(i, j)">
-                      <i nz-icon nzType="delete"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="module-header">
+            <label nz-checkbox formControlName="enabled">
+              {{module.get('name')?.value}}
+            </label>
           </div>
         </div>
       </div>
