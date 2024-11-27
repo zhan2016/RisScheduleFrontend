@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PatchLicenseListComponent } from './patch-license-list.component';
+import { LoadingCarComponent } from './loading-car.component';
 
-describe('PatchLicenseListComponent', () => {
-  let component: PatchLicenseListComponent;
-  let fixture: ComponentFixture<PatchLicenseListComponent>;
+describe('LoadingCarComponent', () => {
+  let component: LoadingCarComponent;
+  let fixture: ComponentFixture<LoadingCarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PatchLicenseListComponent ]
+      declarations: [ LoadingCarComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PatchLicenseListComponent);
+    fixture = TestBed.createComponent(LoadingCarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -14,7 +14,7 @@ import { SystemAuthorizationType } from "./license-systems";
     systemId: string;
     name: string;
     description?: string;
-    
+    code: string;
     // 授权相关
     independentAuth: boolean;         // 是否单独授权
     authType: SystemAuthorizationType;      // 授权类型
@@ -33,6 +33,7 @@ import { SystemAuthorizationType } from "./license-systems";
 export interface CreateModuleDto {
     systemId: string;
     name: string;
+    code: string;
     description?: string;
     independentAuth: boolean;
     authType: SystemAuthorizationType;
@@ -43,6 +44,7 @@ export interface CreateModuleDto {
   export interface UpdateModuleDto {
     name?: string;
     description?: string;
+    code: string;
     independentAuth?: boolean;
     authType?: SystemAuthorizationType;
     status?: KeyStatus;

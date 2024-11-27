@@ -1,25 +1,24 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
-import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
-import { License, LicenseRequest } from 'src/app/core/models/license-models';
+import { NzModalRef } from 'ng-zorro-antd/modal';
+import { finalize } from 'rxjs/operators';
+import { LicenseEdition } from 'src/app/core/models/common-models';
+import { License, LicenseModuleInfo, LicensePatchRequest, LicenseQueryResponse, LicenseRequest, LicenseTerminal, PatchLicenseInfo } from 'src/app/core/models/license-models';
 import { Module } from 'src/app/core/models/license-module';
 import { System, SystemAuthorizationType } from 'src/app/core/models/license-systems';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { LicenseService } from 'src/app/core/services/license.service';
-import { SystemService } from 'src/app/core/services/system.service';
-import { LicenseFormComponent } from '../license-form/license-form.component';
 import { LoadingService } from 'src/app/core/services/loading.service';
-import { LicenseEdition } from 'src/app/core/models/common-models';
+import { SystemService } from 'src/app/core/services/system.service';
 
 @Component({
-  selector: 'app-homepage',
-  templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
+  selector: 'app-patch-page',
+  templateUrl: './patch-page.component.html',
+  styleUrls: ['./patch-page.component.scss']
 })
-export class HomepageComponent implements OnInit {
+export class PatchPageComponent implements OnInit {
+  @Input()
+  existingLicense!: LicenseQueryResponse; // 接收现有license数据
   form!: FormGroup;
   softwares: System[] = [];
   authTypes = SystemAuthorizationType;
@@ -30,59 +29,49 @@ export class HomepageComponent implements OnInit {
     private softwareService: SystemService,
     private licenseService: LicenseService,
     private message: NzMessageService,
+    private modal: NzModalRef,
     private loadingService: LoadingService
   ) {
-    this.createForm();
+    //this.createForm();
   }
 
   ngOnInit() {
     this.loadSoftwares();
-    this.form.get('licenseEdition')?.valueChanges.subscribe(edition => {
-      this.onLicenseEditionChange(edition);
+    this.initForm();
+  }
+  private loadSoftwares() {
+    this.softwareService.getSystems({page: 1, pageSize: 1000}).subscribe(data => {
+      this.softwares = data.data;
     });
   }
-
-  private createForm() {
+  private initForm() {
+    // 创建表单时使用现有license数据
     this.form = this.fb.group({
-      hospitalName: ['', Validators.required],
-      softwareId: ['', Validators.required],
-      licenseEdition: [LicenseEdition.TRIAL, Validators.required], 
-      authType: ['', Validators.required],
-      concurrentLimit: [{ value: null, disabled: true }],
-      validRange: [null, Validators.required],
+      // 只读字段 - 显示但不可修改
+      hospitalName: [{value: this.existingLicense.hospitalName, disabled: true}],
+      softwareId: [{value: this.existingLicense.softwareId, disabled: true}],
+      licenseEdition: [{value: this.existingLicense.licenseEdition, disabled: true}],
+      authType:[{value: this.existingLicense.software.authType, disabled: true}],
+      // 可修改字段
+      validRange: [[new Date(this.existingLicense.validFrom), new Date(this.existingLicense.validTo)], Validators.required],
+      concurrentLimit: [this.existingLicense.concurrentLimit],
       systemTerminals: this.fb.array([]),
       modules: this.fb.array([])
     });
 
-    this.form.get('authType')?.valueChanges.subscribe(authType => {
-      const concurrentControl = this.form.get('concurrentLimit');
-      if (authType === SystemAuthorizationType.CONCURRENT || 
-          authType === SystemAuthorizationType.BOTH) {
-        concurrentControl?.enable();
-      } else {
-        concurrentControl?.disable();
-        this.form.patchValue({ concurrentLimit: null });
-      }
+    // 初始化终端列表
+    this.existingLicense?.terminals?.forEach(terminal => {
+      this.systemTerminalsArray.push(this.createTerminalForm(terminal));
+    });
+  
+    this.softwareService.getModules({systemId: this.existingLicense.softwareId as any, page: 1, pageSize: 1000}).subscribe(modules => {
+      modules.data.forEach(module => {
+        this.modulesArray.push(this.createModuleForm(module));
+      });
     });
   }
+
   
-  private onLicenseEditionChange(edition: LicenseEdition) {
-    // 根据不同版本进行相应处理
-    switch (edition) {
-      case LicenseEdition.TRIAL:
-        // 试用版的处理逻辑
-        break;
-      case LicenseEdition.STANDARD:
-        // 标准版的处理逻辑
-        break;
-      case LicenseEdition.ENTERPRISE:
-        // 企业版的处理逻辑
-        break;
-      case LicenseEdition.DEMO:
-        // 演示版的处理逻辑
-        break;
-    }
-  }
   get modulesArray() {
     return this.form.get('modules') as FormArray;
   }
@@ -91,45 +80,26 @@ export class HomepageComponent implements OnInit {
     return this.form.get('systemTerminals') as FormArray;
   }
 
-  private loadSoftwares() {
-    this.softwareService.getSystems({page: 1, pageSize: 1000}).subscribe(data => {
-      this.softwares = data.data;
-    });
-  }
 
-  onSoftwareChange(softwareId: number) {
-    const software = this.getSelectedSoftware();
-    if (!software) return;
 
-    this.form.patchValue({ authType: software.authType });
-
-    const modulesArray = this.modulesArray;
-    modulesArray.clear();
-    this.systemTerminalsArray.clear();
-
-    this.softwareService.getModules({systemId: softwareId, page: 1, pageSize: 1000}).subscribe(modules => {
-      modules.data.forEach(module => {
-        modulesArray.push(this.createModuleForm(module));
-      });
-    });
-  }
-
-  private createModuleForm(module: Module) {
+  private createModuleForm(module: LicenseModuleInfo) {
+    const existModuleIds = this.existingLicense.modules.map(item => item.id);
     return this.fb.group({
       moduleId: [module.id],
       name: [module.name],
       code: [module.code],
-      enabled: [true]  // 默认选中
+      enabled: [existModuleIds.includes(module.id)]
     });
   }
 
-  private createTerminalForm() {
+  private createTerminalForm(terminal: LicenseTerminal) {
     return this.fb.group({
-      name: ['', Validators.required],
-      macAddress: ['', [
+      name: [terminal.name, Validators.required],
+      macAddress: [terminal.macAddress, [
         Validators.required, 
         Validators.pattern(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
-      ]]
+      ]],
+      id: [terminal.id]
     });
   }
 
@@ -165,7 +135,7 @@ export class HomepageComponent implements OnInit {
   }
 
   addSystemTerminal() {
-    this.systemTerminalsArray.push(this.createTerminalForm());
+    //this.systemTerminalsArray.push(this.createTerminalForm());
   }
 
   removeSystemTerminal(index: number) {
@@ -173,6 +143,12 @@ export class HomepageComponent implements OnInit {
   }
 
   submit() {
+    for (const i in this.form.controls) {
+      const control = this.form.controls[i];
+      if (control.errors) {
+        console.log(`${i} errors:`, control.errors);
+      }
+    }
     if (!this.form.valid) {
       this.markAllAsTouched(this.form);
       this.message.warning('请填写所有必填项');
@@ -182,7 +158,8 @@ export class HomepageComponent implements OnInit {
     const formValue = this.form.value;
     const request = this.prepareLicenseData(formValue);
     const loading = this.loadingService.showLoading();
-    this.licenseService.createLicense(request)
+    
+    this.licenseService.generatePatch(this.existingLicense.id, request)
       .pipe(
         finalize(() => {
           loading.close();
@@ -190,7 +167,7 @@ export class HomepageComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          this.message.success('授权创建成功');
+          this.message.success('补丁授权创建成功');
           console.log('License created:', response);
           
           // 可选：重置表单
@@ -234,13 +211,8 @@ export class HomepageComponent implements OnInit {
     }
   }
 
-  private prepareLicenseData(formValue: any): LicenseRequest {
+  private prepareLicenseData(formValue: any): LicensePatchRequest {
     return {
-      hospitalName: formValue.hospitalName,
-      softwareCode: this.softwares.find(item => item.id === formValue.softwareId)?.code!,
-      licenseEdition: formValue.licenseEdition,
-      softwareId: formValue.softwareId,
-      authType: formValue.authType,
       concurrentLimit: formValue.concurrentLimit,
       validFrom: formValue.validRange[0],
       validTo: formValue.validRange[1],
@@ -253,5 +225,5 @@ export class HomepageComponent implements OnInit {
         }))
     };
   }
-}
 
+}

@@ -70,6 +70,7 @@
           <tr>
             <th>软件系统</th>
             <th>模块名称</th>
+            <th>模块代码</th>
             <th>描述</th>
             <th>授权方式</th>
             <th>单独授权</th>
@@ -83,6 +84,7 @@
           <tr *ngFor="let data of basicTable.data">
             <td>{{ data.software?.name || '-' }}</td>
             <td>{{ data.name }}</td>
+            <td>{{ data.code }}</td>
             <td>{{ data.description || '-' }}</td>
             <td>
               <nz-tag [nzColor]="getAuthTypeColor(data.authType)">

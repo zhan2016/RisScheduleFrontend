@@ -1,0 +1,98 @@
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .road {
+    width: 200px;
+    height: 4px;
+    background: #333;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .car {
+    position: relative;
+    width: 60px;
+    animation: moveCar 2s linear infinite;
+  }
+
+  .car-body {
+    width: 60px;
+    height: 25px;
+    position: relative;
+  }
+
+  .car-top {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    width: 40px;
+    height: 15px;
+    background: #1890ff;
+    border-radius: 5px 5px 0 0;
+  }
+
+  .car-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 60px;
+    height: 15px;
+    background: #1890ff;
+    border-radius: 5px;
+  }
+
+  .wheel {
+    width: 12px;
+    height: 12px;
+    background: #333;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -6px;
+    animation: rotateWheel 0.5s linear infinite;
+  }
+
+  .wheel1 { left: 10px; }
+  .wheel2 { right: 10px; }
+
+  .smoke {
+    position: absolute;
+    left: -15px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    border-radius: 50%;
+    opacity: 0;
+    animation: smoke 1s linear infinite;
+  }
+
+  .loading-text {
+    margin-top: 20px;
+    color: #1890ff;
+    font-size: 16px;
+  }
+
+  @keyframes moveCar {
+    0% { transform: translateX(-100px); }
+    100% { transform: translateX(100px); }
+  }
+
+  @keyframes rotateWheel {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes smoke {
+    0% { opacity: 0.5; transform: scale(1) translateY(0); }
+    100% { opacity: 0; transform: scale(2) translateY(-10px); }
+  }

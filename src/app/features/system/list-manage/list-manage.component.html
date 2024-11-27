@@ -24,6 +24,7 @@
     <thead>
       <tr>
         <th>系统名称</th>
+        <th>系统代码</th>
         <th>描述</th>
         <th>最大并发数</th>
         <th>授权类型</th>
@@ -37,6 +38,7 @@
     <tbody>
       <tr *ngFor="let system of basicTable.data">
         <td>{{ system.name }}</td>
+        <td>{{ system.code }}</td>
         <td>{{ system.description }}</td>
         <td>{{ system.maxConcurrent }}</td>
         <td>{{ getAuthTypeLabel(system.authType) }}</td>

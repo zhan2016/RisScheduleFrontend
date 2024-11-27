@@ -15,10 +15,20 @@
         <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
           <li nz-submenu nzOpen nzTitle="授权管理" nzIcon="dashboard">
             <ul>
-              <li nz-menu-item nzMatchRouter>
-                <a routerLink="/licenses">授权生成</a>
-              </li>
-            </ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/licenses/query">授权查询</a>
+                </li>
+              </ul>
+              <ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/licenses/generate">主授权生成</a>
+                </li>
+              </ul>
+             <!-- <ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/licenses/patch">patch授权生成</a>
+                </li>
+              </ul> -->
           </li>
           <li nz-submenu nzOpen nzTitle="维护" nzIcon="form">
             <ul>

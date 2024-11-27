@@ -1,0 +1,157 @@
+<nz-card>
+    <!-- 搜索表单 -->
+    <form nz-form [formGroup]="searchForm" class="search-form">
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8">医院名称</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+              <input nz-input formControlName="hospitalName" placeholder="请输入医院名称">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8">软件名称</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+              <input nz-input formControlName="softwareName" placeholder="请输入软件名称">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8">状态</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+              <nz-select formControlName="status" nzAllowClear nzPlaceHolder="请选择状态">
+                <nz-option *ngFor="let option of statusOptions"
+                          [nzLabel]="option.label"
+                          [nzValue]="option.value">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+  
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="8">创建时间</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+              <nz-range-picker formControlName="dateRange"></nz-range-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+  
+        <div nz-col [nzSpan]="16" class="search-buttons">
+          <button nz-button [nzType]="'primary'" (click)="onSearch()">搜索</button>
+          <button nz-button (click)="onReset()">重置</button>
+        </div>
+      </div>
+    </form>
+  
+    <!-- 数据表格 -->
+    <nz-table
+      #licenseTable
+      [nzData]="licenses"
+      [nzTotal]="total"
+      [nzPageSize]="pageSize"
+      [nzPageIndex]="pageIndex"
+      [nzLoading]="loading"
+      [nzShowSizeChanger]="true"
+      [nzFrontPagination]="false"
+      (nzQueryParams)="loadData($event)"
+      nzBordered
+      [nzScroll]="{ x: '1200px' }"
+      nzShowPagination
+      >
+
+      <thead>
+        <tr>
+         <th nzWidth="60px" *ngIf="hasPatchLicenses"></th>
+          <th nzWidth="200px">医院名称</th>
+          <th nzWidth="150px">软件名称</th>
+          <th nzWidth="200px">模块信息</th>
+          <th nzWidth="200px">终端MAC地址</th>
+          <th nzWidth="120px">授权版本</th>
+          <th nzWidth="100px">并发数</th>
+          <th nzWidth="200px">有效期</th>
+          <th nzWidth="100px">状态</th>
+          <th nzWidth="160px">创建时间</th>
+          <th nzWidth="100px" [nzRight]="true">操作</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        <ng-container *ngFor="let license of licenseTable.data">
+          <tr>
+            <td *ngIf="hasPatchLicenses(license)"
+            [nzExpand]="isExpanded(license.id)"
+            (nzExpandChange)="onExpandChange(license.id, $event)">
+            </td>
+            <td>{{ license.hospitalName }}</td>
+            <td>{{ license.software?.name }}</td>
+            <td>
+                <div class="module-list">
+                  <ul>
+                    <li *ngFor="let module of license.modules">
+                      {{ module.name }} ({{ module.code }})
+                    </li>
+                  </ul>
+                </div>
+              </td>
+              <td>
+                <div class="terminal-list">
+                  <ul>
+                    <li *ngFor="let terminal of license.terminals">
+                      {{ terminal.name }}: {{ terminal.macAddress }}
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            <td>{{ license.licenseEdition }}</td>
+            <td>{{ license.concurrentLimit }}</td>
+            <td>{{ license.validFrom | date:'yyyy-MM-dd' }} 至 {{ license.validTo | date:'yyyy-MM-dd' }}</td>
+            <td>
+              <nz-tag [nzColor]="getStatusColor(license.status)">
+                {{ getStatusText(license.status) }}
+              </nz-tag>
+            </td>
+            <td>{{ license.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+            <td [nzRight]="true">
+                <a (click)="downloadMainLicense(license)">下载主授权</a>
+                <nz-divider nzType="vertical"></nz-divider>
+              <a (click)="showModal(license)">生成patch</a>
+            </td>
+          </tr>
+          
+          <!-- Patch Licenses -->
+          <tr [nzExpand]="isExpanded(license.id)" *ngIf="hasPatchLicenses(license)">
+            <td colspan="11" class="expanded-row">
+                <nz-timeline>
+                  <nz-timeline-item *ngFor="let patch of license.patchLicenses">
+                    <div class="patch-license-item">
+                      <div class="patch-info">
+                        <h4>补丁授权 - {{ patch.createdAt | date:'yyyy-MM-dd HH:mm:ss' }}</h4>
+                        <p>有效期：{{ patch.validFrom | date:'yyyy-MM-dd' }} 至 {{ patch.validTo | date:'yyyy-MM-dd' }}</p>
+                        <p *ngIf="patch.concurrentLimit !== license.concurrentLimit">
+                          并发数：{{ patch.concurrentLimit }}
+                        </p>
+                      </div>
+                      <div class="patch-actions">
+                        <button nz-button nzType="link" (click)="downloadPatchLicense(patch)">
+                          <i nz-icon nzType="download" nzTheme="outline"></i>
+                          下载补丁授权
+                        </button>
+                      </div>
+                    </div>
+                  </nz-timeline-item>
+                </nz-timeline>
+              </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </nz-table>
+</nz-card>

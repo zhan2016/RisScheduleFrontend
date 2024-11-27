@@ -16,12 +16,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { UserInfoModalComponent } from './component/user-info-modal/user-info-modal.component';
 import { ChangePasswordModalComponent } from './component/change-password-modal/change-password-modal.component';
+import { LoadingCarComponent } from './component/loading-car/loading-car.component';
 
 @NgModule({
   declarations: [
     MainLayoutComponent,
     UserInfoModalComponent,
-    ChangePasswordModalComponent
+    ChangePasswordModalComponent,
+    LoadingCarComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +41,8 @@ import { ChangePasswordModalComponent } from './component/change-password-modal/
     ReactiveFormsModule
   ],
   exports: [
-    MainLayoutComponent
+    MainLayoutComponent,
+    LoadingCarComponent
   ]
 })
 export class SharedModule { }

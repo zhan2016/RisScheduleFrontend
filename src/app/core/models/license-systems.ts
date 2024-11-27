@@ -17,6 +17,7 @@ export enum SystemStatus {
     name: string;
     description?: string;
     status: SystemStatus;
+    code: string;
     modules: Module[];
     maxConcurrent: number;
     independentAuth: boolean;     // 单独授权
@@ -31,6 +32,7 @@ export enum SystemStatus {
   
   export interface CreateSystemDto {
     name: string;
+    code: string;
     description?: string;
     status: SystemStatus;
     maxConcurrent: number;
@@ -41,6 +43,7 @@ export enum SystemStatus {
   export interface UpdateSystemDto {
     name?: string;
     description?: string;
+    code: string;
     status?: SystemStatus;
     maxConcurrent?: number;
     independentAuth?: boolean;

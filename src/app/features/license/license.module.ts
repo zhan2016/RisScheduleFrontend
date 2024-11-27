@@ -14,7 +14,6 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { HomepageComponent } from './homepage/homepage.component';
 import { LicenseFormComponent } from './license-form/license-form.component';
-import { PatchLicenseListComponent } from './patch-license-list/patch-license-list.component';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -23,12 +22,17 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzTimelineModule } from 'ng-zorro-antd/timeline';
+
+import { LicenseListComponent } from './license-list/license-list.component';
+import { PatchPageComponent } from './patch-page/patch-page.component';
 
 @NgModule({
   declarations: [
     HomepageComponent,
     LicenseFormComponent,
-    PatchLicenseListComponent
+    LicenseListComponent,
+    PatchPageComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +55,8 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
     NzTabsModule,
     NzDropDownModule,
     NzModalModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzTimelineModule
   ]
 })
 export class LicenseModule { }

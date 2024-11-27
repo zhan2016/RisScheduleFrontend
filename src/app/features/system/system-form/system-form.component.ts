@@ -51,6 +51,10 @@ export class SystemFormComponent implements OnInit {
   private createForm() {
     this.systemForm = this.fb.group({
       name: ['', [Validators.required]],
+      code: ['', [
+        Validators.required, 
+        Validators.pattern('^[a-zA-Z0-9][a-zA-Z0-9_]*$')
+      ]],
       description: [''],
       maxConcurrent: [1, [Validators.required, Validators.min(1)]],
       authType: [SystemAuthorizationType.CONCURRENT, [Validators.required]],

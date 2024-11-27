@@ -10,3 +10,14 @@ export interface PaginatedResponse<T> {
     EXPIRED = 'EXPIRED',
     REVOKED = 'REVOKED',
   }
+  export enum LicenseType {
+    MAIN = 'MAIN',
+    PATCH = 'PATCH'
+  }
+  export enum LicenseEdition {
+    TRIAL = 'TRIAL',
+    STANDARD = 'STANDARD',
+    ENTERPRISE = 'ENTERPRISE',
+    DEMO = 'DEMO' 
+  }
+  

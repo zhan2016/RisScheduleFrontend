@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { License } from '../models/license-models';
+import { License, LicensePatchRequest } from '../models/license-models';
 import { System } from '../models/license-systems';
 import { Env } from 'env';
 
@@ -10,14 +10,41 @@ import { Env } from 'env';
 })
 export class LicenseService {
 
-  private apiUrl = `api/licenses`; // 根据实际API地址调整
+  getMainLicenses(params: any): Observable<any> {
+    let httpParams = new HttpParams()
+      .set('pageIndex', params.pageIndex.toString())
+      .set('pageSize', params.pageSize.toString())
+      .set('licenseType', 'main');
+
+    if (params.hospitalName) {
+      httpParams = httpParams.set('hospitalName', params.hospitalName);
+    }
+    if (params.softwareName) {
+      httpParams = httpParams.set('softwareName', params.softwareName);
+    }
+    if (params.status) {
+      httpParams = httpParams.set('status', params.status);
+    }
+    if (params.startDate) {
+      httpParams = httpParams.set('startDate', params.startDate.toISOString());
+    }
+    if (params.endDate) {
+      httpParams = httpParams.set('endDate', params.endDate.toISOString());
+    }
+
+    return this.http.get(this.apiUrl, { params: httpParams });
+  }
+
+  private apiUrl = `api/license`; // 根据实际API地址调整
 
   constructor(private http: HttpClient) {}
 
   createLicense(license: Partial<License>): Observable<License> {
     return this.http.post<License>(this.apiUrl, license);
   }
-
+  generatePatch(licenseId: string, patch: LicensePatchRequest): Observable<any> {
+      return this.http.post(`${this.apiUrl}/${licenseId}/patch`, patch);
+  }
   getLicenses(params: {
     hospitalName?: string;
     startDate?: Date;

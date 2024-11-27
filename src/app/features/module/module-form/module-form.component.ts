@@ -53,6 +53,10 @@ export class ModuleFormComponent implements OnInit {
     this.moduleForm = this.fb.group({
       systemId: ['', [Validators.required]], // 添加系统ID字段
       name: ['', [Validators.required]],
+      code: ['', [
+        Validators.required, 
+        Validators.pattern('^[a-zA-Z0-9][a-zA-Z0-9_]*$')
+      ]],
       description: [''],
       authType: [this.AuthorizationType.CONCURRENT, [Validators.required]],
       independentAuth: [false, [Validators.required]],

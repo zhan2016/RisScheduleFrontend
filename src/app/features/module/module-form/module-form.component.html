@@ -24,6 +24,23 @@
         <input nz-input formControlName="name" placeholder="请输入模块名称" />
       </nz-form-control>
     </nz-form-item>
+    <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>系统代码</nz-form-label>
+        <nz-form-control 
+            [nzSpan]="14" 
+            nzHasFeedback
+            [nzErrorTip]="codeErrorTpl">
+            <input nz-input formControlName="code" placeholder="请输入系统代号" />
+            <ng-template #codeErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">
+                    请输入系统代号
+                </ng-container>
+                <ng-container *ngIf="control.hasError('pattern')">
+                系统代号只能包含字母、数字和下划线，且不能以下划线开头
+                </ng-container>
+            </ng-template>
+        </nz-form-control>
+      </nz-form-item>
 
     <nz-form-item>
       <nz-form-label [nzSpan]="6">描述</nz-form-label>
