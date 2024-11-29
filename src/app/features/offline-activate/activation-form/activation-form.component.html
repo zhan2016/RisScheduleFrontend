@@ -1,0 +1,74 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6" nzRequired>医院名称</nz-form-label>
+      <nz-form-control [nzSpan]="14" nzErrorTip="请输入医院名称">
+        <input nz-input formControlName="hospitalName" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">医院代码</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <input nz-input formControlName="hospitalCode" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">科室</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <input nz-input formControlName="department" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>软件</nz-form-label>
+        <nz-form-control [nzSpan]="14" nzErrorTip="请选择软件">
+          <nz-select formControlName="softwareId" [nzOptions]="softwareOptions">
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>机器码</nz-form-label>
+        <nz-form-control [nzSpan]="14" nzErrorTip="请输入至少一个机器码">
+          <textarea 
+            #machineCodesInput
+            nz-input 
+            formControlName="machineCodes" 
+            [nzAutosize]="{ minRows: 3, maxRows: 8 }"
+            placeholder="请输入机器码，支持换行、中英文逗号分隔"
+          ></textarea>
+          <div class="machine-codes-tip">
+            <span class="tip-text">支持换行、中英文逗号分隔，已输入 {{ getMachineCodesCount() }} 个机器码</span>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>有效期</nz-form-label>
+        <nz-form-control [nzSpan]="14" nzErrorTip="请选择有效期">
+          <nz-range-picker formControlName="validRange"></nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+    
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">模块配置</nz-form-label>
+        <nz-form-control [nzSpan]="14">
+          <nz-select 
+            formControlName="moduleIds" 
+            nzMode="multiple" 
+            [nzOptions]="moduleOptions"
+            [nzDisabled]="!form.get('softwareId')?.value"
+          >
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <div class="form-footer">
+        <button nz-button nzType="default" (click)="cancel()">取消</button>
+        <button nz-button nzType="primary" 
+                [nzLoading]="submitting" 
+                [disabled]="!form.valid">
+          保存
+        </button>
+      </div>
+  </form>

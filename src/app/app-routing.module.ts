@@ -27,6 +27,13 @@ const routes: Routes = [
         canActivate: [AuthGuard]
       },
       {
+        path: 'offlineActivate',
+        loadChildren: () => import('./features/offline-activate/offline-activate.module')
+          .then(m => m.OfflineActivateModule),
+        canActivate: [AuthGuard]
+        
+      },
+      {
         path: 'systems',
         loadChildren: () => import('./features/system/system.module')
           .then(m => m.SystemModule),

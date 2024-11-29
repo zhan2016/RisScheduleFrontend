@@ -1,0 +1,109 @@
+<div class="page-header">
+    <div class="title">离线机器激活管理</div>
+    <button nz-button nzType="primary" (click)="createActivation()">
+      <i nz-icon nzType="plus"></i>新增激活
+    </button>
+  </div>
+
+  <nz-card>
+    <form nz-form [nzLayout]="'inline'" (ngSubmit)="search()">
+      <nz-form-item>
+        <nz-form-control>
+          <nz-input-group [nzSuffix]="suffixIcon">
+            <input type="text" nz-input [(ngModel)]="query.keyword" 
+                   name="keyword" placeholder="医院名称/机器码">
+          </nz-input-group>
+          <ng-template #suffixIcon>
+            <i nz-icon nzType="search"></i>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      
+      <nz-form-item>
+        <nz-form-control>
+          <nz-select [(ngModel)]="query.isActivated" name="isActivated" 
+                    [nzPlaceHolder]="'激活状态'">
+            <nz-option [nzValue]="null" nzLabel="全部"></nz-option>
+            <nz-option [nzValue]="true" nzLabel="已激活"></nz-option>
+            <nz-option [nzValue]="false" nzLabel="未激活"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <nz-range-picker [(ngModel)]="query.dateRange" name="dateRange">
+          </nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button nzType="primary">搜索</button>
+          <button nz-button (click)="resetSearch()" class="ml-2">重置</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+    <nz-table #basicTable 
+              [nzData]="activations"
+              [nzTotal]="total"
+              [(nzPageIndex)]="query.pageIndex"
+              [(nzPageSize)]="query.pageSize"
+              (nzPageIndexChange)="loadData()"
+              [nzLoading]="loading">
+      <thead>
+        <tr>
+          <th>医院名称</th>
+          <th>机器码</th>
+          <th>激活码</th>
+          <th>有效期</th>
+          <th>授权时间</th>
+          <th>软件名称</th>
+          <th>模块列表</th>
+            <!--<th>状态</th>-->
+          <!--<th>操作</th>-->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td>{{data.hospitalName}}</td>
+          <td>{{data.machineCode}}</td>
+          <td>
+                <span class="code-text activation-code" 
+                [title]="'双击复制: ' + data.activationCode"
+                (dblclick)="copySingleCode(data.activationCode!)">
+                {{ getDisplayCode(data.activationCode) }}
+            </span>
+          </td>
+          <td>
+            {{data.validFrom | date:'yyyy-MM-dd'}} 至 
+            {{data.validTo | date:'yyyy-MM-dd'}}
+          </td>
+          <td>{{data.createdAt}}</td>
+          <td>{{data.softwareName}}</td>
+          <td>
+            <div class="module-list">
+                <ul>
+                  <li *ngFor="let moduleName of data.modulesName">
+                    {{ moduleName }}
+                  </li>
+                </ul>
+              </div>
+          </td>
+          <!--<td>
+            <nz-tag [nzColor]="data.isActivated ? 'success' : 'warning'">
+              {{data.isActivated ? '已激活' : '未激活'}}
+            </nz-tag>
+          </td>-->
+           <!--<td>-->
+            <!--<a (click)="viewActivation(data)">查看</a>-->
+           <!-- <nz-divider nzType="vertical"></nz-divider>-->
+            <!-- <a nz-popconfirm
+              nzPopconfirmTitle="确定删除此记录?"
+            (nzOnConfirm)="deleteActivation(data.id)">删除</a>-->
+           <!--</td>-->
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>

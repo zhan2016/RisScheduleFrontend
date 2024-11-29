@@ -16,19 +16,9 @@
           <li nz-submenu nzOpen nzTitle="授权管理" nzIcon="dashboard">
             <ul>
                 <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/licenses/query">授权查询</a>
+                  <a routerLink="/offlineActivate">离线授权</a>
                 </li>
-              </ul>
-              <ul>
-                <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/licenses/generate">主授权生成</a>
-                </li>
-              </ul>
-             <!-- <ul>
-                <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/licenses/patch">patch授权生成</a>
-                </li>
-              </ul> -->
+            </ul>
           </li>
           <li nz-submenu nzOpen nzTitle="维护" nzIcon="form">
             <ul>
@@ -44,6 +34,12 @@
               <li nz-menu-item nzMatchRouter>
                 <a routerLink="/users">用户管理</a>
               </li>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/licenses/query">服务端授权查询</a>
+                </li>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/licenses/generate">服务端授权生成</a>
+                </li>
             </ul>
           </li>
         </ul>

@@ -1,0 +1,19 @@
+.activation-success {
+    padding: 16px;
+  }
+
+  .action-bar {
+    margin-bottom: 16px;
+    text-align: right;
+  }
+
+  .code-text {
+    word-break: break-all;
+    display: block;
+    max-width: 300px;
+  }
+
+  :host ::ng-deep .ant-table-small td {
+    white-space: normal;
+    word-break: break-all;
+  }
