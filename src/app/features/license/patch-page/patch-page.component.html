@@ -88,6 +88,17 @@
             <label nz-checkbox formControlName="enabled">
               {{module.get('name')?.value}}
             </label>
+            <nz-form-item *ngIf="module.get('enabled')?.value" class="concurrent-input">
+              <nz-form-label [nzSpan]="8">模块并发数</nz-form-label>
+              <nz-form-control [nzSpan]="16" [nzErrorTip]="'请输入有效的并发数'">
+                <nz-input-number 
+                  formControlName="concurrentLimit"
+                  [nzMin]="1"
+                  [nzStep]="1"
+                  [nzPrecision]="0">
+                </nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
           </div>
         </div>
       </div>

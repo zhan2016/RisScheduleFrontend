@@ -11,6 +11,7 @@ import { KeyStatus, LicenseEdition } from "./common-models";
   export interface License {
     id: string;
     hospitalName: string;
+    hawardInfo: string;
     systemId: number;
     moduleIds: number[];
     licenseEdition: string;
@@ -31,6 +32,7 @@ import { KeyStatus, LicenseEdition } from "./common-models";
     name:string;
     id: string;
     code: string;
+    concurrentLimit: number;
   }
 
   export interface LicenseTerminal {
@@ -41,6 +43,7 @@ import { KeyStatus, LicenseEdition } from "./common-models";
   export interface LicenseModuleRequest {
     moduleId: string;  // 假设是UUID，如果是其他类型可以调整
     code: string;
+    concurrentLimit: number
   }
 
   export interface PatchLicenseInfo {
@@ -56,6 +59,7 @@ import { KeyStatus, LicenseEdition } from "./common-models";
   export interface LicenseQueryResponse {
     id: string;
     hospitalName: string;
+    hawardInfo: string
     softwareId: string;
     downloadUrl: string
     software: { name: string, authType:string };
@@ -74,6 +78,7 @@ import { KeyStatus, LicenseEdition } from "./common-models";
 
   export interface LicenseRequest {
     hospitalName: string;
+    hardwareInfo: string;
     softwareId: string;  // 假设是UUID，如果是其他类型可以调整
     softwareCode: string;  // 假设是UUID，如果是其他类型可以调整
     licenseEdition: LicenseEdition;  // 新增授权版本字段

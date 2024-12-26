@@ -48,10 +48,11 @@ export class HomepageComponent implements OnInit {
       softwareId: ['', Validators.required],
       licenseEdition: [LicenseEdition.TRIAL, Validators.required], 
       authType: ['', Validators.required],
-      concurrentLimit: [{ value: null, disabled: true }],
+      concurrentLimit: [{ value: null, disabled: true,}, Validators.required ],
       validRange: [null, Validators.required],
       systemTerminals: this.fb.array([]),
-      modules: this.fb.array([])
+      modules: this.fb.array([]),
+      hardwareInfo: [null, Validators.required], 
     });
 
     this.form.get('authType')?.valueChanges.subscribe(authType => {
@@ -119,7 +120,8 @@ export class HomepageComponent implements OnInit {
       moduleId: [module.id],
       name: [module.name],
       code: [module.code],
-      enabled: [true]  // 默认选中
+      enabled: [true],  // 默认选中
+      concurrentLimit: [{ value: 1, disabled: false }, [Validators.required, Validators.min(1)]]  // 修改这里
     });
   }
 
@@ -235,8 +237,10 @@ export class HomepageComponent implements OnInit {
   }
 
   private prepareLicenseData(formValue: any): LicenseRequest {
+    //console.log(formValue.modules);
     return {
       hospitalName: formValue.hospitalName,
+      hardwareInfo: formValue.hardwareInfo,
       softwareCode: this.softwares.find(item => item.id === formValue.softwareId)?.code!,
       licenseEdition: formValue.licenseEdition,
       softwareId: formValue.softwareId,
@@ -249,7 +253,8 @@ export class HomepageComponent implements OnInit {
         .filter((m: any) => m.enabled)
         .map((m: any) => ({
           moduleId: m.moduleId,
-          code: m.code
+          code: m.code,
+          concurrentLimit: m.concurrentLimit
         }))
     };
   }

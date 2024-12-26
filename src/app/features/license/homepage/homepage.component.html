@@ -11,7 +11,22 @@
         </nz-form-item>
       </div>
     </div>
-
+    <div class="form-section">
+      <h2>服务器硬件信息</h2>
+      <div class="form-row">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">硬件信息</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <textarea 
+              nz-input 
+              formControlName="hardwareInfo" 
+              [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+              placeholder="请输入服务器硬件信息">
+            </textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
     <!-- 系统选择 -->
     <div class="form-section">
       <h2>系统选择</h2>
@@ -123,6 +138,18 @@
             <label nz-checkbox formControlName="enabled">
               {{module.get('name')?.value}}
             </label>
+                <!-- 当模块被选中时显示并发数输入框 -->
+            <nz-form-item *ngIf="module.get('enabled')?.value" class="concurrent-input">
+              <nz-form-label [nzSpan]="8">模块并发数</nz-form-label>
+              <nz-form-control [nzSpan]="16" [nzErrorTip]="'请输入有效的并发数'">
+                <nz-input-number 
+                  formControlName="concurrentLimit"
+                  [nzMin]="1"
+                  [nzStep]="1"
+                  [nzPrecision]="0">
+                </nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
           </div>
         </div>
       </div>

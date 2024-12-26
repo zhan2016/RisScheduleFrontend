@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { License, LicensePatchRequest } from '../models/license-models';
+import { License, LicensePatchRequest, LicenseRequest } from '../models/license-models';
 import { System } from '../models/license-systems';
 import { Env } from 'env';
 
@@ -39,8 +39,8 @@ export class LicenseService {
 
   constructor(private http: HttpClient) {}
 
-  createLicense(license: Partial<License>): Observable<License> {
-    return this.http.post<License>(this.apiUrl, license);
+  createLicense(license: Partial<LicenseRequest>): Observable<any> {
+    return this.http.post<LicenseRequest>(this.apiUrl, license);
   }
   generatePatch(licenseId: string, patch: LicensePatchRequest): Observable<any> {
       return this.http.post(`${this.apiUrl}/${licenseId}/patch`, patch);

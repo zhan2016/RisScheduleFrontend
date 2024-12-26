@@ -72,6 +72,7 @@
         <tr>
          <th nzWidth="60px" *ngIf="hasPatchLicenses"></th>
           <th nzWidth="200px">医院名称</th>
+          <th nzWidth="200px">硬件码</th>
           <th nzWidth="150px">软件名称</th>
           <th nzWidth="200px">模块信息</th>
           <th nzWidth="200px">终端MAC地址</th>
@@ -87,17 +88,21 @@
       <tbody>
         <ng-container *ngFor="let license of licenseTable.data">
           <tr>
-            <td *ngIf="hasPatchLicenses(license)"
-            [nzExpand]="isExpanded(license.id)"
-            (nzExpandChange)="onExpandChange(license.id, $event)">
+            <td [nzExpand]="isExpanded(license.id)"
+              (nzExpandChange)="onExpandChange(license.id, $event)"
+              *ngIf="hasPatchLicenses(license); else emptyCell">
             </td>
+            <ng-template #emptyCell>
+                <td></td>
+            </ng-template>
             <td>{{ license.hospitalName }}</td>
+            <td>{{ license.hawardInfo }}</td>
             <td>{{ license.software?.name }}</td>
             <td>
                 <div class="module-list">
                   <ul>
                     <li *ngFor="let module of license.modules">
-                      {{ module.name }} ({{ module.code }})
+                      {{ module.name }} ({{ module.code }}) ({{ module.concurrentLimit }})
                     </li>
                   </ul>
                 </div>

@@ -82,13 +82,14 @@ export class PatchPageComponent implements OnInit {
 
 
 
-  private createModuleForm(module: LicenseModuleInfo) {
+  private createModuleForm(module: Module) {
     const existModuleIds = this.existingLicense.modules.map(item => item.id);
     return this.fb.group({
       moduleId: [module.id],
       name: [module.name],
       code: [module.code],
-      enabled: [existModuleIds.includes(module.id)]
+      enabled: [existModuleIds.includes(module.id)],
+      concurrentLimit: [{ value: 1, disabled: false }, [Validators.required, Validators.min(1)]]  // 修改这里
     });
   }
 
