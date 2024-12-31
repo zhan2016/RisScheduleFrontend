@@ -4,6 +4,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { AuthService, User } from 'src/app/core/services/auth.service';
 import { UserInfoModalComponent } from '../user-info-modal/user-info-modal.component';
 import { ChangePasswordModalComponent } from '../change-password-modal/change-password-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-layout',
@@ -17,11 +18,15 @@ export class MainLayoutComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private modalService: NzModalService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
+    if (this.router.url === '/') {
+      this.router.navigate(['/assigmentManage']);
+    }
   }
 
   showUserInfoModal() {

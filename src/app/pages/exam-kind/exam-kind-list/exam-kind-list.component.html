@@ -1,0 +1,212 @@
+<!-- exam-category-list.component.html -->
+<div class="category-list">
+    <div class="search-form">
+        <form nz-form [nzLayout]="'inline'">
+          <nz-form-item>
+            <nz-form-label>分类名称</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="searchParams.categoryName" name="categoryName" placeholder="请输入分类名称" />
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label>分类编码</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="searchParams.categoryCode" name="categoryCode" placeholder="请输入分类编码" />
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label>分类类型</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="searchParams.categoryType" name="categoryType" nzAllowClear nzPlaceHolder="请选择分类类型">
+                <nz-option nzValue="1" nzLabel="检查类别"></nz-option>
+                <nz-option nzValue="2" nzLabel="检查部位"></nz-option>
+                <nz-option nzValue="3" nzLabel="检查项目"></nz-option>
+                <nz-option nzValue="4" nzLabel="自定义"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label>状态</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="searchParams.isActive" name="isActive" nzAllowClear nzPlaceHolder="请选择状态">
+                <nz-option nzValue="1" nzLabel="启用"></nz-option>
+                <nz-option nzValue="0" nzLabel="禁用"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-control>
+              <button nz-button [nzType]="'primary'" (click)="search()">
+                <i nz-icon nzType="search"></i>查询
+              </button>
+              <button nz-button (click)="resetSearch()" class="ml-8">
+                <i nz-icon nzType="redo"></i>重置
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+    <div class="operation-bar">
+      <button nz-button nzType="primary" (click)="showModal()">
+        <i nz-icon nzType="plus"></i>添加分类
+      </button>
+    </div>
+  <!-- exam-category-list.component.html -->
+    <nz-table
+    #basicTable
+    [nzData]="categories"
+    [nzLoading]="loading"
+    [nzShowSizeChanger]="true"
+    [nzShowPagination]="true">
+    <thead>
+    <tr>
+        <th nzWidth="40px"></th>
+        <th>分类名称</th>
+        <th>分类编码</th>
+        <th>分类类型</th>
+        <th>描述说明</th>
+        <th>排序号</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let data of basicTable.data">
+        <!-- 主行 -->
+        <tr>
+        <td [nzExpand]="expandSet.has(data.categoryId)"
+            (nzExpandChange)="onExpandChange(data.categoryId, $event)">
+        </td>
+        <td>{{ data.categoryName }}</td>
+        <td>{{ data.categoryCode }}</td>
+        <td>
+            <span [ngSwitch]="data.categoryType">
+            <span *ngSwitchCase="'1'">检查类别</span>
+            <span *ngSwitchCase="'2'">检查部位</span>
+            <span *ngSwitchCase="'3'">检查项目</span>
+            <span *ngSwitchCase="'4'">自定义</span>
+            </span>
+        </td>
+        <td>{{ data.description }}</td>
+        <td>{{ data.sortOrder }}</td>
+        <td>
+            <nz-tag [nzColor]="data.isActive === '1' ? 'green' : 'red'">
+            {{ data.isActive === '1' ? '启用' : '禁用' }}
+            </nz-tag>
+        </td>
+        <td>
+            <a (click)="showModal(data)">编辑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a nz-popconfirm nzPopconfirmTitle="确定要删除吗？" (nzOnConfirm)="handleDelete(data.categoryId)">删除</a>
+        </td>
+        </tr>
+        <!-- 展开行 -->
+        <tr [nzExpand]="expandSet.has(data.categoryId)">
+        <td></td>
+        <td colspan="7">
+            <div class="content-preview">
+            <div class="content-header">内容详情：</div>
+            <div class="content-body">
+                <ng-container [ngSwitch]="data.categoryType">
+                <!-- JSON格式化显示 -->
+                <pre *ngSwitchCase="'1'" class="json-content">{{ formatJSON(data.content || '{}') }}</pre>
+                <pre *ngSwitchCase="'2'" class="json-content">{{ formatJSON(data.content || '{}') }}</pre>
+                <pre *ngSwitchCase="'3'" class="json-content">{{ formatJSON(data.content || '{}') }}</pre>
+                <!-- SQL语句显示 -->
+                <pre *ngSwitchCase="'4'" class="sql-content">{{ data.content || '' }}</pre>
+                </ng-container>
+            </div>
+            </div>
+        </td>
+        </tr>
+    </ng-container>
+    </tbody>
+    </nz-table>
+  
+    <nz-modal
+      [(nzVisible)]="visible"
+      [nzTitle]="editingCategory?.categoryId ? '编辑分类' : '添加分类'"
+      (nzOnCancel)="visible = false"
+      (nzOnOk)="handleOk()">
+      <ng-container *nzModalContent>
+        <form nz-form>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">分类名称</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <input nz-input [(ngModel)]="editingCategory!.categoryName" name="categoryName" required />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">分类编码</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <input nz-input [(ngModel)]="editingCategory!.categoryCode" name="categoryCode" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">分类类型</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-select [(ngModel)]="editingCategory!.categoryType" name="categoryType" required>
+                <nz-option nzValue="1" nzLabel="检查类别"></nz-option>
+                <nz-option nzValue="2" nzLabel="检查部位"></nz-option>
+                <nz-option nzValue="3" nzLabel="检查项目"></nz-option>
+                <nz-option nzValue="4" nzLabel="自定义"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">描述说明</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <textarea nz-input [(ngModel)]="editingCategory!.description" 
+                        name="description" [nzAutosize]="{ minRows: 2, maxRows: 6 }">
+              </textarea>
+            </nz-form-control>
+          </nz-form-item>
+          
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">内容</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <div class="editor-container">
+                <ngx-monaco-editor
+                  [(ngModel)]="editingCategory!.content"
+                  [options]="editingCategory?.categoryType === '4' ? sqlEditorOptions : editorOptions"
+                  name="content"
+                  style="height: 200px;"
+                ></ngx-monaco-editor>
+                <div class="editor-help">
+                  <ng-container [ngSwitch]="editingCategory?.categoryType">
+                    <span *ngSwitchCase="'1'">请输入检查类别ID列表的JSON格式</span>
+                    <span *ngSwitchCase="'2'">请输入检查部位ID列表的JSON格式</span>
+                    <span *ngSwitchCase="'3'">请输入检查项目ID列表的JSON格式</span>
+                    <span *ngSwitchCase="'4'">请输入查询SQL语句</span>
+                  </ng-container>
+                </div>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">排序号</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-input-number [(ngModel)]="editingCategory!.sortOrder" name="sortOrder"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">状态</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-switch [(ngModel)]="editingCategory!.isActive" name="isActive" 
+                        [nzCheckedChildren]="'启用'" [nzUnCheckedChildren]="'禁用'">
+              </nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </nz-modal>
+</div>

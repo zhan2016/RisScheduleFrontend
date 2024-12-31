@@ -1,0 +1,41 @@
+.doctor-item {
+    display: inline-block;
+    margin: 4px;
+    cursor: pointer;
+  }
+
+  .doctor-tag {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 0 8px;
+  }
+
+  .actions {
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .actions i {
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .actions i:hover {
+    opacity: 1;
+  }
+
+  .remove-icon {
+    visibility: hidden;
+  }
+
+  .doctor-item:hover .remove-icon {
+    visibility: visible;
+  }
+
+  .remove-icon:hover {
+    color: #ff4d4f;
+  }

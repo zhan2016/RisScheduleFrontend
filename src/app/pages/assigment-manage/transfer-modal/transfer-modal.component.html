@@ -1,0 +1,42 @@
+<!-- transfer-modal.component.html -->
+
+  
+  <form [formGroup]="transferForm">
+    <nz-form-item>
+      <nz-form-label>请选择转发医生</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="doctorType" nzPlaceHolder="选择转发医生类型" (ngModelChange)="onDoctorTypeChange($event)">
+          <nz-option nzValue="both" nzLabel="同时转发初步和审核报告医生"></nz-option>
+          <nz-option nzValue="preliminary" nzLabel="仅转发初步报告医生"></nz-option>
+          <nz-option nzValue="review" nzLabel="仅转发审核报告医生"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- 如果选择了转发初步报告医生 -->
+    <nz-form-item *ngIf="isPreliminaryDoctorVisible">
+      <nz-form-label>初步报告医生</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="preliminaryDoctorId" nzPlaceHolder="选择初步报告医生">
+          <nz-option *ngFor="let doctor of doctorList" [nzValue]="doctor.userId" [nzLabel]="doctor.userName"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- 如果选择了转发审核报告医生 -->
+    <nz-form-item *ngIf="isReviewDoctorVisible">
+      <nz-form-label>审核报告医生</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="reviewDoctorId" nzPlaceHolder="选择审核报告医生">
+          <nz-option *ngFor="let doctor of doctorList" [nzValue]="doctor.userId" [nzLabel]="doctor.userName"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <div nz-form-item>
+      <nz-form-control>
+        <button nz-button nzType="primary" (click)="onConfirm()" [disabled]="!transferForm.valid">确认转发</button>
+        <button nz-button (click)="onCancel()" class="ml-8">取消</button>
+      </nz-form-control>
+    </div>
+  </form>

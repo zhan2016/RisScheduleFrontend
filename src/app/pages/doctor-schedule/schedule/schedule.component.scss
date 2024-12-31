@@ -1,0 +1,268 @@
+// schedule.component.scss
+.schedule-board {
+    background: #fff;
+    padding: 24px;
+  
+    .schedule-controls {
+      margin-bottom: 24px;
+  
+      .date-navigation {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+  
+        nz-date-picker {
+          width: 200px;
+        }
+      }
+    }
+  
+    .schedule-grid {
+      border: 1px solid #f0f0f0;
+      border-radius: 2px;
+  
+      .grid-header {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        background: #fafafa;
+        border-bottom: 1px solid #f0f0f0;
+  
+        .header-cell {
+          padding: 12px;
+          text-align: center;
+          border-right: 1px solid #f0f0f0;
+  
+          &:last-child {
+            border-right: none;
+          }
+  
+          .date {
+            font-weight: 500;
+            margin-bottom: 4px;
+          }
+  
+          .weekday {
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
+          }
+        }
+      }
+  
+      .grid-body {
+        .grid-row {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          border-bottom: 1px solid #f0f0f0;
+     
+          .shift-summary {
+            padding: 6px;
+            margin-bottom: 4px;
+            border: 1px solid #e8e8e8;
+            overflow-y: auto; // 纵向滚动条
+            max-height: calc(100% - 16px); // 最大高度，防止超出单元格
+            box-sizing: border-box;
+            width: 130px;
+            .summary-header {
+              margin-bottom: 2px;
+            }
+  
+            .summary-info {
+              margin-bottom: 4px;
+            }
+  
+            .doctor-list {
+              display: block; // 关键修改：使医生列表纵向排列
+              overflow: hidden; // 防止内容溢出，配合父元素的滚动条
+              padding-bottom: 4px; //避免滚动条遮挡最后一个元素
+  
+              .doctor-item {
+                margin: 2px 0; // 只设置上下margin，控制纵向间距
+                display: flex; // 保持 flex 布局，方便内部元素对齐
+                align-items: center;
+  
+                .doctor-wrapper {
+                  nz-tag {
+                    margin-right: 2px;
+                  }
+                }
+              }
+            }
+          }
+          &:last-child {
+            border-bottom: none;
+          }
+  
+          .grid-cell {
+            padding: 8px; // 略微减少单元格padding，腾出空间
+            min-height: 100px; // 保持最小高度，防止内容过少时单元格高度过小
+            position: relative; // 为滚动条定位做准备
+            overflow: hidden; // 隐藏超出部分
+  
+            &:last-child {
+              border-right: none;
+            }
+  
+            &.today {
+              background: #e6f7ff;
+            }
+  
+            &.selected {
+              background: #f0f7ff;
+            }
+  
+            &:hover {
+              background: #f5f5f5;
+            }
+  
+            .schedule-item {
+              margin-bottom: 8px;
+              padding: 4px 8px;
+              border-radius: 2px;
+              background: #fff;
+              border: 1px solid #d9d9d9;
+              font-size: 12px;
+  
+              &.pending {
+                border-color: #faad14;
+                background: #fffbe6;
+              }
+  
+              &.active {
+                border-color: #52c41a;
+                background: #f6ffed;
+              }
+  
+              &.completed {
+                border-color: #d9d9d9;
+                background: #f5f5f5;
+                color: rgba(0, 0, 0, 0.45);
+              }
+  
+              .schedule-actions {
+                float: right;
+  
+                a {
+                  padding: 4px;
+                  color: rgba(0, 0, 0, 0.45);
+  
+                  &:hover {
+                    color: #1890ff;
+                  }
+                }
+              }
+            }
+  
+            .add-schedule-btn {
+              width: 100%;
+              height: 24px;
+              padding: 0;
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // schedule.component.scss
+// 添加新的样式
+.shift-summary {
+    padding: 8px;
+    background: #fafafa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+  
+      .shift-name {
+        font-weight: 500;
+        color: #1890ff;
+      }
+  
+      .shift-time {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.45);
+      }
+    }
+  
+    .summary-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.65);
+      margin-bottom: 8px;
+    }
+  
+    .doctor-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+  
+      .doctor-tag {
+        margin: 2px;
+        
+        .remove-icon {
+          margin-left: 4px;
+          cursor: pointer;
+          
+          &:hover {
+            color: #ff4d4f;
+          }
+        }
+      }
+    }
+  }
+  .doctor-list {
+    .doctor-item {
+      display: inline-block;
+      margin: 4px;
+  
+      .doctor-wrapper {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+  
+        nz-tag {
+          margin-right: 0;
+          
+          i {
+            margin-left: 4px;
+            font-size: 12px;
+          }
+        }
+  
+        .remove-icon {
+          margin-left: 4px;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.45);
+          visibility: hidden;
+          
+          &:hover {
+            color: #ff4d4f;
+          }
+        }
+  
+        &:hover {
+          .remove-icon {
+            visibility: visible;
+          }
+        }
+      }
+    }
+  }
+  
+  // 自定义下拉菜单样式
+  ::ng-deep .schedule-dropdown {
+    .ant-dropdown-menu {
+      min-width: 120px;
+      
+      .ant-dropdown-menu-item {
+        i {
+          margin-right: 8px;
+        }
+      }
+    }
+  }

@@ -1,0 +1,38 @@
+<form nz-form [formGroup]="scheduleForm">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">排班日期</nz-form-label>
+      <nz-form-control [nzSpan]="14">
+        <input nz-input [disabled]="true" [value]="formatDate(scheduleDate)">
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">班次</nz-form-label>
+      <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择班次'">
+        <nz-select formControlName="shiftTypeId">
+          <nz-option 
+            *ngFor="let shift of shiftTypes" 
+            [nzValue]="shift.shiftTypeId" 
+            [nzLabel]="shift.shiftTypeName + ' (' + shift.startTime + '-' + shift.endTime + ')'">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="6">医生</nz-form-label>
+      <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择医生'">
+        <nz-select 
+          formControlName="doctorId"
+          [nzShowSearch]="true"
+          [nzServerSearch]="true"
+          (nzOnSearch)="onDoctorSearch($event)">
+          <nz-option
+            *ngFor="let doctor of doctors"
+            [nzValue]="doctor.userId"
+            [nzLabel]="doctor.userName">
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>

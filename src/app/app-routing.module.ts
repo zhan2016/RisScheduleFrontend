@@ -21,42 +21,55 @@ const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: 'licenses',
-        loadChildren: () => import('./features/license/license.module')
-          .then(m => m.LicenseModule),
+        path: 'examKind',
+        loadChildren: () => import('./pages/exam-kind/exam-kind.module').then(m => m.ExamKindModule),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'examMapset',
+        loadChildren: () => import('./pages/exam-mapset/exam-mapset.module')
+          .then(m => m.ExamMapsetModule),
         canActivate: [AuthGuard]
       },
       {
-        path: 'offlineActivate',
-        loadChildren: () => import('./features/offline-activate/offline-activate.module')
-          .then(m => m.OfflineActivateModule),
+        path: 'shift',
+        loadChildren: () => import('./pages/shift/shift.module')
+        .then(m => m.ShiftModule),
         canActivate: [AuthGuard]
         
       },
       {
-        path: 'systems',
-        loadChildren: () => import('./features/system/system.module')
-          .then(m => m.SystemModule),
+        path: 'shiftReportGroup',
+        loadChildren: () => import('./pages/shift-report/shift-report.module')
+        .then(m => m.ShiftReportModule),
+         canActivate: [AuthGuard, AdminGuard]
+      },
+      {
+        path: 'assigmentManage',  // 空路径
+        //redirectTo: 'assigmentManage',
+        loadChildren: () => import('./pages/assigment-manage/assigment-manage.module')
+        .then(m => m.AssigmentManageModule),
+         canActivate: [AuthGuard, AdminGuard]
+      },
+      {
+        path: 'doctorSchedule',
+        loadChildren: () => import('./pages/doctor-schedule/doctor-schedule.module')
+        .then(m => m.DoctorScheduleModule),
         canActivate: [AuthGuard, AdminGuard]
       },
       {
-        path: 'modules',
-        loadChildren: () => import('./features/module/module.module')
-          .then(m => m.ModuleModule),
+        path: 'assignmentStrategy',
+        loadChildren: () => import('./pages/assignment-strategy/assignment-strategy.module')
+        .then(m => m.AssignmentStrategyModule),
         canActivate: [AuthGuard, AdminGuard]
       },
       {
-        path: 'encryptionKeys',
-        loadChildren: () => import('./features/encryption/encryption.module')
-          .then(m => m.EncryptionModule),
+        path: 'systemConfig',
+        loadChildren: () => import('./pages/system-config/system-config.module')
+          .then(m => m.SystemConfigModule),
         canActivate: [AuthGuard, AdminGuard]
       },
-      {
-        path: 'users',
-        loadChildren: () => import('./features/users/users.module')
-          .then(m => m.UsersModule),
-        canActivate: [AuthGuard, AdminGuard]
-      },
+      
     ]
   },
 

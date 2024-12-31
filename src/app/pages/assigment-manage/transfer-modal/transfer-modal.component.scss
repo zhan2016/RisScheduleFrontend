@@ -1,0 +1,17 @@
+:host {
+    display: block;
+  }
+  nz-range-picker {
+    width: 100%;
+  }
+  nz-select {
+    width: 100%;
+  }
+  .modal-footer {
+    margin-top: 24px;
+    text-align: right;
+    
+    button + button {
+      margin-left: 8px;
+    }
+  }

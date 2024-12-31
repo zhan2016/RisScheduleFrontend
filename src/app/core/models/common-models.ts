@@ -20,4 +20,9 @@ export interface PaginatedResponse<T> {
     ENTERPRISE = 'ENTERPRISE',
     DEMO = 'DEMO' 
   }
-  
+  export interface ExamUser {
+    userId: string,
+    userName: string,
+    userRole?: string,
+    
+  }

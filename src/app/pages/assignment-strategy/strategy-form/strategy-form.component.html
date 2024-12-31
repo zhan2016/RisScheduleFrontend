@@ -1,0 +1,109 @@
+<!-- src/app/features/assignment-strategy/components/strategy-form/strategy-form.component.html -->
+<div class="card">
+    <div class="card-header">
+      <h5>{{ isEdit ? '编辑' : '新增' }}分配策略</h5>
+    </div>
+    <div class="card-body">
+      <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>策略名称</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="请输入策略名称">
+            <input nz-input formControlName="strategyName" placeholder="请输入策略名称" />
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>分配模式</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-radio-group formControlName="distributionMode">
+              <label nz-radio-button *ngFor="let mode of distributionModes" [nzValue]="mode.value">
+                {{mode.label}}
+              </label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">仅在线分配</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="onlineOnly" [nzCheckedChildren]="'是'" [nzUnCheckedChildren]="'否'"
+              [ngModel]="form.get('onlineOnly')?.value === '1'"
+              (ngModelChange)="form.get('onlineOnly')?.setValue($event ? '1' : '0')">
+            </nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>触发时机</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-radio-group formControlName="triggerPoint">
+              <label nz-radio-button *ngFor="let point of triggerPoints" [nzValue]="point.value">
+                {{point.label}}
+              </label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>报告范围</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-radio-group formControlName="reportScope">
+              <label nz-radio-button *ngFor="let scope of reportScopes" [nzValue]="scope.value">
+                {{scope.label}}
+              </label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>重试次数</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="请输入0-10之间的数字">
+            <nz-input-number formControlName="retryCount" [nzMin]="0" [nzMax]="10" [nzStep]="1">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>重试间隔(秒)</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzErrorTip="请输入大于0的数字">
+            <nz-input-number formControlName="retryInterval" [nzMin]="0" [nzStep]="1">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">是否默认</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="isDefault" [nzCheckedChildren]="'是'" [nzUnCheckedChildren]="'否'"
+              [ngModel]="form.get('isDefault')?.value === '1'"
+              (ngModelChange)="form.get('isDefault')?.setValue($event ? '1' : '0')">
+            </nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">是否启用</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="isActive" [nzCheckedChildren]="'是'" [nzUnCheckedChildren]="'否'"
+              [ngModel]="form.get('isActive')?.value === '1'"
+              (ngModelChange)="form.get('isActive')?.setValue($event ? '1' : '0')">
+            </nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">描述</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <textarea nz-input formControlName="description" rows="4" placeholder="请输入描述"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-control [nzOffset]="6" [nzSpan]="14">
+            <button nz-button nzType="primary" type="submit" [nzLoading]="loading">保存</button>
+            <button nz-button nzType="default" type="button" (click)="cancel()">取消</button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+  </div>

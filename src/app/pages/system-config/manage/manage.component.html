@@ -1,0 +1,93 @@
+<nz-card>
+    <nz-tabset>
+      <nz-tab nzTitle="缓存管理">
+        <form nz-form [formGroup]="cacheForm" (ngSubmit)="refreshCache()">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">缓存类型</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-select 
+                formControlName="cacheTypes" 
+                [nzMode]="'multiple'" 
+                nzPlaceHolder="选择要刷新的缓存类型">
+                <nz-option
+                  *ngFor="let type of cacheTypes"
+                  [nzValue]="type.value"
+                  [nzLabel]="type.label">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">刷新原因</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <input nz-input formControlName="reason" placeholder="请输入刷新原因">
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-control [nzOffset]="6" [nzSpan]="14">
+              <button nz-button nzType="primary" type="submit"  [nzLoading]="isRefreshing" [disabled]="!cacheForm.valid">刷新缓存</button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </nz-tab>
+
+      <nz-tab nzTitle="系统设置">
+        <form nz-form [formGroup]="settingsForm" (ngSubmit)="updateSettings()">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">检查Redis同步间隔(秒)</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-input-number 
+                formControlName="redisSyncInterval"
+                [nzMin]="1"
+                [nzMax]="3600">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-divider nzText="分发任务设置" nzOrientation="left"></nz-divider>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">执行间隔(秒)</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-input-number 
+                formControlName="intervalSeconds"
+                [nzMin]="1"
+                [nzMax]="3600">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">批处理大小</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-input-number 
+                formControlName="batchSize"
+                [nzMin]="1"
+                [nzMax]="1000">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">最大重试次数</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-input-number 
+                formControlName="maxRetries"
+                [nzMin]="0"
+                [nzMax]="10">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-control [nzOffset]="6" [nzSpan]="14">
+              <button nz-button nzType="primary" type="submit" [nzLoading]="isSaving"
+              [disabled]="!settingsForm.valid">保存设置</button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </nz-tab>
+    </nz-tabset>
+  </nz-card>

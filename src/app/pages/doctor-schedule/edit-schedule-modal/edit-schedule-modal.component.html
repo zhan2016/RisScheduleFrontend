@@ -1,0 +1,62 @@
+<!-- edit-schedule-modal.component.html -->
+<div>
+    <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()">
+      <div nz-form nzLayout="horizontal">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">班种</nz-form-label>
+            <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择班种'">
+              <nz-select formControlName="shiftTypeId" nzPlaceHolder="请选择班种">
+                <nz-option *ngFor="let shift of shiftTypes" 
+                          [nzValue]="shift.shiftTypeId" 
+                          [nzLabel]="shift.shiftTypeName">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">日期</nz-form-label>
+          <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择日期'">
+            <nz-date-picker formControlName="scheduleDate" 
+                           [nzDisabledDate]="disabledDate"
+                           nzFormat="yyyy-MM-dd">
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">医生</nz-form-label>
+          <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择医生'">
+            <nz-select formControlName="doctorId" nzPlaceHolder="请选择医生">
+              <nz-option *ngFor="let doc of doctors" 
+                        [nzValue]="doc.userId" 
+                        [nzLabel]="doc.userName">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+  
+     
+  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">权重</nz-form-label>
+          <nz-form-control [nzSpan]="14" [nzErrorTip]="'请输入有效的权重值'">
+            <nz-input-number formControlName="weight" 
+                            [nzMin]="0" 
+                            [nzMax]="9.99" 
+                            [nzStep]="0.01"
+                            [nzPrecision]="2">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+  
+        <div class="form-buttons">
+          <button nz-button nzType="default" (click)="onCancel()">取消</button>
+          <button nz-button nzType="primary" 
+                  [nzLoading]="loading" 
+                  [disabled]="scheduleForm.invalid">
+            保存
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>

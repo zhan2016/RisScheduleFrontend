@@ -9,37 +9,59 @@
         <div class="sidebar-logo">
           <a href="https://ng.ant.design/" target="_blank">
             <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
-            <h1>授权管理系统</h1>
+            <h1>报告智能分配管理系统</h1>
           </a>
         </div>
         <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-          <li nz-submenu nzOpen nzTitle="授权管理" nzIcon="dashboard">
+          <li nz-submenu nzOpen nzTitle="主页管理" nzIcon="dashboard">
             <ul>
                 <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/offlineActivate">离线授权</a>
+                  <a routerLink="/assigmentManage">报告分发管理</a>
+                </li>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/doctorWorkload">工作量统计管理</a>
                 </li>
             </ul>
           </li>
-          <li nz-submenu nzOpen nzTitle="维护" nzIcon="form">
+          <li nz-submenu nzOpen nzTitle="排班管理" nzIcon="form">
             <ul>
               <li nz-menu-item nzMatchRouter>
-                <a routerLink="/systems">软件系统管理</a>
+                <a routerLink="/shift">班种管理</a>
               </li>
               <li nz-menu-item nzMatchRouter>
-                <a routerLink="/modules">软件系统模块</a>
+                <a routerLink="/shiftReportGroup">排班集合管理</a>
               </li>
               <li nz-menu-item nzMatchRouter>
-                <a routerLink="/encryptionKeys">加密key管理</a>
+                <a routerLink="/doctorSchedule">排班管理</a>
+              </li>
+            </ul>
+          </li>
+          <li nz-submenu nzOpen nzTitle="报告集合管理" nzIcon="form">
+            <ul>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/examKind">报告分类管理</a>
               </li>
               <li nz-menu-item nzMatchRouter>
-                <a routerLink="/users">用户管理</a>
+                <a routerLink="/examMapset">报告集合管理</a>
               </li>
-                <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/licenses/query">服务端授权查询</a>
-                </li>
-                <li nz-menu-item nzMatchRouter>
-                  <a routerLink="/licenses/generate">服务端授权生成</a>
-                </li>
+            </ul>
+          </li>
+          <li nz-submenu nzOpen nzTitle="配置" nzIcon="form">
+            <ul>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/assignmentStrategy">排班策略配置</a>
+              </li>
+              <!-- <li nz-menu-item nzMatchRouter>
+                <a routerLink="/examMapset">报告集合管理</a>
+              </li> -->
+            </ul>
+            <ul>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/systemConfig">系统配置</a>
+              </li>
+              <!-- <li nz-menu-item nzMatchRouter>
+                <a routerLink="/examMapset">报告集合管理</a>
+              </li> -->
             </ul>
           </li>
         </ul>

@@ -1,0 +1,60 @@
+<!-- src/app/features/assignment-strategy/components/strategy-list/strategy-list.component.html -->
+<div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5>报告分配策略管理</h5>
+        <button nz-button nzType="primary" [routerLink]="['./create']">
+          <i nz-icon nzType="plus"></i>新增策略
+        </button>
+      </div>
+    </div>
+  
+    <nz-table #basicTable [nzData]="strategies" [nzLoading]="loading">
+      <thead>
+        <tr>
+          <th>策略名称</th>
+          <th>分配模式</th>
+          <th>仅在线分配</th>
+          <th>触发时机</th>
+          <th>报告范围</th>
+          <th>工作量计算</th>
+          <th>重试次数</th>
+          <th>重试间隔(秒)</th>
+          <th>是否默认</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td>{{ data.strategyName }}</td>
+          <td>{{ data.distributionMode === '1' ? '平均模式' : '绩效模式' }}</td>
+          <td>{{ data.onlineOnly === '1' ? '是' : '否' }}</td>
+          <td>{{ data.triggerPoint === '1' ? '登记完成后' : '检查完成后' }}</td>
+          <td>
+            {{ data.reportScope === '1' ? '仅初步报告' : 
+               data.reportScope === '2' ? '仅审核报告' : '全部' }}
+          </td>
+          <td>
+            {{getWorkloadModeLabel(data.workloadMode)}}
+            <ng-container *ngIf="data.workloadMode === '2'">
+              <i nz-icon 
+                 nzType="info-circle" 
+                 nz-tooltip 
+                 [nzTooltipTitle]="'初审权重: ' + data.preliminaryWeight + ', 审核权重: ' + data.reviewWeight">
+              </i>
+            </ng-container>
+          </td>
+          <td>{{ data.retryCount }}</td>
+          <td>{{ data.retryInterval }}</td>
+          <td>{{ data.isDefault === '1' ? '是' : '否' }}</td>
+          <td>{{ data.isActive === '1' ? '启用' : '禁用' }}</td>
+          <td>
+            <a [routerLink]="['./', data.strategyId]">编辑</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a nz-popconfirm nzPopconfirmTitle="确定删除?" (nzOnConfirm)="deleteStrategy(data.strategyId!)">删除</a>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>

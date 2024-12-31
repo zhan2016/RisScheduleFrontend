@@ -1,0 +1,142 @@
+<!-- report-assignment.component.html -->
+<div class="report-assignment">
+    <!-- 搜索表单 -->
+    <form nz-form [formGroup]="searchForm" class="search-form">
+        <!-- 第一行放检索条件 -->
+        <div nz-row [nzGutter]="24">
+            <div nz-col [nzSpan]="6">
+                <nz-form-item>
+                  <nz-form-label>检查时间</nz-form-label>
+                  <nz-form-control>
+                    <nz-range-picker 
+                      formControlName="examDateRange" 
+                      nzPlaceHolder="请选择检查时间"
+                      [nzFormat]="'yyyy-MM-dd'">
+                    </nz-range-picker>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+          <div nz-col [nzSpan]="6">
+            <nz-form-item>
+              <nz-form-label>患者姓名</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="patientName" placeholder="请输入患者姓名" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="6">
+            <nz-form-item>
+              <nz-form-label>患者ID</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="patientId" placeholder="请输入患者ID" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="6">
+            <nz-form-item>
+              <nz-form-label>检查类别</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="modality" nzAllowClear nzPlaceHolder="请选择检查类别">
+                  <nz-option nzValue="CT" nzLabel="CT"></nz-option>
+                  <nz-option nzValue="MR" nzLabel="MR"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <!-- 按钮放在最后一列 -->
+          <div nz-col [nzSpan]="6">
+            <nz-form-item [nzJustify]="'end'">
+              <nz-form-control>
+                <button nz-button [nzType]="'primary'" (click)="loadData()">
+                  <i nz-icon nzType="search"></i>查询
+                </button>
+                <button nz-button (click)="loadData(true)" class="ml-8">
+                  <i nz-icon nzType="redo"></i>重置
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </form>
+  
+    <!-- 操作按钮 -->
+    <div class="operation-bar">
+      <button nz-button [nzType]="'primary'" (click)="onTransfer()" [disabled]="selectedRows.length === 0">
+        <i nz-icon nzType="swap"></i>转发
+      </button>
+      <button nz-button [nzType]="'primary'" (click)="onRecall()" [disabled]="selectedRows.length === 0" class="ml-8">
+        <i nz-icon nzType="rollback"></i>召回
+      </button>
+      <!-- <button nz-button (click)="onExport()" class="ml-8">
+        <i nz-icon nzType="download"></i>导出
+      </button> -->
+    </div>
+  
+    <!-- 数据表格 -->
+    <nz-table
+        #basicTable
+        [nzData]="assignments"
+        [nzLoading]="loading"
+        [nzFrontPagination] = "false"
+        [nzShowSizeChanger]="true"
+        [nzShowPagination]="true"
+        [nzShowTotal]="totalTemplate"
+        [nzPaginationPosition]="'bottom'"
+        [nzBordered]="true"
+        [nzTotal]="totalPage"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="pageIndex"
+        (nzPageIndexChange)="onPageChange($event)"
+        (nzPageSizeChange)="onPageSizeChange($event)"
+    >
+    <thead>
+      <tr>
+        <th
+          [nzChecked]="false"
+          [nzIndeterminate]="false"
+          (nzCheckedChange)="onAllChecked($event)">
+        </th>
+        <th>患者姓名</th>
+        <th>患者ID</th>
+        <th>检查类别</th>
+        <th>检查部位</th>
+        <th>检查来源</th>
+        <th>检查时间</th>
+        <th>初步报告分配医生</th>
+        <th>初步报告分配时间</th>
+        <th>审核报告分配医生</th>
+        <th>审核报告分配时间</th>
+        <th>状态</th>
+        <!-- <th>分配类型</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td
+          [nzChecked]="setOfCheckedId.has(data.risNo)"
+          (nzCheckedChange)="onItemChecked(data.risNo, $event)">
+        </td>
+        <td>{{ data.patientName }}</td>
+        <td>{{ data.patientId }}</td>
+        <td>{{ data.modality }}</td>
+        <td>{{ data.examSubClass }}</td>
+        <td>{{ data.patientSource }}</td>
+        <td>{{ data.examDateTime | date:'yyyy-MM-dd HH:mm:ss'  }}</td>
+
+        <td>{{ getDoctorName(data.preliminaryDoctorId) }}</td>
+        <td>{{ data.preliminaryAssignTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>{{ getDoctorName(data.reviewDoctorId) }}</td>
+        <td>{{ data.reviewAssignTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>
+          <nz-tag [nzColor]="getStatusColor(data.preliminaryDoctorId, data.reviewDoctorId)">
+            {{ getStatusText(data.status, data.preliminaryDoctorId, data.reviewDoctorId) }}
+          </nz-tag>
+        </td>
+        <!-- <td>{{ data.assignType === '1' ? '初步报告' : '审核报告' }}</td> -->
+      </tr>
+    </tbody>
+  </nz-table>
+  <ng-template #totalTemplate let-total>共有 {{ total }} 条记录</ng-template>
+  </div>
+
+  

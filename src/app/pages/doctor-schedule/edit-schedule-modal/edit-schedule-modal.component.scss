@@ -1,0 +1,33 @@
+// edit-schedule-modal.component.scss
+:host {
+    display: block;
+    width: 100%;
+    padding: 24px;
+  }
+  
+  [nz-form] {
+    max-width: 600px;
+  }
+  
+  [nz-form-item] {
+    margin-bottom: 24px;
+  }
+  
+  [nz-form-label] {
+    min-width: 80px;
+    text-align: right;
+    margin-right: 8px;
+  }
+  
+  [nz-form-control] {
+    flex: 1;
+  }
+  
+  .form-buttons {
+    margin-top: 32px;
+    text-align: right;
+  
+    button + button {
+      margin-left: 8px;
+    }
+  }

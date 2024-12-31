@@ -1,0 +1,30 @@
+.report-assignment {
+    .search-form {
+      padding: 24px;
+      background: #fff;
+      border-radius: 2px;
+      margin-bottom: 24px;
+  
+      nz-form-item {
+        margin-bottom: 0;  // 移除表单项底部边距
+        
+        // 当表单项在最后一列时的样式
+        &:last-child {
+          text-align: right;
+          
+          // 调整按钮位置使其与输入框对齐
+          button {
+            margin-top: 4px;
+          }
+        }
+      }
+    }
+  
+    .operation-bar {
+      margin-bottom: 16px;
+    }
+  
+    .ml-8 {
+      margin-left: 8px;
+    }
+  }

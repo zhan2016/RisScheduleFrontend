@@ -1,0 +1,240 @@
+<div class="report-group-list">
+    <div class="search-form">
+        <form nz-form [nzLayout]="'inline'">
+          <nz-form-item>
+            <nz-form-label>集合名称</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="searchParams.groupName" 
+                     name="groupName" 
+                     placeholder="请输入集合名称" />
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label>集合类型</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="searchParams.groupType" 
+                        name="groupType" 
+                        nzAllowClear 
+                        nzPlaceHolder="请选择集合类型">
+                <nz-option nzValue="1" nzLabel="按分类"></nz-option>
+                <nz-option nzValue="2" nzLabel="按SQL"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label>报告类型</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="searchParams.reportType" 
+                        name="reportType" 
+                        nzAllowClear 
+                        nzPlaceHolder="请选择报告类型">
+                <nz-option nzValue="1" nzLabel="初步报告"></nz-option>
+                <nz-option nzValue="2" nzLabel="审核报告"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-label>状态</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="searchParams.isActive" 
+                        name="isActive" 
+                        nzAllowClear 
+                        nzPlaceHolder="请选择状态">
+                <nz-option nzValue="1" nzLabel="启用"></nz-option>
+                <nz-option nzValue="0" nzLabel="禁用"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+    
+          <nz-form-item>
+            <nz-form-control>
+              <button nz-button [nzType]="'primary'" (click)="search()">
+                <i nz-icon nzType="search"></i>查询
+              </button>
+              <button nz-button (click)="resetSearch()" class="ml-8">
+                <i nz-icon nzType="redo"></i>重置
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+    <div class="operation-bar">
+      <button nz-button nzType="primary" (click)="showModal()">
+        <i nz-icon nzType="plus"></i>添加报告集合
+      </button>
+    </div>
+  
+    <nz-table
+      #basicTable
+      [nzData]="reportGroups"
+      [nzLoading]="loading"
+      [nzShowSizeChanger]="true"
+      [nzShowPagination]="true">
+      <thead>
+        <tr>
+          <th></th>
+          <th>集合名称</th>
+          <th>集合类型</th>
+          <th>报告类型</th>
+          <th>描述说明</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let data of basicTable.data">
+          <tr>
+            <td [nzExpand]="expandSet.has(data.groupId)"
+                (nzExpandChange)="onExpandChange(data.groupId, $event)">
+            </td>
+            <td>{{ data.groupName }}</td>
+            <td>
+              <span [ngSwitch]="data.groupType">
+                <span *ngSwitchCase="'1'">按分类</span>
+                <span *ngSwitchCase="'2'">按SQL</span>
+              </span>
+            </td>
+            <td>
+              <span [ngSwitch]="data.reportType">
+                <span *ngSwitchCase="'1'">初步报告</span>
+                <span *ngSwitchCase="'2'">审核报告</span>
+              </span>
+            </td>
+            <td>{{ data.description }}</td>
+            <td>
+              <nz-tag [nzColor]="data.isActive === '1' ? 'green' : 'red'">
+                {{ data.isActive === '1' ? '启用' : '禁用' }}
+              </nz-tag>
+            </td>
+            <td>
+              <a (click)="showModal(data)">编辑</a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a nz-popconfirm
+                 nzPopconfirmTitle="确定要删除吗？"
+                 (nzOnConfirm)="handleDelete(data.groupId)">删除</a>
+            </td>
+          </tr>
+          <tr [nzExpand]="expandSet.has(data.groupId)">
+            <td></td>
+            <td colspan="6">
+              <div class="content-preview">
+                <div class="content-header">
+                  {{ data.groupType === '1' ? '关联分类：' : 'SQL语句：' }}
+                </div>
+                <div class="content-body">
+                  <ng-container [ngSwitch]="data.groupType">
+                    <div *ngSwitchCase="'1'" class="categories-list">
+                      <nz-tag *ngFor="let categoryId of data.categories">
+                        {{ getCategoryName(categoryId) }}
+                      </nz-tag>
+                    </div>
+                    <pre *ngSwitchCase="'2'" class="sql-content">{{ data.customSql }}</pre>
+                  </ng-container>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </nz-table>
+  
+    <nz-modal
+      [(nzVisible)]="visible"
+      [nzTitle]="editingGroup?.groupId ? '编辑报告集合' : '添加报告集合'"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()">
+      <ng-container *nzModalContent>
+        <form nz-form>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">集合名称</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <input nz-input [(ngModel)]="editingGroup!.groupName" 
+                     name="groupName" required />
+            </nz-form-control>
+          </nz-form-item>
+  
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">集合类型</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-select [(ngModel)]="editingGroup!.groupType" 
+                        name="groupType" 
+                        (ngModelChange)="onGroupTypeChange()"
+                        required>
+                <nz-option nzValue="1" nzLabel="按分类"></nz-option>
+                <nz-option nzValue="2" nzLabel="按SQL"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+  
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">报告类型</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-select [(ngModel)]="editingGroup!.reportType" 
+                        name="reportType" 
+                        required>
+                <nz-option nzValue="1" nzLabel="初步报告"></nz-option>
+                <nz-option nzValue="2" nzLabel="审核报告"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+  
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">描述说明</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <textarea nz-input [(ngModel)]="editingGroup!.description" 
+                        name="description" 
+                        [nzAutosize]="{ minRows: 2, maxRows: 6 }">
+              </textarea>
+            </nz-form-control>
+          </nz-form-item>
+  
+          <ng-container [ngSwitch]="editingGroup?.groupType">
+            <!-- 按分类 -->
+            <nz-form-item *ngSwitchCase="'1'">
+              <nz-form-label [nzSpan]="6">关联分类</nz-form-label>
+              <nz-form-control [nzSpan]="14">
+                <nz-select [(ngModel)]="editingGroup!.categories" 
+                          name="categories" 
+                          nzMode="multiple"
+                          required>
+                  <nz-option *ngFor="let category of categories" 
+                            [nzValue]="category.categoryId" 
+                            [nzLabel]="category.categoryName">
+                  </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+  
+            <!-- 按SQL -->
+            <nz-form-item *ngSwitchCase="'2'">
+              <nz-form-label [nzSpan]="6">SQL语句</nz-form-label>
+              <nz-form-control [nzSpan]="14">
+                <div class="editor-container">
+                  <ngx-monaco-editor
+                    [(ngModel)]="editingGroup!.customSql"
+                    name="customSql"
+                    [options]="sqlEditorOptions"
+                    style="height: 200px;">
+                  </ngx-monaco-editor>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+          </ng-container>
+  
+          <nz-form-item>
+            <nz-form-label [nzSpan]="6">状态</nz-form-label>
+            <nz-form-control [nzSpan]="14">
+              <nz-switch [(ngModel)]="editingGroup!.isActive" 
+                        name="isActive"
+                        [nzCheckedChildren]="'启用'" 
+                        [nzUnCheckedChildren]="'禁用'">
+              </nz-switch>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </nz-modal>
+  </div>
