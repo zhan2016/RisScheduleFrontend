@@ -1,0 +1,79 @@
+<nz-card nzTitle="授权信息">
+    <nz-descriptions [nzBordered]="true" [nzColumn]="1">
+      <nz-descriptions-item nzTitle="授权状态">
+        <nz-tag [nzColor]="licenseStatus?.isValid ? 'success' : 'error'">
+          {{ licenseStatus?.isValid ? '有效' : '无效' }}
+        </nz-tag>
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="医院名称">
+        {{ licenseStatus?.licenseInfo?.hospitalName }}
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="机器码">
+        <div class="copy-wrapper">
+          {{ licenseStatus?.hardwareId }}
+          <button nz-button nzType="link" (click)="copyHardwareId()">
+            <i nz-icon nzType="copy"></i>
+          </button>
+        </div>
+      </nz-descriptions-item>
+
+      <nz-descriptions-item nzTitle="授权ID">
+        {{ licenseStatus?.licenseInfo?.id }}
+      </nz-descriptions-item>
+
+      <nz-descriptions-item nzTitle="有效期">
+        {{ licenseStatus?.licenseInfo?.validFrom | date:'yyyy-MM-dd' }} 至 
+        {{ licenseStatus?.licenseInfo?.validTo | date:'yyyy-MM-dd' }}
+      </nz-descriptions-item>
+
+      <nz-descriptions-item nzTitle="并发数">
+        {{ licenseStatus?.licenseInfo?.concurrentLimit }}
+      </nz-descriptions-item>
+    </nz-descriptions>
+
+    <nz-divider></nz-divider>
+
+    <nz-tabset>
+      <nz-tab nzTitle="模块授权">
+        <nz-table 
+          #modulesTable 
+          [nzData]="licenseStatus?.licenseInfo?.modules!"
+          [nzSize]="'small'">
+          <thead>
+            <tr>
+              <th>模块名称</th>
+              <th>模块代码</th>
+              <th>并发数限制</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let module of modulesTable.data">
+              <td>{{ module.id }}</td>
+              <td>{{ module.code }}</td>
+              <td>{{ module.concurrentLimit }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-tab>
+
+      <nz-tab nzTitle="终端授权">
+        <nz-table 
+          #terminalsTable 
+          [nzData]="licenseStatus?.licenseInfo?.terminals!"
+          [nzSize]="'small'">
+          <thead>
+            <tr>
+              <th>终端名称</th>
+              <th>MAC地址</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let terminal of terminalsTable.data">
+              <td>{{ terminal.name }}</td>
+              <td>{{ terminal.macAddress }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </nz-tab>
+    </nz-tabset>
+  </nz-card>

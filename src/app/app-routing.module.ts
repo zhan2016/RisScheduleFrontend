@@ -69,7 +69,11 @@ const routes: Routes = [
           .then(m => m.SystemConfigModule),
         canActivate: [AuthGuard, AdminGuard]
       },
-      
+      {
+        path: 'license',
+        loadChildren: () => import('./pages/license/license.module')
+          .then(m => m.LicenseModule),
+      },
     ]
   },
 
