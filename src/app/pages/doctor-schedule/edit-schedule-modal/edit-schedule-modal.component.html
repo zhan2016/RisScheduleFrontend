@@ -48,6 +48,16 @@
             </nz-input-number>
           </nz-form-control>
         </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">状态</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-switch formControlName="status" 
+            [nzCheckedChildren]="'启用'" 
+            [nzUnCheckedChildren]="'禁用'">
+            </nz-switch>
+          </nz-form-control>
+        </nz-form-item>
   
         <div class="form-buttons">
           <button nz-button nzType="default" (click)="onCancel()">取消</button>

@@ -659,12 +659,13 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
         status: schedule.status,
         scheduleId: schedule.scheduleId!,
         shiftTypeId: shift.shiftTypeId,
-        scheduleDate: schedule.scheduleDate
+        scheduleDate: schedule.scheduleDate,
       }))
     };
   }
   
   getStatusColor(status: string): string {
+    //console.log(status);
     switch (status) {
       case '0':
         return 'gold';    // 待确认
@@ -676,9 +677,12 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
         return 'default';
     }
   }
+  trackById(item: any) {
+    return item.scheduleId;
+  }
   // schedule.component.ts
   showEditScheduleModal(doctor: any): void {
-    //console.log('Opening modal for doctor:', doctor);
+    console.log('Opening modal for doctor:', doctor);
     if (this.modalRef) {
       this.modalRef.close();
       this.modalRef = null;

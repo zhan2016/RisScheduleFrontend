@@ -81,7 +81,7 @@
                         <!-- 医生列表 -->
                         <div class="doctor-list">
                             <app-doctor-schedule-item
-                                *ngFor="let doctor of summary.doctors"
+                                *ngFor="let doctor of summary.doctors;trackBy: trackById"
                                 [doctor]="doctor"
                                 (delete)="deleteSchedule(doctor.scheduleId)"
                                 (edit)="showEditScheduleModal(doctor)"

@@ -20,8 +20,11 @@ export class DoctorScheduleItemComponent implements OnInit {
     event.preventDefault();
     this.nzContextMenuService.create(event, menu);
   }
-
+  trackByFn(index: number, item: any): string {
+    return item.label;
+  }
   getStatusColor(status: string): string {
+    //console.log(status);
     switch (status) {
       case '0': return 'orange';
       case '1': return 'green';

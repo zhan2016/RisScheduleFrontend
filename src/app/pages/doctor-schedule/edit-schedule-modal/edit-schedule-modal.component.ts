@@ -33,7 +33,8 @@ export class EditScheduleModalComponent implements OnInit {
       scheduleDate: [null, [Validators.required]],
       doctorId: [null, [Validators.required]],
       shiftTypeId: [null, [Validators.required]],
-      weight: [1.0, [Validators.required, Validators.min(0), Validators.max(9.99)]]
+      weight: [1.0, [Validators.required, Validators.min(0), Validators.max(9.99)]],
+      status: ['1']
     });
   }
 
@@ -49,7 +50,8 @@ export class EditScheduleModalComponent implements OnInit {
         scheduleDate: scheduleDate,
         doctorId: this.doctor.doctorId,
         shiftTypeId: this.doctor.shiftTypeId,
-        weight: this.doctor.weight || 1.0
+        weight: this.doctor.weight || 1.0,
+        status: this.doctor.status === "1"
       });
     }
   }
@@ -75,7 +77,7 @@ export class EditScheduleModalComponent implements OnInit {
         this.formatDate(formData.scheduleDate) : 
         null
     };
-
+    updatedSchedule.status =  formData.status ? '1' : '0';
     this.scheduleService.updateSchedule(updatedSchedule).subscribe({
       next: (res) => {
         this.loading = false;

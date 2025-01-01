@@ -41,6 +41,7 @@ export class ReportAssignmentComponent implements OnInit {
       patientId: [''],
       modality: [''],
       examSubClass: [''],
+      examItemsstr:[''],
       patientSource: [''],
       doctorId: [''],
       status: [''],
@@ -66,12 +67,13 @@ export class ReportAssignmentComponent implements OnInit {
 
   // 添加获取状态文本的方法
   getStatusText(status: string, preliminaryDoctorId: string | undefined, reviewDoctorId: string | undefined): string {
+    //console.log(preliminaryDoctorId, reviewDoctorId);
     if (!preliminaryDoctorId && !reviewDoctorId) {
       return '待分配';  // 如果两者都没有值，表示待分配
     } else if (preliminaryDoctorId && !reviewDoctorId) {
-      return '初步已分配'; // 如果只有 preliminaryDoctorId 有值，表示初步已分配
-    } else if (!preliminaryDoctorId && reviewDoctorId) {
-      return '审核已分配';  // 如果只有 reviewDoctorId 有值，表示审核已分配
+      return '初步医生已分配'; // 如果只有 preliminaryDoctorId 有值，表示初步已分配
+    } else if (preliminaryDoctorId && reviewDoctorId) {
+      return '审核医生已分配';  // 如果只有 reviewDoctorId 有值，表示审核已分配
     } else {
       return (ASSIGNMENT_STATUS_TEXT as any)[status] || '未知状态';  // 如果都有值，返回已有的状态文本
     }
@@ -117,6 +119,9 @@ export class ReportAssignmentComponent implements OnInit {
   getDoctorName(doctorId: string | undefined): string {
 
     if (!doctorId) return '';
+    if(doctorId.toLowerCase() === 'system') {
+      return "系统自动";
+    }
     const doctor = this.doctorList.find(d => d.userId === doctorId);
     return doctor ? doctor.userName : '未知医生';
   }
@@ -231,6 +236,7 @@ export class ReportAssignmentComponent implements OnInit {
       patientId: formValue.patientId,
       modality: formValue.modality,
       examSubClass: formValue.examSubClass,
+      examItemsstr: formValue.examItemsstr,
       patientSource: formValue.patientSource,
       doctorId: formValue.doctorId,
       status: formValue.status,

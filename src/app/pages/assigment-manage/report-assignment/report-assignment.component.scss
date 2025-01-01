@@ -1,30 +1,71 @@
 .report-assignment {
-    .search-form {
-      padding: 24px;
-      background: #fff;
-      border-radius: 2px;
-      margin-bottom: 24px;
-  
-      nz-form-item {
-        margin-bottom: 0;  // 移除表单项底部边距
+  .search-form {
+    padding: 32px 24px;  /* 增加上下内边距 */
+    background: #fff;
+    border-radius: 4px;  /* 增加圆角 */
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* 添加轻微阴影 */
+
+    /* 调整行间距 */
+    [nz-row] {
+      margin-bottom: -24px;  /* 抵消最后一行的底部间距 */
+      
+      /* 调整列样式 */
+      [nz-col] {
+        margin-bottom: 24px;  /* 增加每行之间的间距 */
         
-        // 当表单项在最后一列时的样式
-        &:last-child {
-          text-align: right;
+        nz-form-item {
+          margin-bottom: 0;
           
-          // 调整按钮位置使其与输入框对齐
-          button {
-            margin-top: 4px;
+          /* 调整表单标签样式 */
+          nz-form-label {
+            padding-bottom: 8px;  /* 增加标签和输入框的间距 */
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 500;
+          }
+          
+          /* 调整输入框样式 */
+          nz-form-control {
+            .ant-input,
+            .ant-picker,
+            .ant-select {
+              width: 100%;
+            }
+            
+            /* 日期选择器特殊调整 */
+            nz-range-picker {
+              width: 100%;
+            }
+          }
+          
+          /* 按钮组样式调整 */
+          &:last-child {
+            text-align: right;
+            margin-top: 4px;  /* 微调按钮位置 */
+            
+            button {
+              min-width: 88px;  /* 统一按钮宽度 */
+              
+              &:not(:first-child) {
+                margin-left: 12px;  /* 增加按钮之间的间距 */
+              }
+            }
           }
         }
       }
     }
-  
-    .operation-bar {
-      margin-bottom: 16px;
-    }
-  
-    .ml-8 {
-      margin-left: 8px;
+  }
+
+  .operation-bar {
+    margin: 24px 0;  /* 调整操作栏的上下间距 */
+    padding: 0 24px;  /* 添加左右内边距 */
+    
+    button {
+      min-width: 88px;  /* 统一按钮宽度 */
     }
   }
+
+  .ml-8 {
+    margin-left: 12px;  /* 调整为12px以保持一致性 */
+  }
+}

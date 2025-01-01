@@ -42,7 +42,6 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
     NzModalModule,
     NzPaginationModule,
     NzDatePickerModule,
-    
   ]
 })
 export class AssigmentManageModule { }

@@ -33,6 +33,7 @@ import { EditScheduleModalComponent } from './edit-schedule-modal/edit-schedule-
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { DoctorScheduleItemComponent } from './doctor-schedule-item/doctor-schedule-item.component';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { DoctorScheduleItemComponent } from './doctor-schedule-item/doctor-sched
     NzDropDownModule,
     NzInputModule,
     NzInputNumberModule,
+    NzSwitchModule,
     CalendarModule.forRoot({
       provide: DateAdapter,
       useFactory: adapterFactory

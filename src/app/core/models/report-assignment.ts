@@ -6,6 +6,7 @@ export interface ReportAssignmentQueryDTO {
     patientId?: string;
     modality?: string;    // 检查类别
     examSubClass?: string; // 检查部位
+    examItemsstr?: string; //检查项目
     patientSource?: string; // 检查来源
     doctorId?: string;
     status?: string;
