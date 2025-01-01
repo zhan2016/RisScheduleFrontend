@@ -1,6 +1,6 @@
 // schedule.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ShiftType } from '../models/shift';
 import { DoctorSchedule, ScheduleQueryDTO, ScheduleSaveDTO, ScheduleView } from '../models/doctor-shedule';
@@ -32,21 +32,18 @@ export class ScheduleService {
   // 获取排班列表
   getSchedules(query: ScheduleQueryDTO): Observable<ScheduleView[]> {
     let params = new HttpParams();
-    if (query.doctorId) {
-      params = params.set('doctorId', query.doctorId);
-    }
-    if (query.startDate) {
-      params = params.set('startDate', query.startDate);
-    }
-    if (query.endDate) {
-      params = params.set('endDate', query.endDate);
-    }
-    if (query.shiftTypeId) {
-      params = params.set('shiftTypeId', query.shiftTypeId);
-    }
-    if (query.status) {
-      params = params.set('status', query.status);
-    }
+    
+    // 构建查询参数
+    Object.keys(query).forEach(key => {
+      const value = (query as any)[key];
+      if (value !== null && value !== undefined && value !== '') {
+        if (value instanceof Date) {
+          params = params.set(key, value.toISOString());
+        } else {
+          params = params.set(key, value.toString());
+        }
+      }
+    });
 
     return this.http.get<ScheduleView[]>(`${this.baseUrl}/list`, { params });
   }
@@ -67,6 +64,15 @@ export class ScheduleService {
   // 删除排班
   deleteSchedule(scheduleId: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${scheduleId}`);
+  }
+  //批量删除
+  batchDeleteSchedules(scheduleIds: string[]): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/batch`, {
+      body: scheduleIds,  // 注意：DELETE 请求的请求体需要使用 body 属性
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
   }
 
   // 更新排班状态

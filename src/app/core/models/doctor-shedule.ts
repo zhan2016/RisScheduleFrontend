@@ -22,12 +22,15 @@ export interface DoctorSchedule {
   
   // schedule-query.dto.ts (查询参数)
   export interface ScheduleQueryDTO {
+    doctorName?:string;
     doctorId?: string;
     startDate?: string;
     endDate?: string;
     shiftTypeId?: string;
     status?: string;
     createUser?: string,
+    pageIndex: number,
+    pageSize: number,
   }
   
   // schedule-save.dto.ts (保存参数)

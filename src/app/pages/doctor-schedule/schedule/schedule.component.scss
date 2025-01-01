@@ -162,6 +162,17 @@
         }
       }
     }
+    .ant-table-wrapper {
+      margin-top: 16px;
+    }
+  
+    .schedule-controls {
+      margin-bottom: 16px;
+      
+      .ant-radio-group {
+        margin-right: 16px;
+      }
+    }
   }
 
   // schedule.component.scss

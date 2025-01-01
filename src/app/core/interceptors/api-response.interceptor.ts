@@ -33,11 +33,11 @@ export class ApiResponseInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       map(event => {
-        console.log(event, event instanceof HttpResponse);
+        //console.log(event, event instanceof HttpResponse);
         if (event instanceof HttpResponse && !(event.body instanceof Blob)) {
           if (this.isApiResponse(event.body)) {
             const apiResponse = event.body as ApiResponse<any>;
-            console.log(apiResponse, apiResponse);
+            //console.log(apiResponse, apiResponse);
             // 处理业务层面的错误
             if (!apiResponse.success || !SuccessCode.includes(apiResponse.code)) {
              

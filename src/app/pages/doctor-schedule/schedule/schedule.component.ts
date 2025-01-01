@@ -46,6 +46,7 @@ import { AddScheduleModalComponent } from '../add-schedule-modal/add-schedule-mo
 import { EditScheduleModalComponent } from '../edit-schedule-modal/edit-schedule-modal.component';
 import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { map } from 'rxjs/operators';
+import { PageResult } from 'src/app/core/models/page-result';
 
 const colors: Record<string, EventColor> = {
   red: {
@@ -82,14 +83,41 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
   private modalRef: NzModalRef | null = null; // 添加模态框引用
   private destroy$ = new Subject<void>();     // 用于清理订阅
 
+  viewMode: 'calendar' | 'table' = 'calendar';
+  selectedSchedules: string[] = [];
+  tableData: any[] = [];
+  tableColumns = [
+    { title: '日期', key: 'scheduleDate' },
+    { title: '医生', key: 'doctorName' },
+    { title: '班次', key: 'shiftTypeName' },
+    { title: '状态', key: 'status' },
+    { title: '操作', key: 'action' }
+  ];
+  searchForm!: FormGroup;
+  pageIndex = 1;
+  pageSize = 10;
+  total = 0;
+  doctors: ExamUser[] = [];
+  
+
   @ViewChild('scheduleGrid', { static: true }) scheduleGrid!: ElementRef;
 
   constructor(
     private scheduleService: ScheduleService,
+    private fb: FormBuilder,
     private message: NzMessageService,
     private modal: NzModalService,
     private userService: UserService // 假设你有用户服务获取当前用户信息
-  ) {}
+  ) {
+    this.searchForm = this.fb.group({
+      doctorId: [null],
+      doctorName: [null],
+      shiftTypeId: [null],
+      dateRange: [null],
+      status: [null]
+    });
+
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -105,6 +133,164 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       this.modalRef.close();
       this.modalRef = null;
     }
+  }
+
+  /************表格视图模式下操作与属性 ****************/
+  switchView(mode: 'calendar' | 'table') {
+    this.viewMode = mode;
+    if (mode === 'table') {
+      this.loadTableData();
+    }
+  }
+  search(): void {
+    this.pageIndex = 1;
+    this.loadTableData();
+  }
+
+  reset(): void {
+    this.searchForm.reset();
+    this.pageIndex = 1;
+    this.loadTableData();
+  }
+
+  onPageIndexChange(index: number): void {
+    this.pageIndex = index;
+    this.loadTableData();
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.pageIndex = 1;
+    this.loadTableData();
+  }
+  loadTableData() {
+    const formValue = this.searchForm.value;
+    const dateRange = formValue.dateRange;
+    
+    const params: ScheduleQueryDTO = {
+      doctorId: formValue.doctorId,
+      doctorName: formValue.doctorName,
+      shiftTypeId: formValue.shiftTypeId,
+      startDate: dateRange?.[0],
+      endDate: dateRange?.[1],
+      status: formValue.status,
+      pageIndex: this.pageIndex,
+      pageSize: this.pageSize
+    };
+    console.log(params);
+    this.loading = true;
+    this.scheduleService.getSchedules(params).subscribe({
+      next: (res: any) => {
+        if (res.code === 200) {
+          this.tableData = (res.data as PageResult<ScheduleView[]>).data.map((schedule: any) => ({
+            key: schedule.scheduleId,
+            scheduleDate: new Date(schedule.scheduleDate).toLocaleDateString(),
+            doctorName: schedule.doctorName,
+            shiftTypeName: this.shiftTypes.find(s => s.shiftTypeId === schedule.shiftTypeId)?.shiftTypeName,
+            status: this.getStatusText(schedule.status),
+            schedule: schedule
+          }));
+          this.total = (res.data as PageResult<ScheduleView[]>).total;
+        } else {
+          this.message.error(res.message || "获取排班失败");
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load schedules:', err);
+        this.message.error('加载排班失败');
+        this.loading = false;
+      }
+    });
+  }
+  batchDelete() {
+    this.modal.confirm({
+      nzTitle: '确认删除',
+      nzContent: `是否确认删除选中的 ${this.selectedSchedules.length} 条排班记录？`,
+      nzOnOk: () => {
+        this.scheduleService.batchDeleteSchedules(this.selectedSchedules).subscribe({
+          next: (res) => {
+            if (res.code === 200) {
+              this.message.success('批量删除成功');
+              this.selectedSchedules = [];
+              this.loadTableData();
+            } else {
+              this.message.error(res.message || '批量删除失败');
+            }
+          },
+          error: (err) => {
+            console.error('Failed to batch delete:', err);
+            this.message.error('批量删除失败');
+          }
+        });
+      }
+    });
+  }
+  copyToNextWeek() {
+    if (this.selectedSchedules.length === 0) {
+      this.message.warning('请选择需要复制的排班');
+      return;
+    }
+
+    const selectedData = this.schedules.filter(s => 
+      this.selectedSchedules.includes(s.scheduleId!)
+    );
+
+    const nextWeekSchedules = selectedData.map(schedule => ({
+      doctorId: schedule.doctorId,
+      scheduleDate: addWeeks(new Date(schedule.scheduleDate), 1),
+      shiftTypeId: schedule.shiftTypeId
+    }));
+
+    this.scheduleService.batchSaveSchedules(nextWeekSchedules).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.message.success('复制到下周成功');
+          this.loadSchedules();
+        } else {
+          this.message.error(res.message || '复制失败');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to copy schedules:', err);
+        this.message.error('复制到下周失败');
+      }
+    });
+  }
+  getStatusText(status: string): string {
+    switch (status) {
+      case '0': return '未生效';
+      case '1': return '已生效';
+      case '2': return '已结束';
+      default: return '未知';
+    }
+  }
+  onAllCheckedChange(checked: boolean): void {
+    if (checked) {
+      // 全选：将所有记录的 key 添加到选中数组
+      this.selectedSchedules = this.tableData.map(item => item.key);
+    } else {
+      // 取消全选：清空选中数组
+      this.selectedSchedules = [];
+    }
+  }
+  onItemCheckedChange(checked: boolean, scheduleId: string): void {
+    if (checked) {
+      // 选中：添加到选中数组
+      this.selectedSchedules = [...this.selectedSchedules, scheduleId];
+    } else {
+      // 取消选中：从选中数组中移除
+      this.selectedSchedules = this.selectedSchedules.filter(id => id !== scheduleId);
+    }
+  }
+  isAllChecked(): boolean {
+    return this.tableData.length > 0 && this.tableData.every(item => 
+      this.selectedSchedules.includes(item.key)
+    );
+  }
+
+  isIndeterminate(): boolean {
+    return this.selectedSchedules.length > 0 && !this.isAllChecked();
   }
 
   loadShiftTypes() {
@@ -152,6 +338,8 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
             ? zonedTimeToUtc(endOfWeek(this.currentDate, { weekStartsOn: 1 }), this.timeZone)
             : zonedTimeToUtc(endOfMonth(this.currentDate), this.timeZone);
         const params: ScheduleQueryDTO = {
+            pageIndex:1,
+            pageSize: 1000,
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString()
         };
@@ -159,7 +347,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
     this.scheduleService.getSchedules(params).subscribe({
       next: (res) => {
         if (res) {
-          this.schedules = (res as any).data;
+          this.schedules = ((res as any).data as PageResult<ScheduleView[]>).data;
         } else {
           this.message.error("获取排班失败");
         }
@@ -173,20 +361,16 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
     });
   }
   onCellClick(dateLocal: Date, shift: ShiftType) {
+    console.log("cellclick", shift);
     const dateUtc = zonedTimeToUtc(dateLocal, this.timeZone); // 在点击事件中转换为 UTC
     this.selectedShiftType = shift;
     this.showAddScheduleModal(dateUtc);
   }
-  // formatToUTCDateString(date: Date): string {
-  //     try {
-  //       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  //       const zonedDate = utcToZonedTime(date, timeZone);
-  //       return format(zonedDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timeZone: 'UTC' }); // 格式化为UTC字符串
-  //     } catch (error) {
-  //       console.error("Error formatting date:", error);
-  //       return 'Invalid Date';
-  //     }
-  // }
+  refreshCalendarView(): void {
+    this.loading = true;
+    this.loadSchedules();
+    this.message.success('刷新成功');
+  }
   showAddScheduleModal(date: Date) {
     const modal = this.modal.create({
       nzTitle: '添加排班',
