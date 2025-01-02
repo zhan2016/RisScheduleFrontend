@@ -1,0 +1,102 @@
+<!-- service-manager.component.html -->
+<nz-card nzTitle="服务总览" [nzExtra]="extraTemplate">
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="6">
+        <nz-statistic
+          [nzValue]="overallStatus?.runningCount || 0"
+          [nzTitle]="'运行中服务'"
+          [nzSuffix]="'/ ' + (overallStatus?.totalCount || 0)"
+        ></nz-statistic>
+      </nz-col>
+      <nz-col [nzSpan]="6">
+        <nz-statistic
+          [nzValue]="overallStatus?.enabledCount || 0"
+          [nzTitle]="'已启用服务'"
+          [nzSuffix]="'/ ' + (overallStatus?.totalCount || 0)"
+        ></nz-statistic>
+      </nz-col>
+      <nz-col [nzSpan]="6">
+        <nz-statistic
+          [nzValue]="overallStatus?.licenseValidCount || 0"
+          [nzTitle]="'许可证有效服务'"
+          [nzSuffix]="'/ ' + (overallStatus?.totalCount || 0)"
+        ></nz-statistic>
+      </nz-col>
+    </nz-row>
+  </nz-card>
+  
+  <ng-template #extraTemplate>
+    <nz-space>
+      <button *nzSpaceItem nz-button [nzType]="'primary'" (click)="controlAllServices(true)" [disabled]="overallStatus?.allServicesRunning">
+        <i nz-icon nzType="play-circle"></i>启动全部
+      </button>
+      <button *nzSpaceItem nz-button nzDanger (click)="controlAllServices(false)" [disabled]="overallStatus?.allServicesStopped">
+        <i nz-icon nzType="stop"></i>停止全部
+      </button>
+      <button *nzSpaceItem nz-button (click)="refreshStatus()">
+        <i nz-icon nzType="reload"></i>刷新
+      </button>
+    </nz-space>
+  </ng-template>
+  
+  <nz-card nzTitle="服务列表" class="mt-16">
+    <nz-table #basicTable [nzData]="services">
+      <thead>
+        <tr>
+          <th>服务名称</th>
+          <th>描述</th>
+          <th>状态</th>
+          <th>许可证</th>
+          <!-- <th>手动控制</th> -->
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let service of basicTable.data">
+          <td>{{service.displayName}}</td>
+          <td>{{service.description}}</td>
+          <td>
+            <nz-tag [nzColor]="getStateColor(service.state)">
+              {{getStateText(service.state)}}
+            </nz-tag>
+          </td>
+          <td>
+            <nz-tag [nzColor]="service.isLicenseValid ? 'success' : 'error'">
+              {{service.isLicenseValid ? '有效' : '无效'}}
+            </nz-tag>
+          </td>
+          <!-- <td>
+            <nz-switch
+              [(ngModel)]="service.isManuallyEnabled"
+              (ngModelChange)="onServiceControl(service)"
+              [nzLoading]="service.loading"
+            ></nz-switch>
+          </td> -->
+          <td>
+            <a (click)="showLogs(service)">查看日志</a>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+  
+  <nz-modal
+    [(nzVisible)]="isLogModalVisible"
+    nzTitle="服务操作日志"
+    (nzOnCancel)="handleLogModalCancel()"
+    [nzFooter]="null"
+  >
+    <ng-container *nzModalContent>
+      <nz-timeline>
+        <nz-timeline-item
+          *ngFor="let record of selectedService?.recentRecords"
+          [nzColor]="record.result.toLowerCase().includes('success') ? 'green' : 'red'"
+        >
+          <h4>{{record.action}}</h4>
+          <p>操作时间: {{record.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+          <p>操作人: {{record.operator}}</p>
+          <p>结果: {{record.result}}</p>
+        </nz-timeline-item>
+      </nz-timeline>
+    </ng-container>
+  </nz-modal>

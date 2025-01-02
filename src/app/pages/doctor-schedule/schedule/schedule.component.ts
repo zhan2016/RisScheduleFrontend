@@ -660,6 +660,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
         scheduleId: schedule.scheduleId!,
         shiftTypeId: shift.shiftTypeId,
         scheduleDate: schedule.scheduleDate,
+        weight: schedule.weight
       }))
     };
   }
@@ -682,7 +683,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
   }
   // schedule.component.ts
   showEditScheduleModal(doctor: any): void {
-    console.log('Opening modal for doctor:', doctor);
+    //console.log('Opening modal for doctor:', doctor);
     if (this.modalRef) {
       this.modalRef.close();
       this.modalRef = null;

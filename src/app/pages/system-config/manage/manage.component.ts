@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { SystemConfigService } from 'src/app/core/services/system-config.service';
+import {ServiceManagerComponent} from '../service-manager/service-manager.component';
 
 @Component({
   selector: 'app-manage',
@@ -15,7 +16,7 @@ export class ManageComponent implements OnInit {
   settingsForm!: FormGroup;
   isRefreshing = false;
   isSaving = false;
-  
+
   constructor(
     private systemConfigService: SystemConfigService,
     private fb: FormBuilder,

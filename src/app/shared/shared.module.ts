@@ -17,6 +17,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { UserInfoModalComponent } from './component/user-info-modal/user-info-modal.component';
 import { ChangePasswordModalComponent } from './component/change-password-modal/change-password-modal.component';
 import { LoadingCarComponent } from './component/loading-car/loading-car.component';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 @NgModule({
   declarations: [
@@ -38,7 +42,11 @@ import { LoadingCarComponent } from './component/loading-car/loading-car.compone
     NzFormModule,
     NzInputModule,
     NzButtonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NzSpaceModule,
+    NzToolTipModule,
+    NzBadgeModule,
+    NzDividerModule
   ],
   exports: [
     MainLayoutComponent,

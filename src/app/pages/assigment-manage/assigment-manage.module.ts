@@ -19,10 +19,14 @@ import { TransferModalComponent } from './transfer-modal/transfer-modal.componen
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { AssignmentHistoryModalComponent } from './assignment-history-modal/assignment-history-modal.component';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 @NgModule({
   declarations: [
     ReportAssignmentComponent,
-    TransferModalComponent
+    TransferModalComponent,
+    AssignmentHistoryModalComponent
   ],
   imports: [
     CommonModule,
@@ -42,6 +46,8 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
     NzModalModule,
     NzPaginationModule,
     NzDatePickerModule,
+    NzCheckboxModule,
+    NzToolTipModule
   ]
 })
 export class AssigmentManageModule { }

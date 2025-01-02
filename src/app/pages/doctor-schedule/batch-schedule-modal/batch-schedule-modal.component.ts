@@ -48,7 +48,15 @@ export class BatchScheduleModalComponent implements OnInit {
   }
 
   disabledDate = (current: Date): boolean => {
-    return current < new Date();
+    // 将当前日期设置为当天的开始（0时0分0秒）
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // 将要比较的日期也设置为其当天的开始
+    const currentDate = new Date(current);
+    currentDate.setHours(0, 0, 0, 0);
+    
+    return currentDate < today;
   };
 
   onSubmit() {

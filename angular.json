@@ -46,8 +46,7 @@
             "styles": [
               "src/theme.less",
               "src/styles.scss",
-              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
-              "node_modules/angular-calendar/css/angular-calendar.css"
+              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css"
             ],
             "scripts": [
               "src/assets/editor/HCEmrViewLib.min.js"

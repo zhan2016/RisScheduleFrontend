@@ -157,3 +157,89 @@
       filter: drop-shadow(0 0 4px rgba(24, 144, 255, 0.6));
     }
   }
+  .license-info {
+    display: flex;
+    align-items: center;
+    margin: 0 24px;
+    
+    .license-item {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 14px;
+      
+      i {
+        margin-right: 6px;
+        font-size: 16px;
+      }
+  
+      &.hospital {
+        i {
+          color: #1890ff;
+        }
+      }
+  
+      &.status {
+        &.valid {
+          i {
+            color: #52c41a;
+          }
+        }
+        
+        &.invalid {
+          i {
+            color: #f5222d;
+          }
+        }
+      }
+  
+      &.expiry {
+        i {
+          color: #722ed1;
+        }
+        
+        &.near-expiry {
+          color: #faad14;
+          i {
+            color: #faad14;
+          }
+        }
+        
+        &.expired {
+          color: #f5222d;
+          i {
+            color: #f5222d;
+          }
+        }
+      }
+  
+      &.concurrent {
+        i {
+          color: #13c2c2;
+        }
+      }
+    }
+  }
+  .service-status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px;
+    
+    i {
+      margin-right: 4px;
+    }
+  
+    &.running {
+      color: #52c41a;
+    }
+  
+    &.partial {
+      color: #faad14;
+    }
+  
+    &.stopped {
+      color: #ff4d4f;
+    }
+  }

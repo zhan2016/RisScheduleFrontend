@@ -1,0 +1,35 @@
+<div class="assignment-history-modal">
+    <nz-table
+      #basicTable
+      [nzData]="historyList"
+      [nzLoading]="loading"
+      [nzShowPagination]="false"
+      [nzBordered]="true">
+      <thead>
+        <tr>
+          <th>变更时间</th>
+          <th>原状态</th>
+          <th>新状态</th>
+          <th>初步报告医生</th>
+          <th>审核报告医生</th>
+          <th>处理状态</th>
+          <th>错误信息</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of historyList">
+          <td>{{ item.changeTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+          <td>{{ item.oldStatus }}</td>
+          <td>{{ item.newStatus }}</td>
+          <td>{{ getDoctorName(item.preliminaryDoctorId) }}</td>
+          <td>{{ getDoctorName(item.reviewDoctorId) }}</td>
+          <td>
+            <nz-tag [nzColor]="item.isProcessed === 'Y' ? 'success' : 'error'">
+              {{ item.isProcessed === 'Y' ? '已处理' : '未处理' }}
+            </nz-tag>
+          </td>
+          <td>{{ item.errorMsg }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>

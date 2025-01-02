@@ -4,6 +4,8 @@
 export interface ReportAssignmentQueryDTO {
     patientName?: string;
     patientId?: string;
+    onlySystemAssigned: boolean; //仅查询系统分配的
+    onlyFailedAssignments?: boolean; // 仅显示分配失败的记录
     modality?: string;    // 检查类别
     examSubClass?: string; // 检查部位
     examItemsstr?: string; //检查项目
@@ -38,7 +40,48 @@ export interface ReportAssignmentDTO {
     priority: number;
     assignType: string;  // 1-初步报告、2-审核报告
     resultStatus: string;
+    retryCount?: number;
+    errorMsg?: string;
+    isProcessed?: string;
+    systemAssignmentStatus?: string;
+    lastLogId?: string;
 }
+
+export interface AssignmentHistoryDTO {
+    logId: string;
+    risNo: string;
+    patientName: string;
+    patientId: string;
+    modality: string;
+    examSubClass: string;
+    examItemsstr: string;
+    oldStatus: string;
+    newStatus: string;
+    changeTime?: Date;
+    examCompleteTime?: Date;
+    emergency: string;
+    isProcessed: string;
+    processTime?: Date;
+    retryCount?: number;
+    errorMsg: string;
+    
+    // 分配信息
+    assignmentId: string;
+    preliminaryDoctorId?: string;
+    preliminaryAssignTime?: Date;
+    reviewDoctorId?: string;
+    reviewAssignTime?: Date;
+    assignmentStatus: string;
+    assignmentCreateUser: string;
+    assignmentCreateTime?: Date;
+    
+    // 报告状态
+    reportCreateUser?: string;
+    reportCreateTime?: Date;
+    reportCheckUser?: string;
+    reportCheckTime?: Date;
+}
+
 
 // 批量分配DTO
 export interface BatchAssignDTO {

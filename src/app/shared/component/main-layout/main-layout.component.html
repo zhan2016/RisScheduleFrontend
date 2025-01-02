@@ -112,6 +112,42 @@
                 <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
                   <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
                 </span>
+                <div class="license-info">
+                  <nz-space [nzSize]="'small'">
+                    <div *nzSpaceItem class="license-item hospital">
+                      <i nz-icon nzType="hospital" nzTheme="outline"></i>
+                      <span>{{ licenseStatus?.licenseInfo?.hospitalName }}</span>
+                    </div>
+                    <div *nzSpaceItem class="license-item status" 
+                         [class.valid]="licenseStatus?.isValid" 
+                         [class.invalid]="!licenseStatus?.isValid">
+                      <i nz-icon [nzType]="licenseStatus?.isValid ? 'check-circle' : 'exclamation-circle'" nzTheme="outline"></i>
+                      <span>{{ licenseStatus?.isValid ? '授权有效' : '授权无效' }}</span>
+                    </div>
+                    <div *nzSpaceItem class="license-item expiry" 
+                         nz-tooltip 
+                         [nzTooltipTitle]="getExpiryTooltip()">
+                      <i nz-icon nzType="calendar" nzTheme="outline"></i>
+                      <span>{{ getExpiryInfo() }}</span>
+                    </div>
+                    <!-- <div *nzSpaceItem class="license-item concurrent">
+                      <i nz-icon nzType="team" nzTheme="outline"></i>
+                      <span>并发数: {{ licenseStatus?.licenseInfo?.concurrentLimit }}</span>
+                    </div> -->
+                    <nz-divider *nzSpaceItem nzType="vertical"></nz-divider>
+
+                    <!-- 服务状态信息 -->
+                    <div *nzSpaceItem class="service-status-item" 
+                      [class.running]="overallStatus?.allServicesRunning"
+                      [class.partial]="!overallStatus?.allServicesRunning && overallStatus?.runningCount! > 0"
+                      [class.stopped]="overallStatus?.allServicesStopped"
+                      nz-tooltip
+                      [nzTooltipTitle]="getServiceCountInfo()">
+                      <i nz-icon [nzType]="getServiceStatusIcon()" nzTheme="outline"></i>
+                      <span>{{ getServiceStatusText() }}</span>
+                    </div>
+                  </nz-space>
+                </div>
                 <div class="header-right">
                   <a nz-dropdown [nzDropdownMenu]="menu">
                     <div class="user-info">

@@ -1,6 +1,6 @@
 <div class="doctor-item">
     <nz-tag [nzColor]="getStatusColor(doctor.status)" class="doctor-tag">
-      {{ doctor.doctorName }}
+      {{ doctor.doctorName }}({{doctor.weight}})
       <span class="actions">
         <i nz-icon nzType="edit" (click)="onEdit($event)"></i>
         <i nz-icon nzType="close" (click)="onDelete($event)" class="remove-icon"></i>

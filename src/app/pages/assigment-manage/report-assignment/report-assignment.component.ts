@@ -9,6 +9,7 @@ import { ReportAssignmentService } from 'src/app/core/services/report-assignment
 import { TransferModalComponent } from '../transfer-modal/transfer-modal.component';
 import { PageResult } from 'src/app/core/models/page-result';
 import { subDays } from 'date-fns';
+import { AssignmentHistoryModalComponent } from '../assignment-history-modal/assignment-history-modal.component';
 
 @Component({
   selector: 'app-report-assignment',
@@ -46,6 +47,8 @@ export class ReportAssignmentComponent implements OnInit {
       doctorId: [''],
       status: [''],
       assignType: [''],
+      onlySystemAssigned: [false],
+      onlyFailedAssignments:[false],
       dateRange: [[]],
       startDate: [this.yesterday],  // 默认开始日期为昨天
       endDate: [this.today],        // 默认结束日期为今天
@@ -146,7 +149,12 @@ export class ReportAssignmentComponent implements OnInit {
     });
   }
 
-
+  getSystemAssignmentStatusColor(data: ReportAssignmentDTO): string {
+    if (data.isProcessed === '0') {
+      return 'error';
+    }
+    return 'success';
+  }
 
   onPageChange(pageIndex: number): void {
     this.pageIndex = pageIndex;
@@ -198,7 +206,7 @@ export class ReportAssignmentComponent implements OnInit {
         reason
       };
     });
-    console.log(recallSummary);
+    //console.log(recallSummary);
     const validRowsToRecall = recallSummary.filter(row => row.canRecall);
     if (validRowsToRecall.length === 0) {
       this.message.warning('没有可以召回的报告');
@@ -244,7 +252,9 @@ export class ReportAssignmentComponent implements OnInit {
       startDate: formValue.examDateRange ? formValue.examDateRange[0] : this.yesterday,
       endDate: formValue.examDateRange ? formValue.examDateRange[1] : this.today,
       pageIndex: this.pageIndex,
-      pageSize: this.pageSize
+      pageSize: this.pageSize,
+      onlySystemAssigned: formValue.onlySystemAssigned,
+      onlyFailedAssignments: formValue.onlyFailedAssignments,
     };
   }
   setOfCheckedId = new Set<string>();
@@ -265,4 +275,59 @@ export class ReportAssignmentComponent implements OnInit {
       this.onItemChecked(item.risNo, checked)
     );
   }
+  showAssignmentHistory(data: ReportAssignmentDTO): void {
+    this.modal.create({
+      nzTitle: `分配历史 - ${data.patientName}`,
+      nzContent: AssignmentHistoryModalComponent,
+      nzWidth: 1000,
+      nzComponentParams: {
+        risNo: data.risNo,
+        doctorList: this.doctorList
+      },
+      nzFooter: null
+    });
+  }
+  loadErrorAssignments(): void {
+    this.loading = true;
+    const query = this.getSearchParams();
+    
+    this.reportAssignmentService.getErrorAssignments(query).subscribe(
+      data => {
+        const pageResult = data as any as PageResult<ReportAssignmentDTO[]>;
+        this.assignments = [...pageResult.data];
+        this.totalPage = pageResult.total;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error => {
+        this.message.error('加载数据失败');
+        this.loading = false;
+      }
+    );
+  }
+  retryAssignments(): void {
+    if (this.selectedRows.length === 0) {
+      this.message.warning('请选择需要重新尝试分配的报告');
+      return;
+    }
+
+    this.modal.confirm({
+      nzTitle: '确认重新尝试分配',
+      nzContent: '确定要重新尝试分配选中的报告吗？',
+      nzOnOk: () => {
+        const lastLogIds = this.selectedRows
+          .filter(row => row.lastLogId)
+          .map(row => row.lastLogId!);
+
+        return this.reportAssignmentService.retryAssignments(lastLogIds)
+          .toPromise()
+          .then(() => {
+            this.message.success('重新分配成功');
+            this.loadData();
+          });
+      }
+    });
+  }
+
+  
 }

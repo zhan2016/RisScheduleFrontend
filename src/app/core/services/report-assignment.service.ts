@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BatchAssignDTO, ReCallDTO, ReportAssignmentDTO, ReportAssignmentQueryDTO } from '../models/report-assignment';
+import { AssignmentHistoryDTO, BatchAssignDTO, ReCallDTO, ReportAssignmentDTO, ReportAssignmentQueryDTO } from '../models/report-assignment';
 import * as saveAs from 'file-saver';
 
 @Injectable({
@@ -66,5 +66,30 @@ export class ReportAssignmentService {
   getDoctorSchedules(date: Date): Observable<any[]> {
     const params = new HttpParams().set('date', date.toISOString());
     return this.http.get<any[]>(`${this.baseUrl}/doctorSchedules`, { params });
+  }
+  getAssignmentHistory(risNo: string): Observable<AssignmentHistoryDTO[]> {
+    return this.http.get<AssignmentHistoryDTO[]>(`${this.baseUrl}/${risNo}/history`);
+  }
+  
+  // 查询分配异常的报告
+  getErrorAssignments(query: ReportAssignmentQueryDTO): Observable<ReportAssignmentDTO[]> {
+    return this.http.get<ReportAssignmentDTO[]>(`${this.baseUrl}/errors`, { params: this.buildParams(query) });
+  }
+  private buildParams(query: any): HttpParams {
+    let params = new HttpParams();
+    Object.keys(query).forEach(key => {
+      const value = query[key];
+      if (value !== null && value !== undefined && value !== '') {
+        if (value instanceof Date) {
+          params = params.set(key, value.toISOString());
+        } else {
+          params = params.set(key, value.toString());
+        }
+      }
+    });
+    return params;
+  }
+  retryAssignments(lastLogIds: string[]): Observable<any> {
+    return this.http.post(`${this.baseUrl}/retry`, { assignmentIds: lastLogIds });
   }
 }
