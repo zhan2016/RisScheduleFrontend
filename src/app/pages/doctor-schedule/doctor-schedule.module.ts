@@ -11,8 +11,6 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 import { ScheduleFilterPipe } from 'src/app/core/pipes/schedule.pipe';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { NzSpaceModule } from 'ng-zorro-antd/space';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -69,10 +67,6 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzInputModule,
     NzInputNumberModule,
     NzSwitchModule,
-    CalendarModule.forRoot({
-      provide: DateAdapter,
-      useFactory: adapterFactory
-    })
   ]
 })
 export class DoctorScheduleModule { }

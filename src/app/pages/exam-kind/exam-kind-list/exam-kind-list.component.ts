@@ -163,7 +163,10 @@ export class ExamKindListComponent implements OnInit {
         return;
       }
     }
-
+    if (this.editingCategory.categoryType === '4' && this.editingCategory.content) {
+      //sql类型
+      this.editingCategory.content = this.editingCategory.content.trim();
+    }
     const request = this.editingCategory.categoryId ?
       this.examCategoryService.update(this.editingCategory.categoryId, this.editingCategory) :
       this.examCategoryService.create(this.editingCategory);

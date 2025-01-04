@@ -1,0 +1,42 @@
+<app-layout>
+    <div class="parent-container">
+        <div class="header-bar">
+            <form [formGroup]="searchForm" class="tool-container">
+                <button class="serch-button" mat-icon-button matSuffix (click)="search()">
+                    <mat-icon>search</mat-icon>
+                </button>
+                <mat-form-field class="search-filter-item">
+                    <mat-label>检查时间范围</mat-label>
+                    <mat-date-range-input class="search-input" [formGroup]="searchForm" [rangePicker]="picker">
+                        <input matStartDate formControlName="startTime" placeholder="开始"
+                            [(ngModel)]="startTime">/>
+                        <input matEndDate formControlName="endTime" placeholder="结束" [(ngModel)]="endTime">/>
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker [calendarHeaderComponent]="CustomDatepickerHeaderComponent"
+                        [touchUi]="true">
+                    </mat-date-range-picker>
+                </mat-form-field>
+            </form>
+            <div>
+                <button mat-stroked-button color="primary" (click)="searchFitter()">筛选</button>
+                <button mat-stroked-button color="primary" (click)="onBtExport()" class="export-btn">
+                    导出
+                </button>
+            </div>
+        </div>
+        <div style="width: 100%; height: 100%;">
+            <div class="data-table-loading-indicator" *ngIf="requesting">
+                <mat-spinner *ngIf="requesting"></mat-spinner>
+            </div>
+            <ag-grid-angular [localeText]="localeText"style="width: 100%; height: 100%; flex: 1 1 0px;" [defaultColDef]="defaultColDef"
+                [rowData]="rowData" class="ag-theme-alpine" [columnDefs]="columnDefs" (gridReady)="onGridReady($event)"
+                (firstDataRendered)="onFirstDataRendered($event)">
+            </ag-grid-angular>
+        </div>
+    </div>
+    <div class="pagination">
+        <mat-paginator #paginator [pageIndex]="pageIndex" [pageSizeOptions]="[5, 10, 20, 30, 50]" showFirstLastButtons
+          [pageSize]="limit" (page)="changeSearchResultPage($event)" [length]="length"></mat-paginator>
+    </div>
+</app-layout>

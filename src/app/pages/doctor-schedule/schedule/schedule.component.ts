@@ -7,7 +7,6 @@ import { Observable, Subject, forkJoin } from 'rxjs';
 import { DoctorSchedule, ScheduleQueryDTO, ScheduleSaveDTO, ScheduleView, ShiftSummary } from 'src/app/core/models/doctor-shedule';
 import { ShiftType } from 'src/app/core/models/shift';
 import { ScheduleService } from 'src/app/core/services/schedule.service';
-import { EventColor } from 'calendar-utils';
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 import {
   startOfDay,
@@ -31,12 +30,6 @@ import {
   eachDayOfInterval,
 } from 'date-fns';
 import {} from 'date-fns-tz';
-import {
-  CalendarEvent,
-  CalendarEventAction,
-  CalendarEventTimesChangedEvent,
-  CalendarView,
-} from 'angular-calendar';
 import { ExamUser } from 'src/app/core/models/common-models';
 import { UserService } from 'src/app/core/services/user.service';
 import zhCN from 'date-fns/locale/zh-CN';
@@ -48,20 +41,6 @@ import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { map } from 'rxjs/operators';
 import { PageResult } from 'src/app/core/models/page-result';
 
-const colors: Record<string, EventColor> = {
-  red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3',
-  },
-  blue: {
-    primary: '#1e90ff',
-    secondary: '#D1E8FF',
-  },
-  yellow: {
-    primary: '#e3bc08',
-    secondary: '#FDF1BA',
-  },
-};
 
 @Component({
   selector: 'app-schedule',

@@ -1,0 +1,24 @@
+.parent-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+.header-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 20px;
+}
+.export-btn {
+    margin-inline-start: 8px;
+}
+.regular-image-container {
+    width: 800px;
+}
+.search-input {
+    width: 80%;
+    margin-right: 20px;
+    border-bottom: solid rgb(212, 211, 208) 1px;
+  }

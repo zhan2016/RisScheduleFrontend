@@ -87,6 +87,9 @@ export class ReportGroupListComponent implements OnInit {
   }
 
   handleOk(): void {
+    if (this.editingGroup.customSql) {
+      this.editingGroup.customSql = this.editingGroup.customSql.trim();
+    }
     if (this.editingGroup.groupId) {
       this.reportGroupService.updateReportGroup(this.editingGroup as ReportGroup).subscribe(
         () => {

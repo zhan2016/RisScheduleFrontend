@@ -23,6 +23,7 @@ export interface ReportAssignmentQueryDTO {
 export interface ReportAssignmentDTO {
     assignmentId?: string;
     risNo: string;
+    patientLocalId?: string;
     // 关联的检查信息
     patientName: string;
     patientId: string;

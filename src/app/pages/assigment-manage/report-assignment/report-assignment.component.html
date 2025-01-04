@@ -51,7 +51,7 @@
               <nz-form-control>
                 <nz-select formControlName="modality" nzAllowClear nzPlaceHolder="请选择检查类别">
                   <nz-option nzValue="CT" nzLabel="CT"></nz-option>
-                  <nz-option nzValue="MR" nzLabel="MR"></nz-option>
+                  <nz-option nzValue="MRI" nzLabel="MRI"></nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
@@ -117,98 +117,22 @@
     </div>
   
     <!-- 数据表格 -->
-    <nz-table
-      #basicTable
-      [nzData]="assignments"
-      [nzLoading]="loading"
-      [nzFrontPagination]="false"
-      [nzShowSizeChanger]="true"
-      [nzShowPagination]="true"
-      [nzShowTotal]="totalTemplate"
-      [nzPaginationPosition]="'bottom'"
-      [nzBordered]="true"
-      [nzTotal]="totalPage"
-      [nzPageSize]="pageSize"
-      [nzPageIndex]="pageIndex"
-      (nzPageIndexChange)="onPageChange($event)"
-      (nzPageSizeChange)="onPageSizeChange($event)"
-      [nzScroll]="{ x: '2000px', y: 'calc(100vh - 280px)' }"
-    >
-    <thead>
-      <tr>
-        <th nzWidth="60px"
-            [nzChecked]="false"
-            [nzIndeterminate]="false"
-            (nzCheckedChange)="onAllChecked($event)">
-        </th>
-        <th nzWidth="100px">患者姓名</th>
-        <th nzWidth="100px">患者ID</th>
-        <th nzWidth="80px">检查类别</th>
-        <th nzWidth="120px">检查部位</th>
-        <th nzWidth="100px">检查来源</th>
-        <th nzWidth="160px">检查时间</th>
-        <th nzWidth="140px">初步报告分配医生</th>
-        <th nzWidth="160px">初步报告分配时间</th>
-        <th nzWidth="140px">审核报告分配医生</th>
-        <th nzWidth="160px">审核报告分配时间</th>
-        <th nzWidth="100px">记录创建人</th>
-        <th nzWidth="100px">最后修改人</th>
-        <th nzWidth="120px" nzRight="300px">系统分配状态</th>
-        <th nzWidth="80px" nzRight="220px">尝试次数</th>
-        <th nzWidth="120px" nzRight="100px">最近失败原因</th>
-        <th nzWidth="100px" nzRight="0px">操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let data of basicTable.data">
-        <td
-          [nzChecked]="setOfCheckedId.has(data.risNo)"
-          (nzCheckedChange)="onItemChecked(data.risNo, $event)">
-        </td>
-        <td>{{ data.patientName }}</td>
-        <td>{{ data.patientId }}</td>
-        <td>{{ data.modality }}</td>
-        <td>{{ data.examSubClass }}</td>
-        <td>{{ data.patientSource }}</td>
-        <td>{{ data.examDateTime | date:'yyyy-MM-dd HH:mm:ss'  }}</td>
-
-        <td>{{ getDoctorName(data.preliminaryDoctorId) }}</td>
-        <td>{{ data.preliminaryAssignTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-        <td>{{ getDoctorName(data.reviewDoctorId) }}</td>
-        <td>{{ data.reviewAssignTime | date:'yyyy-MM-dd HH:mm:ss' }}</td>
-        <td>{{ getDoctorName(data.createUser) }}</td>
-        <td>{{ getDoctorName(data.updateUser)}}</td>
-        <!-- <td>
-          <nz-tag [nzColor]="getStatusColor(data.preliminaryDoctorId, data.reviewDoctorId)">
-            {{ getStatusText(data.status, data.preliminaryDoctorId, data.reviewDoctorId) }}
-          </nz-tag>
-        </td> -->
-        <td nzRight="300px">
-          <nz-tag [nzColor]="getSystemAssignmentStatusColor(data)">
-            {{ data.systemAssignmentStatus }}
-          </nz-tag>
-        </td>
-        <td nzRight="220px">
-          <span *ngIf="data.retryCount! > 0" nz-tooltip [nzTooltipTitle]="'已重试' + data.retryCount + '次'">
-            {{ data.retryCount }}
-          </span>
-        </td>
-        <td nzRight="100px">
-          <span *ngIf="data.errorMsg" 
-                nz-tooltip 
-                [nzTooltipTitle]="data.errorMsg"
-                class="error-msg-cell">
-            {{ data.errorMsg }}
-          </span>
-        </td>
-        <td nzRight="0px">
-          <a (click)="showAssignmentHistory(data)">分配历史</a>
-        </td>
-        <!-- <td>{{ data.assignType === '1' ? '初步报告' : '审核报告' }}</td> -->
-      </tr>
-    </tbody>
-  </nz-table>
-  <ng-template #totalTemplate let-total>共有 {{ total }} 条记录</ng-template>
+    <ag-grid-angular
+    [localeText]="localeText"
+    class="ag-theme-alpine"
+    [gridOptions]="gridOptions"
+    [rowData]="assignments"
+    [columnDefs]="columnDefs"
+    [defaultColDef]="defaultColDef"
+    [rowSelection]="'multiple'"
+    [suppressRowClickSelection]="true"
+    [pagination]="true"
+    [paginationPageSize]="pageSize"
+    (gridReady)="onGridReady($event)"
+    (selectionChanged)="onSelectionChanged($event)"
+    [style.height]="'calc(100vh - 280px)'"
+  >
+  </ag-grid-angular>
   </div>
 
   

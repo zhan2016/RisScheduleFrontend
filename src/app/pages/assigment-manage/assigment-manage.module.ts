@@ -22,11 +22,17 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { AssignmentHistoryModalComponent } from './assignment-history-modal/assignment-history-modal.component';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { EllipsisCellComponent } from './ellipsis-cell/ellipsis-cell.component';
+import { AgGridModule } from 'ag-grid-angular';
+import { StatusTagComponent } from './status-tag/status-tag.component';
+
 @NgModule({
   declarations: [
     ReportAssignmentComponent,
     TransferModalComponent,
-    AssignmentHistoryModalComponent
+    AssignmentHistoryModalComponent,
+    EllipsisCellComponent,
+    StatusTagComponent
   ],
   imports: [
     CommonModule,
@@ -47,7 +53,9 @@ import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
     NzPaginationModule,
     NzDatePickerModule,
     NzCheckboxModule,
-    NzToolTipModule
+    NzToolTipModule,
+    NzToolTipModule,
+    AgGridModule.withComponents([]),
   ]
 })
 export class AssigmentManageModule { }

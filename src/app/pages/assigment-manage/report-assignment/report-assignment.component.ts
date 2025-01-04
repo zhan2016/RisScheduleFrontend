@@ -10,7 +10,11 @@ import { TransferModalComponent } from '../transfer-modal/transfer-modal.compone
 import { PageResult } from 'src/app/core/models/page-result';
 import { subDays } from 'date-fns';
 import { AssignmentHistoryModalComponent } from '../assignment-history-modal/assignment-history-modal.component';
-
+import { EllipsisCellComponent } from '../ellipsis-cell/ellipsis-cell.component';
+import { ColDef, GridApi } from 'ag-grid-enterprise';
+import { CellClickedEvent, GridOptions, GridReadyEvent, ICellRendererParams, IDatasource, IGetRowsParams } from 'ag-grid-community';
+import { StatusTagComponent } from '../status-tag/status-tag.component';
+import { AG_GRID_LOCALE_INTERNATIONALIZATION } from '../aggrid-internationalization';
 @Component({
   selector: 'app-report-assignment',
   templateUrl: './report-assignment.component.html',
@@ -25,10 +29,199 @@ export class ReportAssignmentComponent implements OnInit {
   isTransferModalVisible = false;
   totalPage = 0; // 数据总数
   pageIndex = 1; // 当前页码
-  pageSize = 10; // 每页条数
+  pageSize = 50; // 每页条数
   today: Date = new Date();
   yesterday: Date = subDays(this.today, 1); // 获取昨天的日期
   initDateRangeValue = [this.yesterday, this.today];
+  public localeText = AG_GRID_LOCALE_INTERNATIONALIZATION;
+  private gridApi!: GridApi;
+  columnDefs: ColDef[] = [
+    {
+      headerName: '',
+      field: 'checkbox',
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+      width: 60,
+      pinned: 'left'
+    },
+    { field: 'patientName', headerName: '患者姓名', width: 100 },
+    { field: 'patientId', headerName: '患者ID', width: 100 },
+    { field: 'risNo', headerName: '检查流水号', width: 100 },
+    { field: 'patientLocalId', headerName: '影像号', width: 100 },
+    { field: 'modality', headerName: '检查类别', width: 80 },
+    { field: 'examSubClass', headerName: '检查部位', width: 120 },
+    { field: 'patientSource', headerName: '检查来源', width: 100 },
+    { 
+      field: 'examDateTime', 
+      headerName: '检查时间', 
+      width: 160,
+      valueFormatter: params => {
+        return params.value ? new Date(params.value).toLocaleString() : '';
+      }
+    },
+    { 
+      field: 'preliminaryDoctorId', 
+      headerName: '初步报告分配医生',
+      width: 140,
+      valueFormatter: params => this.getDoctorName(params.value)
+    },
+    {
+      field: 'preliminaryAssignTime',
+      headerName: '初步报告分配时间',
+      width: 160,
+      valueFormatter: params => {
+        return params.value ? new Date(params.value).toLocaleString() : '';
+      }
+    },
+    { 
+      field: 'reviewDoctorId', 
+      headerName: '审核报告分配医生',
+      width: 140,
+      valueFormatter: params => this.getDoctorName(params.value)
+    },
+    {
+      field: 'reviewAssignTime',
+      headerName: '审核报告分配时间',
+      width: 160,
+      valueFormatter: params => {
+        return params.value ? new Date(params.value).toLocaleString() : '';
+      }
+    },
+    { 
+      field: 'createUser', 
+      headerName: '记录创建人',
+      width: 100,
+      valueFormatter: params => this.getDoctorName(params.value)
+    },
+    { 
+      field: 'updateUser', 
+      headerName: '最后修改人',
+      width: 100,
+      valueFormatter: params => this.getDoctorName(params.value)
+    },
+    {
+      field: 'systemAssignmentStatus',
+      headerName: '系统分配状态',
+      width: 150,
+      pinned: 'right',
+      cellRenderer: 'statusTagComponent'
+    },
+    {
+      field: 'retryCount',
+      headerName: '尝试次数',
+      width: 80,
+      pinned: 'right',
+      cellRenderer: params => {
+        if (params.value > 0) {
+          return `<span title="已重试${params.value}次">${params.value}</span>`;
+        }
+        return '';
+      }
+    },
+    {
+      field: 'errorMsg',
+      headerName: '最近失败原因',
+      width: 120,
+      pinned: 'right',
+      tooltipField: 'errorMsg'
+    },
+    {
+      field: 'operation',
+      headerName: '操作',
+      width: 100,
+      pinned: 'right',
+      cellRenderer: params => {
+        return '<a class="grid-link">分配历史</a>';
+      },
+      onCellClicked: (event: CellClickedEvent) => {
+        this.showAssignmentHistory(event.data);
+      }
+    }
+  ];
+
+  defaultColDef = {
+    sortable: true,
+    resizable: true
+  };
+
+  getRowId = (params: any) => params.data.risNo;
+
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
+    // 设置 getRowNodeId
+    //this.gridApi.setGridOption('getRowNodeId', this.getRowNodeId);
+    this.loadData();
+  }
+  gridOptions: GridOptions = {
+    rowModelType: 'infinite', // 改为 infinite
+    enableCellTextSelection: true,
+    suppressRowClickSelection: true,
+    rowSelection: 'multiple',
+    pagination: true,
+    paginationPageSize: this.pageSize,
+    cacheBlockSize: this.pageSize, // 添加缓存块大小
+    maxConcurrentDatasourceRequests: 1, // 限制并发请求
+    infiniteInitialRowCount: 1, // 初始行数
+    getRowNodeId: (data: any) => {
+      return data.risNo;
+    },
+    defaultColDef: {
+      sortable: true,    // 启用排序
+      resizable: true,
+      sort: null
+    },
+    // 不要发送排序参数到服务器
+    sortingOrder: ['asc', 'desc', null]
+  };
+
+  // 单独定义 getRowNodeId 函数
+  public getRowNodeId = (data: any) => {
+    return data.risNo;
+  };
+  onSelectionChanged(event: any) {
+    this.selectedRows = this.gridApi.getSelectedRows();
+  }
+  loadData(reset: boolean = false): void {
+    if (reset) {
+      this.searchForm.reset({
+        examDateRange: [this.yesterday, this.today]
+      });
+      this.pageIndex = 1;
+    }
+    
+    const dataSource: IDatasource = {
+      getRows: (params: IGetRowsParams) => {
+        const query = this.getSearchParams();
+        // 计算开始行和结束行
+        const startRow = params.startRow;
+        const endRow = params.endRow;
+        
+        // 更新查询参数
+        query.pageIndex = Math.floor(startRow / this.pageSize) + 1;
+        query.pageSize = this.pageSize;
+        
+        this.loading = true;
+        
+        this.reportAssignmentService.getAssignments(query).subscribe({
+          next: (result: any) => {
+            params.successCallback(
+              result.data,
+              result.total
+            );
+            this.totalPage = result.total;
+            this.loading = false;
+          },
+          error: (error) => {
+            params.failCallback();
+            this.message.error('加载数据失败');
+            this.loading = false;
+          }
+        });
+      }
+    };
+
+    this.gridApi.setDatasource(dataSource);
+  }
   constructor(
     private fb: FormBuilder,
     private reportAssignmentService: ReportAssignmentService,
@@ -54,6 +247,12 @@ export class ReportAssignmentComponent implements OnInit {
       endDate: [this.today],        // 默认结束日期为今天
       examDateRange: [[this.yesterday, this.today]] // 默认日期范围为昨天到今天
     });
+    this.gridOptions = {
+      ...this.gridOptions,
+      frameworkComponents: {
+        statusTagComponent: StatusTagComponent
+      }
+    };
   }
   // 添加获取状态颜色的方法
   getStatusColor(preliminaryDoctorId: string | undefined, reviewDoctorId: string | undefined): string {
@@ -88,34 +287,34 @@ export class ReportAssignmentComponent implements OnInit {
     this.loadData();
   }
 
-  loadData(reset: boolean = false): void {
-    if (reset) {
-      this.searchForm.reset();
-      this.searchForm.reset({
-        examDateRange: [this.yesterday, this.today],  // 重置时默认选择昨天到今天
-      });
-      this.pageIndex = 1; // 重置页码
-    }
+  // loadData(reset: boolean = false): void {
+  //   if (reset) {
+  //     this.searchForm.reset();
+  //     this.searchForm.reset({
+  //       examDateRange: [this.yesterday, this.today],  // 重置时默认选择昨天到今天
+  //     });
+  //     this.pageIndex = 1; // 重置页码
+  //   }
     
-    this.loading = true;
-    const query = this.getSearchParams();
+  //   this.loading = true;
+  //   const query = this.getSearchParams();
     
-    this.reportAssignmentService.getAssignments(query).subscribe(
-      data => {
-        const pageResult = data as any as PageResult<ReportAssignmentDTO[]>;
-        this.assignments = [...pageResult.data];
-        // this.pageIndex = pageResult.page;
-        // this.pageSize = pageResult.pageSize;
-        this.totalPage = pageResult.total;
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error => {
-        this.message.error('加载数据失败');
-        this.loading = false;
-      }
-    );
-  }
+  //   this.reportAssignmentService.getAssignments(query).subscribe(
+  //     data => {
+  //       const pageResult = data as any as PageResult<ReportAssignmentDTO[]>;
+  //       this.assignments = [...pageResult.data];
+  //       // this.pageIndex = pageResult.page;
+  //       // this.pageSize = pageResult.pageSize;
+  //       this.totalPage = pageResult.total;
+  //       this.loading = false;
+  //       this.cdr.detectChanges();
+  //     },
+  //     error => {
+  //       this.message.error('加载数据失败');
+  //       this.loading = false;
+  //     }
+  //   );
+  // }
   trackById(index: number, item: any): any {
     return item.risNo; // 假设 risNo 是唯一标识符
   }
