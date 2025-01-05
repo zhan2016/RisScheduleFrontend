@@ -47,6 +47,7 @@ export class ReportAssignmentComponent implements OnInit {
     {
       headerName: '序号',
       field: 'sequenceNumber',
+      sortable: false, 
       width: 60,
       pinned: 'left',
       valueGetter: params => {
@@ -62,6 +63,14 @@ export class ReportAssignmentComponent implements OnInit {
     { field: 'modality', headerName: '检查类别', width: 80 },
     { field: 'examSubClass', headerName: '检查部位', width: 120 },
     { field: 'patientSource', headerName: '检查来源', width: 100 },
+    { 
+      field: 'baodaoDateTime', 
+      headerName: '报道时间', 
+      width: 160,
+      valueFormatter: params => {
+        return params.value ? new Date(params.value).toLocaleString() : '';
+      }
+    },
     { 
       field: 'examDateTime', 
       headerName: '检查时间', 

@@ -28,6 +28,7 @@ export interface ReportAssignmentDTO {
     assignmentId?: string;
     risNo: string;
     patientLocalId?: string;
+    baodaoDateTime?: Date; //报道时间
     // 关联的检查信息
     patientName: string;
     patientId: string;
