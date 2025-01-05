@@ -1,5 +1,8 @@
 // report-assignment.model.ts
-
+export interface SortModel {
+    colId: string;
+    sort: 'asc' | 'desc';
+  }
 // 报告分配查询DTO
 export interface ReportAssignmentQueryDTO {
     patientName?: string;
@@ -15,6 +18,7 @@ export interface ReportAssignmentQueryDTO {
     assignType?: string;
     startDate?: Date;
     endDate?: Date;
+    sortModel?: SortModel[]; // 修改为支持多字段排序
     pageIndex: number;
     pageSize: number;
 }

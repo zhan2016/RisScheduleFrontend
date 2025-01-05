@@ -44,10 +44,21 @@ export class ReportAssignmentComponent implements OnInit {
       width: 60,
       pinned: 'left'
     },
+    {
+      headerName: '序号',
+      field: 'sequenceNumber',
+      width: 60,
+      pinned: 'left',
+      valueGetter: params => {
+        // Calculate sequence number based on page size and current page
+        const page = Math.floor(params.node?.rowIndex! / this.pageSize);
+        return (page * this.pageSize) + params.node?.rowIndex! + 1;
+      }
+    },
     { field: 'patientName', headerName: '患者姓名', width: 100 },
     { field: 'patientId', headerName: '患者ID', width: 100 },
     { field: 'risNo', headerName: '检查流水号', width: 100 },
-    { field: 'patientLocalId', headerName: '影像号', width: 100 },
+    { field: 'patientLocalId', headerName: '影像号', width: 100, tooltipField: 'patientLocalId', },
     { field: 'modality', headerName: '检查类别', width: 80 },
     { field: 'examSubClass', headerName: '检查部位', width: 120 },
     { field: 'patientSource', headerName: '检查来源', width: 100 },
@@ -153,26 +164,60 @@ export class ReportAssignmentComponent implements OnInit {
     this.loadData();
   }
   gridOptions: GridOptions = {
-    rowModelType: 'infinite', // 改为 infinite
+    localeText: this.localeText,
+    rowModelType: 'infinite',
     enableCellTextSelection: true,
     suppressRowClickSelection: true,
     rowSelection: 'multiple',
     pagination: true,
     paginationPageSize: this.pageSize,
-    cacheBlockSize: this.pageSize, // 添加缓存块大小
-    maxConcurrentDatasourceRequests: 1, // 限制并发请求
-    infiniteInitialRowCount: 1, // 初始行数
+    cacheBlockSize: this.pageSize,
+    maxConcurrentDatasourceRequests: 1,
+    infiniteInitialRowCount: 1,
     getRowNodeId: (data: any) => {
       return data.risNo;
     },
     defaultColDef: {
-      sortable: true,    // 启用排序
+      sortable: true,
       resizable: true,
       sort: null
     },
-    // 不要发送排序参数到服务器
-    sortingOrder: ['asc', 'desc', null]
+    multiSortKey: 'ctrl', // 按住ctrl键可以进行多列排序
+    sortingOrder: ['asc', 'desc', null],
+    onGridReady: (params) => {
+      this.gridApi = params.api;
+      // 从localStorage加载排序状态
+      this.loadSortState();
+      this.loadData();
+    },
+    onSortChanged: (event: any) => {
+      // 保存排序状态到localStorage
+      this.saveSortState();
+      if (this.gridApi) {
+        this.gridApi.purgeInfiniteCache();
+      }
+    }
   };
+  private readonly SORT_STATE_KEY = 'reportAssignment_sortState';
+   // 保存排序状态到localStorage
+   private saveSortState(): void {
+    const sortModel = this.gridApi.getSortModel();
+    localStorage.setItem(this.SORT_STATE_KEY, JSON.stringify(sortModel));
+  }
+
+  // 从localStorage加载排序状态
+  private loadSortState(): void {
+    try {
+      const savedState = localStorage.getItem(this.SORT_STATE_KEY);
+      if (savedState) {
+        const sortModel = JSON.parse(savedState);
+        this.gridApi.setSortModel(sortModel);
+      }
+    } catch (error) {
+      console.error('Error loading sort state:', error);
+      localStorage.removeItem(this.SORT_STATE_KEY);
+    }
+  }
 
   // 单独定义 getRowNodeId 函数
   public getRowNodeId = (data: any) => {
@@ -183,6 +228,8 @@ export class ReportAssignmentComponent implements OnInit {
   }
   loadData(reset: boolean = false): void {
     if (reset) {
+      // localStorage.removeItem(this.SORT_STATE_KEY);
+      // this.gridApi.setSortModel(null);
       this.searchForm.reset({
         examDateRange: [this.yesterday, this.today]
       });
@@ -195,7 +242,13 @@ export class ReportAssignmentComponent implements OnInit {
         // 计算开始行和结束行
         const startRow = params.startRow;
         const endRow = params.endRow;
-        
+        const sortModel = params.sortModel;
+        if (sortModel && sortModel.length > 0) {
+          query.sortModel = sortModel.map((model:any) => ({
+            colId: model.colId,
+            sort: model.sort as 'asc' | 'desc'
+          }));
+        }
         // 更新查询参数
         query.pageIndex = Math.floor(startRow / this.pageSize) + 1;
         query.pageSize = this.pageSize;
@@ -509,7 +562,6 @@ export class ReportAssignmentComponent implements OnInit {
       this.message.warning('请选择需要重新尝试分配的报告');
       return;
     }
-
     this.modal.confirm({
       nzTitle: '确认重新尝试分配',
       nzContent: '确定要重新尝试分配选中的报告吗？',
@@ -517,7 +569,11 @@ export class ReportAssignmentComponent implements OnInit {
         const lastLogIds = this.selectedRows
           .filter(row => row.lastLogId)
           .map(row => row.lastLogId!);
-
+        if(lastLogIds.length === 0) {
+          //重试分配的日志已过期删除, 操作无效
+          this.message.warning('重试分配的日志已过期删除, 操作无效');
+          return;
+        }
         return this.reportAssignmentService.retryAssignments(lastLogIds)
           .toPromise()
           .then(() => {

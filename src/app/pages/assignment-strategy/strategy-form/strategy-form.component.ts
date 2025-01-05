@@ -53,13 +53,13 @@ export class StrategyFormComponent implements OnInit {
     this.form = this.fb.group({
       strategyName: [null, [Validators.required]],
       distributionMode: ['1', [Validators.required]],
-      onlineOnly: ['0'],
+      onlineOnly: [false],
       triggerPoint: ['1', [Validators.required]],
       reportScope: ['3', [Validators.required]],
       retryCount: [3, [Validators.required, Validators.min(0), Validators.max(10)]],
       retryInterval: [300, [Validators.required, Validators.min(0)]],
-      isDefault: ['0'],
-      isActive: ['1'],
+      isDefault: [false],
+      isActive: [true],
       description: [null],
       workloadMode: ['1'],
       preliminaryWeight: [1.0],
@@ -71,7 +71,13 @@ export class StrategyFormComponent implements OnInit {
     this.loading = true;
     this.strategyService.getStrategy(this.strategyId!).subscribe({
       next: (strategy) => {
-        this.form.patchValue(strategy);
+        const formValue = {
+          ...strategy,
+          isDefault: strategy.isDefault === '1',  // 转换为布尔值
+          isActive: strategy.isActive === '1',    // 转换为布尔值
+          onlineOnly: strategy.onlineOnly === '1' // 转换为布尔值
+        };
+        this.form.patchValue(formValue);
         this.loading = false;
       },
       error: (error) => {
@@ -89,13 +95,13 @@ export class StrategyFormComponent implements OnInit {
       const strategy: AssignmentStrategy = {
         strategyName: formValue.strategyName,
         distributionMode: formValue.distributionMode,
-        onlineOnly: formValue.onlineOnly ? '1' : '0',    // 确保是字符串
         triggerPoint: formValue.triggerPoint,
         reportScope: formValue.reportScope,
         retryCount: formValue.retryCount,
         retryInterval: formValue.retryInterval,
-        isDefault: formValue.isDefault ? '1' : '0',      // 确保是字符串
-        isActive: formValue.isActive === true ? '1' : '0', // 确保是字符串
+        isDefault: formValue.isDefault ? '1' : '0',
+        isActive: formValue.isActive ? '1' : '0',
+        onlineOnly: formValue.onlineOnly ? '1' : '0',
         description: formValue.description || '',         // null转为空字符串
         workloadMode: formValue.workloadMode || '1',
         preliminaryWeight: formValue.preliminaryWeight || 1.0,

@@ -24,7 +24,9 @@ export class StrategyListComponent implements OnInit {
   ngOnInit(): void {
     this.loadStrategies();
   }
-
+  trackById(index: number, item: any): any {
+    return item.strategyId; // 假设 strategyId 是唯一标识符
+  }
   loadStrategies(): void {
     this.loading = true;
     this.strategyService.getStrategies().subscribe({

@@ -14,6 +14,8 @@
         <tr>
           <th>策略名称</th>
           <th>分配模式</th>
+          <th>初步报告价值</th>
+          <th>审核报告价值</th>
           <th>仅在线分配</th>
           <th>触发时机</th>
           <th>报告范围</th>
@@ -26,9 +28,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of basicTable.data">
+        <tr *ngFor="let data of basicTable.data;trackBy:trackById">
           <td>{{ data.strategyName }}</td>
           <td>{{ data.distributionMode === '1' ? '平均模式' : '绩效模式' }}</td>
+          <td>{{ data.preliminaryWeight}}</td>
+          <td>{{ data.reviewWeight}}</td>
           <td>{{ data.onlineOnly === '1' ? '是' : '否' }}</td>
           <td>{{ data.triggerPoint === '1' ? '登记完成后' : '检查完成后' }}</td>
           <td>
@@ -52,7 +56,7 @@
           <td>
             <a [routerLink]="['./', data.strategyId]">编辑</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a nz-popconfirm nzPopconfirmTitle="确定删除?" (nzOnConfirm)="deleteStrategy(data.strategyId!)">删除</a>
+            <a (click)="deleteStrategy(data.strategyId!)">删除</a>
           </td>
         </tr>
       </tbody>

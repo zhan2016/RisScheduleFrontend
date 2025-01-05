@@ -14,21 +14,21 @@ export class ReportAssignmentService {
   constructor(private http: HttpClient) { }
 
   getAssignments(query: ReportAssignmentQueryDTO): Observable<ReportAssignmentDTO[]> {
-    let params = new HttpParams();
+    // let params = new HttpParams();
     
-    // 构建查询参数
-    Object.keys(query).forEach(key => {
-      const value = (query as any)[key];
-      if (value !== null && value !== undefined && value !== '') {
-        if (value instanceof Date) {
-          params = params.set(key, value.toISOString());
-        } else {
-          params = params.set(key, value.toString());
-        }
-      }
-    });
+    // // 构建查询参数
+    // Object.keys(query).forEach(key => {
+    //   const value = (query as any)[key];
+    //   if (value !== null && value !== undefined && value !== '') {
+    //     if (value instanceof Date) {
+    //       params = params.set(key, value.toISOString());
+    //     } else {
+    //       params = params.set(key, value.toString());
+    //     }
+    //   }
+    // });
 
-    return this.http.get<ReportAssignmentDTO[]>(this.baseUrl, { params });
+    return this.http.post<ReportAssignmentDTO[]>(this.baseUrl, query);
   }
 
   transferAssignments(dto: BatchAssignDTO): Observable<any> {

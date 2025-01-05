@@ -14,7 +14,7 @@
   
         <nz-form-item>
           <nz-form-label [nzSpan]="6" nzRequired>分配模式</nz-form-label>
-          <nz-form-control [nzSpan]="14">
+          <nz-form-control [nzSpan]="14" nzExtra="绩效模式将启用排班里面的医生权重，权重越大，分配越多" class="flex items-center gap-2">
             <nz-radio-group formControlName="distributionMode">
               <label nz-radio-button *ngFor="let mode of distributionModes" [nzValue]="mode.value">
                 {{mode.label}}
@@ -22,14 +22,37 @@
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
-  
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">写初步报告价值权重</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzExtra="权重值范围0-1，默认为1， 写一份初步报告的价值" class="flex items-center gap-2">
+            <nz-input-number 
+              formControlName="preliminaryWeight" 
+              [nzMin]="0" 
+              [nzStep]="0.1"
+              [nzPrecision]="1">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+        
+        <nz-form-item>
+          <nz-form-label [nzSpan]="6">写审核报告价值权重</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzExtra="权重值范围0-1，默认为1， 写一份审核报告的价值" class="flex items-center gap-2">
+            <nz-input-number 
+              formControlName="reviewWeight" 
+              [nzMin]="0" 
+              [nzStep]="0.1"
+              [nzPrecision]="1">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="6">仅在线分配</nz-form-label>
           <nz-form-control [nzSpan]="14">
-            <nz-switch formControlName="onlineOnly" [nzCheckedChildren]="'是'" [nzUnCheckedChildren]="'否'"
-              [ngModel]="form.get('onlineOnly')?.value === '1'"
-              (ngModelChange)="form.get('onlineOnly')?.setValue($event ? '1' : '0')">
-            </nz-switch>
+            <nz-switch 
+              formControlName="onlineOnly" 
+              [nzCheckedChildren]="'是'" 
+              [nzUnCheckedChildren]="'否'">
+          </nz-switch>
           </nz-form-control>
         </nz-form-item>
   
@@ -74,9 +97,10 @@
         <nz-form-item>
           <nz-form-label [nzSpan]="6">是否默认</nz-form-label>
           <nz-form-control [nzSpan]="14">
-            <nz-switch formControlName="isDefault" [nzCheckedChildren]="'是'" [nzUnCheckedChildren]="'否'"
-              [ngModel]="form.get('isDefault')?.value === '1'"
-              (ngModelChange)="form.get('isDefault')?.setValue($event ? '1' : '0')">
+            <nz-switch 
+              formControlName="isDefault" 
+              [nzCheckedChildren]="'是'" 
+              [nzUnCheckedChildren]="'否'">
             </nz-switch>
           </nz-form-control>
         </nz-form-item>
@@ -84,9 +108,10 @@
         <nz-form-item>
           <nz-form-label [nzSpan]="6">是否启用</nz-form-label>
           <nz-form-control [nzSpan]="14">
-            <nz-switch formControlName="isActive" [nzCheckedChildren]="'是'" [nzUnCheckedChildren]="'否'"
-              [ngModel]="form.get('isActive')?.value === '1'"
-              (ngModelChange)="form.get('isActive')?.setValue($event ? '1' : '0')">
+            <nz-switch 
+              formControlName="isActive" 
+              [nzCheckedChildren]="'是'" 
+              [nzUnCheckedChildren]="'否'">
             </nz-switch>
           </nz-form-control>
         </nz-form-item>
