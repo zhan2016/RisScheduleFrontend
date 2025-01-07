@@ -124,6 +124,7 @@ export class ReportAssignmentComponent implements OnInit {
       headerName: '系统分配状态',
       width: 150,
       pinned: 'right',
+      sortable: false, 
       cellRenderer: 'statusTagComponent'
     },
     {
@@ -131,6 +132,7 @@ export class ReportAssignmentComponent implements OnInit {
       headerName: '尝试次数',
       width: 80,
       pinned: 'right',
+      sortable: false, 
       cellRenderer: params => {
         if (params.value > 0) {
           return `<span title="已重试${params.value}次">${params.value}</span>`;
@@ -143,6 +145,7 @@ export class ReportAssignmentComponent implements OnInit {
       headerName: '最近失败原因',
       width: 120,
       pinned: 'right',
+      sortable: false, 
       tooltipField: 'errorMsg'
     },
     {
@@ -150,6 +153,7 @@ export class ReportAssignmentComponent implements OnInit {
       headerName: '操作',
       width: 100,
       pinned: 'right',
+      sortable: false, 
       cellRenderer: params => {
         return '<a class="grid-link">分配历史</a>';
       },
