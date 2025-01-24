@@ -24,7 +24,7 @@ export class ExamCategoryService {
     if (query?.categoryType) {
       params = params.set('categoryType', query.categoryType);
     }
-    return this.http.get<ExamCategory[]>(this.apiUrl, { params });
+    return this.http.get<ExamCategory[]>(this.apiUrl, {params});
   }
 
   getById(id: string): Observable<ExamCategory> {
