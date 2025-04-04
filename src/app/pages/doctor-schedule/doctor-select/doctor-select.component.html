@@ -1,0 +1,18 @@
+<nz-select 
+  [formControl]="control!"
+  [nzShowSearch]="true"
+  [nzServerSearch]="true"
+  [nzDisabled]="!shiftTypeId"
+  [nzMode]="multiple ? 'multiple' : 'default'"
+  [nzLoading]="isLoading"
+  (nzOnSearch)="onSearch($event)"
+  (ngModelChange)="onChange($event)">
+  <nz-option *ngIf="isLoading" nzDisabled nzCustomContent>
+    <i nz-icon nzType="loading" class="loading-icon"></i> 加载中...
+  </nz-option>
+  <nz-option
+    *ngFor="let doctor of doctors"
+    [nzValue]="doctor.id"
+    [nzLabel]="doctor.name">
+  </nz-option>
+</nz-select>

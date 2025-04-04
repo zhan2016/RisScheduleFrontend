@@ -18,7 +18,7 @@ export class AssigmentManageResolver implements Resolve<any> {
   }
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
     return forkJoin({
-      doctorList: this.scheduleService.getDoctors(),
+      doctorList: this.scheduleService.getMyDepartmentDoctors(),
       //reportGroups: this.reportGroupService.getReportGroups({ isActive: '1' })
     });
     //return of(true);

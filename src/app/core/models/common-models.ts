@@ -21,8 +21,8 @@ export interface PaginatedResponse<T> {
     DEMO = 'DEMO' 
   }
   export interface ExamUser {
-    userId: string,
-    userName: string,
+    id: string,
+    name: string,
     userRole?: string,
     
   }

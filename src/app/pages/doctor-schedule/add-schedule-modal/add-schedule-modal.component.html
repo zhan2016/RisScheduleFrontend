@@ -22,17 +22,12 @@
     <nz-form-item>
       <nz-form-label [nzSpan]="6">医生</nz-form-label>
       <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择医生'">
-        <nz-select 
-          formControlName="doctorId"
-          [nzShowSearch]="true"
-          [nzServerSearch]="true"
-          (nzOnSearch)="onDoctorSearch($event)">
-          <nz-option
-            *ngFor="let doctor of doctors"
-            [nzValue]="doctor.userId"
-            [nzLabel]="doctor.userName">
-          </nz-option>
-        </nz-select>
+        <!-- Replace app-doctor-selector with app-doctor-select -->
+        <app-doctor-select
+        [control]="doctorControl"
+        [shiftTypeId]="scheduleForm.get('shiftTypeId')?.value"
+        (doctorSelected)="onDoctorSelected($event)">
+        </app-doctor-select>
       </nz-form-control>
     </nz-form-item>
   </form>

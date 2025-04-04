@@ -45,7 +45,7 @@ export class AssignmentHistoryModalComponent implements OnInit {
     if(doctorId.toLowerCase() === 'system') {
       return "系统自动";
     }
-    const doctor = this.doctorList.find(d => d.userId === doctorId);
-    return doctor ? doctor.userName : '未知医生';
+    const doctor = this.doctorList.find(d => d.id === doctorId);
+    return doctor ? doctor.name : '未知医生';
   }
 }

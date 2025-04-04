@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { NzModalRef } from 'ng-zorro-antd/modal';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ScheduleService } from 'src/app/core/services/schedule.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ShiftType } from 'src/app/core/models/shift';
@@ -102,7 +102,13 @@ export class EditScheduleModalComponent implements OnInit {
       }
     });
   }
-
+  onDoctorSelected(doctorId: any) {
+    // 可以在这里处理医生选择后的逻辑
+    console.log('选中医生:', doctorId);
+  }
+  get doctorControl(): FormControl {
+    return this.scheduleForm.get('doctorId') as FormControl;
+  }
   // 格式化日期
   private formatDate(date: Date): string {
     if (!date) return '';

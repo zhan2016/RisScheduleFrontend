@@ -35,16 +35,17 @@ export class HomePageComponent implements OnInit {
   private initForm(): void {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', ]
+      passwordHash: ['', [Validators.required]],
+      timestamp:[null],
     });
   }
 
   login(): void {
     if (this.form.valid) {
       this.isLoading = true;
-      const { username, password } = this.form.value;
+      const { username, passwordHash } = this.form.value;
 
-      this.authService.login(username, password)
+      this.authService.login(username, passwordHash)
         .pipe(
           finalize(() => {
             this.isLoading = false;
@@ -64,7 +65,7 @@ export class HomePageComponent implements OnInit {
           error: (error) => {
             console.log(error, error);
             this.message.error(error.error?.message || '登录失败，请检查用户名和密码');
-            this.form.patchValue({ password: '' });
+            this.form.patchValue({ passwordHash: '' });
           }
         });
     } else {

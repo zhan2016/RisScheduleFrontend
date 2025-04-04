@@ -18,7 +18,7 @@
       <nz-form-label>初步报告医生</nz-form-label>
       <nz-form-control>
         <nz-select formControlName="preliminaryDoctorId" nzPlaceHolder="选择初步报告医生">
-          <nz-option *ngFor="let doctor of doctorList" [nzValue]="doctor.userId" [nzLabel]="doctor.userName"></nz-option>
+          <nz-option *ngFor="let doctor of doctorList" [nzValue]="doctor.id" [nzLabel]="doctor.name"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>
@@ -28,7 +28,7 @@
       <nz-form-label>审核报告医生</nz-form-label>
       <nz-form-control>
         <nz-select formControlName="reviewDoctorId" nzPlaceHolder="选择审核报告医生">
-          <nz-option *ngFor="let doctor of doctorList" [nzValue]="doctor.userId" [nzLabel]="doctor.userName"></nz-option>
+          <nz-option *ngFor="let doctor of doctorList" [nzValue]="doctor.id" [nzLabel]="doctor.name"></nz-option>
         </nz-select>
       </nz-form-control>
     </nz-form-item>

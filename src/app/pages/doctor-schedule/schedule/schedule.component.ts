@@ -575,7 +575,9 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
   showBatchScheduleModal() {
 
     forkJoin({
-      doctors: this.scheduleService.getDoctors().pipe(map(data => (data as any).data)),
+      doctors: this.scheduleService.getDoctors().pipe(map(data => {
+        return data;
+      })),
       shiftTypes: this.scheduleService.getShiftTypes()
     }).pipe(
       map(data => ({
@@ -584,6 +586,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       }))
     ).subscribe({
       next: (data) => {
+        console.log(data);
         const modalRef = this.modal.create({
           nzTitle: '批量排班',
           nzContent: BatchScheduleModalComponent,
@@ -669,7 +672,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
     }
     // 确保 doctors 和 shiftTypes 是数组
     forkJoin({
-      doctors: this.scheduleService.getDoctors().pipe(map(data => (data as any).data)),
+      doctors: this.scheduleService.getDoctors().pipe(map(data => (data as any))),
       shiftTypes: this.scheduleService.getShiftTypes()
     }).pipe(
       map(data => ({

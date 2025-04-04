@@ -119,8 +119,8 @@ export class AuthService extends BaseApiService {
     // 这里可以添加token有效性检查的逻辑
     return !!token;
   }
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<{ token: string; user: User }>('api/auth/login', { username, password })
+  login(username: string, passwordHash: string): Observable<LoginResponse> {
+    return this.http.post<{ token: string; user: User }>('api/auth/login', { username, passwordHash, timestamp: Math.floor(Date.now() / 1000) })
       .pipe(
         tap(response => {
           this.setSession(response);

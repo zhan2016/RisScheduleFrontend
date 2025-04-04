@@ -15,12 +15,13 @@
     <nz-form-item>
         <nz-form-label [nzSpan]="6" nzRequired>排班医生</nz-form-label>
         <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择排班医生'">
-          <nz-select formControlName="doctorIds" nzPlaceHolder="请选择医生" [nzMode]="'multiple'">
-            <nz-option *ngFor="let doc of doctorOptions" 
-                      [nzValue]="doc.userId" 
-                      [nzLabel]="doc.userName">
-            </nz-option>
-          </nz-select>
+          <app-doctor-select
+        [control]="doctorControl"
+        [shiftTypeId]="form.get('selectedShiftId')?.value"
+        [multiple]="true"
+        placeholder="请选择排班医生"
+        (doctorSelected)="onDoctorSelected($event)">
+      </app-doctor-select>
         </nz-form-control>
     </nz-form-item>
 

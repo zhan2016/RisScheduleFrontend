@@ -26,12 +26,12 @@
         <nz-form-item>
           <nz-form-label [nzSpan]="6">医生</nz-form-label>
           <nz-form-control [nzSpan]="14" [nzErrorTip]="'请选择医生'">
-            <nz-select formControlName="doctorId" nzPlaceHolder="请选择医生">
-              <nz-option *ngFor="let doc of doctors" 
-                        [nzValue]="doc.userId" 
-                        [nzLabel]="doc.userName">
-              </nz-option>
-            </nz-select>
+            <app-doctor-select
+            [control]="doctorControl"
+            placeholder="请选择排班医生"
+            [shiftTypeId]="scheduleForm.get('shiftTypeId')?.value"
+            (doctorSelected)="onDoctorSelected($event)">
+            </app-doctor-select>
           </nz-form-control>
         </nz-form-item>
   

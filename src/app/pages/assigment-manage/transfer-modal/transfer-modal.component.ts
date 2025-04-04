@@ -35,7 +35,7 @@ export class TransferModalComponent implements OnInit  {
       preliminaryDoctorId: [null],
       reviewDoctorId: [null]
     });
-  
+    console.log("doctorList", this.doctorList);
     // 初始化可见性
     this.isPreliminaryDoctorVisible = true;
     this.isReviewDoctorVisible = true;

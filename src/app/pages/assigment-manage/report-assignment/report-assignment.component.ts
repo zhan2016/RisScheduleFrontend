@@ -303,7 +303,7 @@ export class ReportAssignmentComponent implements OnInit {
       examSubClass: [''],
       examItemsstr:[''],
       patientSource: [''],
-      doctorId: [''],
+      doctorId: [null],
       status: [''],
       assignType: [''],
       onlySystemAssigned: [false],
@@ -349,7 +349,7 @@ export class ReportAssignmentComponent implements OnInit {
   
   ngOnInit(): void {
     const resolverData = this.route.snapshot.data['resolverData'];
-    this.doctorList = resolverData.doctorList.data;
+    this.doctorList = resolverData.doctorList;
     this.loadData();
   }
 
@@ -390,10 +390,11 @@ export class ReportAssignmentComponent implements OnInit {
     if(doctorId.toLowerCase() === 'system') {
       return "系统自动";
     }
-    const doctor = this.doctorList.find(d => d.userId === doctorId);
-    return doctor ? doctor.userName : '未知医生';
+    const doctor = this.doctorList.find(d => d.id === doctorId);
+    return doctor ? doctor.name : '未知医生';
   }
   onTransfer(): void {
+
     const modal = this.modal.create({
       nzTitle: '选择转发医生',
       nzContent: TransferModalComponent,

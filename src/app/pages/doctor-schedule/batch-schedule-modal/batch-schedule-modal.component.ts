@@ -1,10 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { addDays, eachDayOfInterval } from 'date-fns';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 import { ExamUser } from 'src/app/core/models/common-models';
 import { ShiftType } from 'src/app/core/models/shift';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ScheduleService } from 'src/app/core/services/schedule.service';
 
 @Component({
@@ -23,7 +24,8 @@ export class BatchScheduleModalComponent implements OnInit {
     private fb: FormBuilder,
     private modal: NzModalRef,
     private scheduleService: ScheduleService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -42,7 +44,10 @@ export class BatchScheduleModalComponent implements OnInit {
     });
   }
 
-
+  onDoctorSelected(doctorId: any) {
+    // 可以在这里处理医生选择后的逻辑
+    console.log('选中医生:', doctorId);
+  }
   onShiftSelectionChange() {
     //this.isAllShiftSelected = Object.values(this.selectedShifts).every(value => value);
   }
@@ -58,7 +63,10 @@ export class BatchScheduleModalComponent implements OnInit {
     
     return currentDate < today;
   };
-
+  get doctorControl(): FormControl {
+    return this.form.get('doctorIds') as FormControl;
+  }
+  
   onSubmit() {
     if (this.form.valid) {
       const formValue = this.form.value;
@@ -124,7 +132,7 @@ export class BatchScheduleModalComponent implements OnInit {
           doctorId,
           scheduleDate: day,
           shiftTypeId,
-          createUser: "system"
+          createUser: this.authService.getCurrentUser()?.id
         });
 
         // if (options.autoBalance) {

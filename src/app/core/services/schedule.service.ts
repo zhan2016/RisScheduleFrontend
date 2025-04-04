@@ -25,10 +25,17 @@ export class ScheduleService {
   }
 
   // 获取医生列表
-  getDoctors(): Observable<any[]> {
-    return this.http.get<any[]>('/api/doctor/list');
+  getDoctors(): Observable<any> {
+    console.log('getDoctors');
+    return this.http.get<any>('/api/doctor/list');
   }
-
+  getMyDepartmentDoctors(): Observable<any> {
+    return this.http.get<any>('/api/doctor/department-doctors');
+  }
+  getDoctorsByShiftType(shiftTypeId:string, search?:string): Observable<any> {
+    console.log('getDoctors');
+    return this.http.post<any>('/api/doctor/list/byShiftType', {shiftTypeId, search});
+  }
   // 获取排班列表
   getSchedules(query: ScheduleQueryDTO): Observable<ScheduleView[]> {
     let params = new HttpParams();

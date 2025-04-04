@@ -1,7 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { format, set } from 'date-fns';
 import { NzModalRef } from 'ng-zorro-antd/modal';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, finalize, takeUntil } from 'rxjs/operators';
 import { ExamUser } from 'src/app/core/models/common-models';
 import { ShiftType } from 'src/app/core/models/shift';
 import { ScheduleService } from 'src/app/core/services/schedule.service';
@@ -11,7 +13,7 @@ import { ScheduleService } from 'src/app/core/services/schedule.service';
   templateUrl: './add-schedule-modal.component.html',
   styleUrls: ['./add-schedule-modal.component.scss']
 })
-export class AddScheduleModalComponent implements OnInit {
+export class AddScheduleModalComponent implements OnInit, OnDestroy {
 
   @Input() scheduleDate!: Date;
   @Input() shiftTypes: ShiftType[] = [];
@@ -19,7 +21,10 @@ export class AddScheduleModalComponent implements OnInit {
 
   scheduleForm: FormGroup;
   doctors: ExamUser[] = []; // 根据实际的医生数据类型调整
-
+  isLoading = false;
+  
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
     private modalRef: NzModalRef,
@@ -37,24 +42,25 @@ export class AddScheduleModalComponent implements OnInit {
         shiftTypeId: this.selectedShiftType.shiftTypeId
       });
     }
-    this.loadDoctors();
+    
   }
-
-  loadDoctors(search: string = '') {
-    // 根据实际的 API 调整
-    this.userService.getDoctors().subscribe({
-      next: (res) => {
-        this.doctors = (res as any).data;
-      },
-      error: (err) => {
-        console.error('Failed to load doctors:', err);
-      }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+  onShiftTypeChange(shiftTypeId: string) {
+    this.scheduleForm.patchValue({
+      doctorId: null
     });
   }
-
-  onDoctorSearch(value: string): void {
-    this.loadDoctors(value);
+  onDoctorSelected(doctorId: any) {
+    // 可以在这里处理医生选择后的逻辑
+    console.log('选中医生:', doctorId);
   }
+  get doctorControl(): FormControl {
+    return this.scheduleForm.get('doctorId') as FormControl;
+  }
+  
 
   formatDate(date: Date): string {
     console.log(this.scheduleDate);

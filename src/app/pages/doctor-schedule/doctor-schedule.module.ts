@@ -32,6 +32,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { DoctorScheduleItemComponent } from './doctor-schedule-item/doctor-schedule-item.component';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { DoctorSelectComponent } from './doctor-select/doctor-select.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     BatchScheduleModalComponent,
     AddScheduleModalComponent,
     EditScheduleModalComponent,
-    DoctorScheduleItemComponent
+    DoctorScheduleItemComponent,
+    DoctorSelectComponent
   ],
   imports: [
     CommonModule,
