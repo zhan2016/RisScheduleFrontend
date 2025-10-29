@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Env } from 'env';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { finalize } from 'rxjs/operators';
@@ -20,7 +20,8 @@ export class HomePageComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private message: NzMessageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) {
     // 如果已经登录，直接跳转到主页面
     if (this.authService.isLoggedIn()) {
@@ -37,6 +38,13 @@ export class HomePageComponent implements OnInit {
       username: ['', [Validators.required]],
       passwordHash: ['', [Validators.required]],
       timestamp:[null],
+    });
+    this.route.queryParams.subscribe(q => {
+      const { username, password } = q;
+      if (username && password) {
+        this.form.setValue({ username, passwordHash: password, timestamp: null });
+        this.login();                       // 复用现有方法
+      }
     });
   }
 
@@ -57,9 +65,11 @@ export class HomePageComponent implements OnInit {
             
             // 根据用户角色跳转到不同页面
             if (this.authService.isAdmin()) {
-              this.router.navigate(['/']);
+              //this.router.navigate(['/']);
+               this.router.navigate(['/'], { replaceUrl: true });
             } else {
-              this.router.navigate(['/']);
+              //this.router.navigate(['/']);
+               this.router.navigate(['/'], { replaceUrl: true });
             }
           },
           error: (error) => {
