@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { addDays, eachDayOfInterval } from 'date-fns';
+import { addDays, eachDayOfInterval, startOfDay } from 'date-fns';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 import { ExamUser } from 'src/app/core/models/common-models';
 import { ShiftType } from 'src/app/core/models/shift';
 import { ScheduleService } from 'src/app/core/services/schedule.service';
+import { DateUtils } from 'src/app/core/utils/date-utils';
 
 @Component({
   selector: 'app-batch-schedule-modal',
@@ -13,7 +14,11 @@ import { ScheduleService } from 'src/app/core/services/schedule.service';
   styleUrls: ['./batch-schedule-modal.component.scss']
 })
 export class BatchScheduleModalComponent implements OnInit {
-
+  @Input() presetData?: {
+    dateRange: Date[];
+    doctorIds: string[];
+    selectedShiftId: string;
+  };
   form!: FormGroup;
   @Input() doctorOptions: any[] = [];
   isAllShiftSelected = false;
@@ -36,9 +41,18 @@ export class BatchScheduleModalComponent implements OnInit {
     const nextWeek = addDays(today, 7);
     
     this.form = this.fb.group({
-      dateRange: [[today, nextWeek], [Validators.required]],
-      doctorIds: [[], [Validators.required]],
-      selectedShiftId: [null, [Validators.required]],
+      dateRange: [
+        this.presetData?.dateRange || [today, nextWeek], 
+        [Validators.required]
+      ],
+      doctorIds: [
+        this.presetData?.doctorIds || [], 
+        [Validators.required]
+      ],
+      selectedShiftId: [
+        this.presetData?.selectedShiftId || null, 
+        [Validators.required]
+      ],
     });
   }
 
@@ -71,12 +85,10 @@ export class BatchScheduleModalComponent implements OnInit {
         formValue.selectedShiftId!,
         formValue
       );
-      this.scheduleService.batchSaveSchedules(schedules)
+      this.scheduleService.batchSaveSchedules(schedules as unknown as any)
         .subscribe(res => {
-          if(res.code === 200) {
-            this.message.success("批量创建成功");
+           this.message.success("批量创建成功");
             this.modal.close();
-          }
           //console.log(res);
         })
       //this.modal.close(schedules);
@@ -104,7 +116,7 @@ export class BatchScheduleModalComponent implements OnInit {
     const days = eachDayOfInterval({ start: startDate, end: endDate });
     const schedules: Array<{
       doctorId: string;
-      scheduleDate: Date;
+      scheduleDate: string;
       shiftTypeId: string;
       createUser?:string;
     }> = [];
@@ -116,13 +128,12 @@ export class BatchScheduleModalComponent implements OnInit {
       if (options.skipWeekend && (day.getDay() === 0 || day.getDay() === 6)) {
         continue;
       }
-
       // TODO: 节假日判断逻辑
 
       for (const doctorId of doctorIds) {
         schedules.push({
           doctorId,
-          scheduleDate: day,
+          scheduleDate: DateUtils.formatLocalDate(day),
           shiftTypeId,
           createUser: "system"
         });

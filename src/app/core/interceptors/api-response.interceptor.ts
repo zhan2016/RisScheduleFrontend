@@ -85,7 +85,7 @@ export class ApiResponseInterceptor implements HttpInterceptor {
               errorMessage = error.error?.message || '请求参数错误';
               break;
             case 500:
-              errorMessage = '服务器错误';
+              errorMessage = `服务器错误:${error.error?.message}`;
               break;
             default:
               errorMessage = error.error?.message || `服务器返回错误 (${error.status})`;
@@ -95,7 +95,6 @@ export class ApiResponseInterceptor implements HttpInterceptor {
         if (!this.isApiErrorHandled(error)) {
           this.message.error(errorMessage);
         }
-        
         return throwError(() => error);
       })
     );
@@ -106,12 +105,11 @@ export class ApiResponseInterceptor implements HttpInterceptor {
       && typeof body.code !== 'undefined'
       && typeof body.success !== 'undefined'
       && typeof body.message !== 'undefined'
-      && typeof body.data !== 'undefined';
   }
 
   private isApiErrorHandled(error: HttpErrorResponse): boolean {
     // 检查错误是否已经被处理过（避免重复显示错误消息）
-    return error.error instanceof ErrorEvent || error instanceof HttpErrorResponse && error.status === 0;
+    return error.error instanceof ErrorEvent || error instanceof HttpErrorResponse;
   }
   private decodeUnicode(str: string): string {
     try {

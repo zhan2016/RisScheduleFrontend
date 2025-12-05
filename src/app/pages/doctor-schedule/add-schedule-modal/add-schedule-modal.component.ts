@@ -44,7 +44,7 @@ export class AddScheduleModalComponent implements OnInit {
     // 根据实际的 API 调整
     this.userService.getDoctors().subscribe({
       next: (res) => {
-        this.doctors = (res as any).data;
+        this.doctors = res;
       },
       error: (err) => {
         console.error('Failed to load doctors:', err);
@@ -57,7 +57,7 @@ export class AddScheduleModalComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    console.log(this.scheduleDate);
+    //console.log(this.scheduleDate);
     return format(date, 'yyyy-MM-dd');
   }
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { ExamUser } from 'src/app/core/models/common-models';
+import { ExamUser, statusMap } from 'src/app/core/models/common-models';
 import { AssignmentHistoryDTO } from 'src/app/core/models/report-assignment';
 import { ReportAssignmentService } from 'src/app/core/services/report-assignment.service';
 
@@ -47,5 +47,29 @@ export class AssignmentHistoryModalComponent implements OnInit {
     }
     const doctor = this.doctorList.find(d => d.userId === doctorId);
     return doctor ? doctor.userName : '未知医生';
+  }
+
+  getAssignTypeText(assignType: string | undefined): string {
+    const typeMap: { [key: string]: string } = {
+      'PRELIMINARY_ONLY': '仅初审',
+      'REVIEW_ONLY': '仅复审',
+      'BOTH': '同时分配',
+      '': '-'
+    };
+    return typeMap[assignType || ''] || '-';
+  }
+
+  getAssignTypeColor(assignType: string | undefined): string {
+    const colorMap: { [key: string]: string } = {
+      'PRELIMINARY_ONLY': 'blue',
+      'REVIEW_ONLY': 'orange',
+      'BOTH': 'purple',
+      '': 'default'
+    };
+    return colorMap[assignType || ''] || 'default';
+  }
+
+  getStatusText(status: string | undefined): string {
+    return (statusMap as any)[status || ''] || status || '-';
   }
 }

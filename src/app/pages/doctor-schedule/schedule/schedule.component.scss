@@ -195,5 +195,21 @@
       }
     }
   }
+.batch-schedule-icon {
+  margin-left: auto;
+  cursor: pointer;
+  color: #1890ff;
+  font-size: 16px;
+  
+  &:hover {
+    color: #40a9ff;
+  }
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
   

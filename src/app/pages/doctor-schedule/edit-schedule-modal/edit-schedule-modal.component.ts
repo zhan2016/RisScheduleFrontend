@@ -81,8 +81,7 @@ export class EditScheduleModalComponent implements OnInit {
     this.scheduleService.updateSchedule(updatedSchedule).subscribe({
       next: (res) => {
         this.loading = false;
-        //console.log(res);
-        if (res.data) {
+        if (res) {
           this.ngZone.run(() => {
             this.modalRef.close({ 
               action: 'updateSchedule', 
@@ -92,7 +91,7 @@ export class EditScheduleModalComponent implements OnInit {
           });
           
         } else {
-          this.message.error(res.message || '修改失败');
+          this.message.error('修改失败');
         }
       },
       error: (err) => {

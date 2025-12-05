@@ -34,6 +34,32 @@
           </div>
           <div nz-col [nzSpan]="6">
             <nz-form-item>
+              <nz-form-label>报告状态</nz-form-label>
+              <nz-form-control>
+                <nz-select 
+                  formControlName="reportStatus" 
+                  nzMode="multiple"
+                  nzAllowClear 
+                  nzPlaceHolder="请选择报告状态">
+                  <nz-option nzValue="0" nzLabel="取消检查"></nz-option>
+                  <nz-option nzValue="3" nzLabel="报告退费"></nz-option>
+                  <nz-option nzValue="10" nzLabel="申请预约"></nz-option>
+                  <nz-option nzValue="20" nzLabel="预约确认"></nz-option>
+                  <nz-option nzValue="25" nzLabel="已叫号"></nz-option>
+                  <nz-option nzValue="30" nzLabel="检查确认"></nz-option>
+                  <nz-option nzValue="35" nzLabel="检查完成"></nz-option>
+                  <nz-option nzValue="38" nzLabel="未写报告"></nz-option>
+                  <nz-option nzValue="40" nzLabel="初步报告"></nz-option>
+                  <nz-option nzValue="44" nzLabel="审核未通过报告"></nz-option>
+                  <nz-option nzValue="45" nzLabel="审核报告"></nz-option>
+                  <nz-option nzValue="50" nzLabel="确认报告"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          
+          <div nz-col [nzSpan]="6">
+            <nz-form-item>
               <nz-form-label>分配来源</nz-form-label>
               <nz-form-control>
                 <label nz-checkbox formControlName="onlySystemAssigned">
@@ -115,24 +141,36 @@
         <i nz-icon nzType="download"></i>导出
       </button> -->
     </div>
-  
+
     <!-- 数据表格 -->
-    <ag-grid-angular
-    [localeText]="localeText"
-    class="ag-theme-alpine"
-    [gridOptions]="gridOptions"
-    [rowData]="assignments"
-    [columnDefs]="columnDefs"
-    [defaultColDef]="defaultColDef"
-    [rowSelection]="'multiple'"
-    [suppressRowClickSelection]="true"
-    [pagination]="true"
-    [paginationPageSize]="pageSize"
-    (gridReady)="onGridReady($event)"
-    (selectionChanged)="onSelectionChanged($event)"
-    [style.height]="'calc(100vh - 280px)'"
-  >
-  </ag-grid-angular>
+    <div class="grid-container">
+      <ag-grid-angular
+        [localeText]="localeText"
+        class="ag-theme-alpine"
+        [gridOptions]="gridOptions"
+        [rowData]="assignments"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [rowSelection]="'multiple'"
+        [suppressRowClickSelection]="true"
+        [pagination]="true"
+        [paginationPageSize]="pageSize"
+        (gridReady)="onGridReady($event)"
+        (selectionChanged)="onSelectionChanged($event)"
+        [style.height]="'100%'"
+      >
+      </ag-grid-angular>
+      
+      <div class="pagination-controls">
+        <span>每页显示：</span>
+        <nz-select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange($event)" style="width: 100px;">
+          <nz-option [nzValue]="20" nzLabel="20条"></nz-option>
+          <nz-option [nzValue]="50" nzLabel="50条"></nz-option>
+          <nz-option [nzValue]="100" nzLabel="100条"></nz-option>
+          <nz-option [nzValue]="200" nzLabel="200条"></nz-option>
+        </nz-select>
+      </div>
+    </div>
   </div>
 
   

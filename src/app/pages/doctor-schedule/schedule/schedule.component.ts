@@ -40,6 +40,7 @@ import { EditScheduleModalComponent } from '../edit-schedule-modal/edit-schedule
 import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { map } from 'rxjs/operators';
 import { PageResult } from 'src/app/core/models/page-result';
+import { DateUtils } from 'src/app/core/utils/date-utils';
 
 
 @Component({
@@ -156,12 +157,12 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       pageIndex: this.pageIndex,
       pageSize: this.pageSize
     };
-    console.log(params);
+    //console.log(params);
     this.loading = true;
     this.scheduleService.getSchedules(params).subscribe({
-      next: (res: any) => {
-        if (res.code === 200) {
-          this.tableData = (res.data as PageResult<ScheduleView[]>).data.map((schedule: any) => ({
+      next: (res) => {
+        if (res.data.length > 0) {
+          this.tableData = res.data.map((schedule: any) => ({
             key: schedule.scheduleId,
             scheduleDate: new Date(schedule.scheduleDate).toLocaleDateString(),
             doctorName: schedule.doctorName,
@@ -169,9 +170,9 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
             status: this.getStatusText(schedule.status),
             schedule: schedule
           }));
-          this.total = (res.data as PageResult<ScheduleView[]>).total;
+          this.total = (res.total);
         } else {
-          this.message.error(res.message || "获取排班失败");
+          this.message.info("未查询到排版信息");
         }
         this.loading = false;
       },
@@ -189,13 +190,9 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       nzOnOk: () => {
         this.scheduleService.batchDeleteSchedules(this.selectedSchedules).subscribe({
           next: (res) => {
-            if (res.code === 200) {
-              this.message.success('批量删除成功');
+             this.message.success('批量删除成功');
               this.selectedSchedules = [];
               this.loadTableData();
-            } else {
-              this.message.error(res.message || '批量删除失败');
-            }
           },
           error: (err) => {
             console.error('Failed to batch delete:', err);
@@ -223,11 +220,11 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
 
     this.scheduleService.batchSaveSchedules(nextWeekSchedules).subscribe({
       next: (res) => {
-        if (res.success) {
+        if (res) {
           this.message.success('复制到下周成功');
           this.loadSchedules();
         } else {
-          this.message.error(res.message || '复制失败');
+          this.message.error('复制失败');
         }
       },
       error: (err) => {
@@ -271,7 +268,61 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
   isIndeterminate(): boolean {
     return this.selectedSchedules.length > 0 && !this.isAllChecked();
   }
+  showBatchScheduleFromCell(
+    event: Event, 
+    dateLocal: Date, 
+    shift: ShiftType, 
+    doctors: any[]
+  ): void {
+    // 阻止事件冒泡，避免触发 onCellClick
+    event.stopPropagation();
+    
+    const today = new Date();
+    const nextWeek = addDays(today, 7);
+    
+    // 提取医生ID列表
+    const doctorIds = doctors.map(d => d.doctorId);
+    
+    forkJoin({
+      doctors: this.scheduleService.getDoctors().pipe(map(data => data)),
+      shiftTypes: this.scheduleService.getShiftTypes()
+    }).pipe(
+      map(data => ({
+        doctors: Array.isArray(data.doctors) ? data.doctors : [],
+        shiftTypes: Array.isArray(data.shiftTypes) ? data.shiftTypes : []
+      }))
+    ).subscribe({
+      next: (data) => {
+        const modalRef = this.modal.create({
+          nzTitle: '批量排班',
+          nzContent: BatchScheduleModalComponent,
+          nzWidth: 800,
+          nzComponentParams: {
+            doctorOptions: data.doctors,
+            shiftTypes: data.shiftTypes,
+            // 预设参数
+            presetData: {
+              dateRange: [today, nextWeek],
+              doctorIds: doctorIds,
+              selectedShiftId: shift.shiftTypeId
+            }
+          },
+          nzFooter: null,
+          nzOnOk: () => {}
+        });
 
+        modalRef.afterClose.subscribe(result => {
+          if (result?.action === 'updateSchedule') {
+            this.loadSchedules();
+          }
+        });
+      },
+      error: (error) => {
+        this.message.error('加载数据失败');
+        console.error('Error loading data:', error);
+      }
+    });
+  }
   loadShiftTypes() {
     this.scheduleService.getShiftTypes().subscribe({
       next: (res) => {
@@ -325,8 +376,9 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
 
     this.scheduleService.getSchedules(params).subscribe({
       next: (res) => {
+        //console.log(res, "res");
         if (res) {
-          this.schedules = ((res as any).data as PageResult<ScheduleView[]>).data;
+          this.schedules = ((res as any) as PageResult<ScheduleView[]>).data;
         } else {
           this.message.error("获取排班失败");
         }
@@ -363,17 +415,13 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       nzOnOk: (componentInstance: AddScheduleModalComponent) => {
         if (componentInstance.scheduleForm.valid) {
           const formValue = componentInstance.getFormValue();
+          formValue.scheduleDate = DateUtils.formatLocalDate(formValue.scheduleDate)
           return new Promise((resolve, reject) => {
             this.scheduleService.saveSchedule(formValue).subscribe({
               next: (res) => {
-                if (res.code === 200) {
                   this.message.success('添加排班成功');
                   this.loadSchedules();
                   resolve(true);
-                } else {
-                  this.message.error(res.message || '添加排班失败');
-                  reject(false);
-                }
               },
               error: (err) => {
                 console.error('Failed to add schedule:', err);
@@ -575,7 +623,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
   showBatchScheduleModal() {
 
     forkJoin({
-      doctors: this.scheduleService.getDoctors().pipe(map(data => (data as any).data)),
+      doctors: this.scheduleService.getDoctors().pipe(map(data => data)),
       shiftTypes: this.scheduleService.getShiftTypes()
     }).pipe(
       map(data => ({
@@ -669,7 +717,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
     }
     // 确保 doctors 和 shiftTypes 是数组
     forkJoin({
-      doctors: this.scheduleService.getDoctors().pipe(map(data => (data as any).data)),
+      doctors: this.scheduleService.getDoctors().pipe(map(data => data)),
       shiftTypes: this.scheduleService.getShiftTypes()
     }).pipe(
       map(data => ({
@@ -678,6 +726,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       }))
     ).subscribe({
       next: (data) => {
+        console.log("data", data);
         const modalRef = this.modal.create({
           nzTitle: '编辑排班信息',
           nzContent: EditScheduleModalComponent,

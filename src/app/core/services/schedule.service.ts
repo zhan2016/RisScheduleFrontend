@@ -6,17 +6,22 @@ import { ShiftType } from '../models/shift';
 import { DoctorSchedule, ScheduleQueryDTO, ScheduleSaveDTO, ScheduleView } from '../models/doctor-shedule';
 import { ShiftTypeService } from './shift-type.service';
 import { format } from 'date-fns';
+import { BaseApiService } from './base-api.service';
+import { ApiResponse } from '../interceptors/api-response.interceptor';
+import { PageResult } from '../models/page-result';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ScheduleService {
+export class ScheduleService extends BaseApiService {
   private baseUrl = '/api/schedule';
 
   constructor(
-    private http: HttpClient,
+    private httpClient: HttpClient,
     private shiftTypeApi: ShiftTypeService
-  ) {}
+  ) {
+    super(httpClient);
+  }
 
   // 获取班种列表
   getShiftTypes(): Observable<ShiftType[]> {
@@ -30,7 +35,7 @@ export class ScheduleService {
   }
 
   // 获取排班列表
-  getSchedules(query: ScheduleQueryDTO): Observable<ScheduleView[]> {
+  getSchedules(query: ScheduleQueryDTO): Observable<PageResult<ScheduleView[]>> {
     let params = new HttpParams();
     
     // 构建查询参数
@@ -45,7 +50,7 @@ export class ScheduleService {
       }
     });
 
-    return this.http.get<ScheduleView[]>(`${this.baseUrl}/list`, { params });
+    return this.http.get<PageResult<ScheduleView[]>>(`${this.baseUrl}/list`, { params });
   }
 
   // 保存排班
@@ -58,12 +63,12 @@ export class ScheduleService {
 
   // 批量保存排班
   batchSaveSchedules(schedules: DoctorSchedule[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/batch`, schedules);
+    return this.post(`${this.baseUrl}/batch`, schedules);
   }
 
   // 删除排班
   deleteSchedule(scheduleId: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${scheduleId}`);
+    return this.delete(`${this.baseUrl}/${scheduleId}`);
   }
   //批量删除
   batchDeleteSchedules(scheduleIds: string[]): Observable<any> {

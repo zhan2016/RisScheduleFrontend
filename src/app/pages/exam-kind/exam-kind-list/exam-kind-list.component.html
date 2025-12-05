@@ -173,12 +173,15 @@
             <nz-form-label [nzSpan]="6">内容</nz-form-label>
             <nz-form-control [nzSpan]="14">
               <div class="editor-container">
-                <ngx-monaco-editor
-                  [(ngModel)]="editingCategory!.content"
-                  [options]="editingCategory?.categoryType === '4' ? sqlEditorOptions : editorOptions"
-                  name="content"
-                  style="height: 200px;"
-                ></ngx-monaco-editor>
+            <textarea
+              nz-input
+              [(ngModel)]="editingCategory!.content"
+              name="content"
+              [nzAutosize]="{ minRows: 10, maxRows: 20 }"
+              [placeholder]="editingCategory?.categoryType === '4' ? '请输入SQL查询语句' : '请输入内容'"
+              [style.font-family]="editingCategory?.categoryType === '4' ? 'Consolas, Monaco, monospace' : 'inherit'"
+              [style.font-size]="editingCategory?.categoryType === '4' ? '13px' : 'inherit'">
+            </textarea>
                 <div class="editor-help">
                   <ng-container [ngSwitch]="editingCategory?.categoryType">
                     <span *ngSwitchCase="'1'">请输入检查类别ID列表的JSON格式</span>
@@ -201,7 +204,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="6">状态</nz-form-label>
             <nz-form-control [nzSpan]="14">
-              <nz-switch [(ngModel)]="editingCategory!.isActive" name="isActive" 
+              <nz-switch  [ngModel]="editingCategory!.isActive === '1'"  (ngModelChange)="editingCategory!.isActive = $event ? '1' : '0'"  name="isActive" 
                         [nzCheckedChildren]="'启用'" [nzUnCheckedChildren]="'禁用'">
               </nz-switch>
             </nz-form-control>

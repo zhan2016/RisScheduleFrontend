@@ -214,12 +214,14 @@
               <nz-form-label [nzSpan]="6">SQL语句</nz-form-label>
               <nz-form-control [nzSpan]="14">
                 <div class="editor-container">
-                  <ngx-monaco-editor
-                    [(ngModel)]="editingGroup!.customSql"
-                    name="customSql"
-                    [options]="sqlEditorOptions"
-                    style="height: 200px;">
-                  </ngx-monaco-editor>
+                 <textarea
+                  nz-input
+                  [(ngModel)]="editingGroup!.customSql"
+                  name="customSql"
+                  [nzAutosize]="{ minRows: 8, maxRows: 15 }"
+                  placeholder="请输入自定义SQL查询语句"
+                  style="font-family: 'Courier New', Consolas, monospace;">
+                </textarea>
                 </div>
               </nz-form-control>
             </nz-form-item>
@@ -228,7 +230,8 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="6">状态</nz-form-label>
             <nz-form-control [nzSpan]="14">
-              <nz-switch [(ngModel)]="editingGroup!.isActive" 
+              <nz-switch 
+                        [ngModel]="editingGroup!.isActive === '1'"  (ngModelChange)="editingGroup!.isActive = $event ? '1' : '0'"
                         name="isActive"
                         [nzCheckedChildren]="'启用'" 
                         [nzUnCheckedChildren]="'禁用'">

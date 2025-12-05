@@ -15,6 +15,20 @@ import { ColDef, GridApi } from 'ag-grid-enterprise';
 import { CellClickedEvent, GridOptions, GridReadyEvent, ICellRendererParams, IDatasource, IGetRowsParams } from 'ag-grid-community';
 import { StatusTagComponent } from '../status-tag/status-tag.component';
 import { AG_GRID_LOCALE_INTERNATIONALIZATION } from '../aggrid-internationalization';
+const statusMap = {
+  '0': '取消检查',
+  '3': '报告退费',
+  '10': '申请预约',
+  '20': '预约确认',
+  '25': '已叫号',
+  '30': '检查确认',
+  '35': '检查完成',
+  '38': '未写报告',
+  '40': '初步报告',
+  '44': '审核未通过报告',
+  '45': '审核报告',
+  '50': '确认报告'
+};
 @Component({
   selector: 'app-report-assignment',
   templateUrl: './report-assignment.component.html',
@@ -41,6 +55,7 @@ export class ReportAssignmentComponent implements OnInit {
       field: 'checkbox',
       checkboxSelection: true,
       headerCheckboxSelection: true,
+      sortable: false, 
       width: 60,
       pinned: 'left'
     },
@@ -58,6 +73,21 @@ export class ReportAssignmentComponent implements OnInit {
     },
     { field: 'patientName', headerName: '患者姓名', width: 100 },
     { field: 'patientId', headerName: '患者ID', width: 100 },
+    { field: 'resultStatus', headerName: '报告状态', width: 100, cellRenderer: (params) => {
+
+    
+    const statusText = (statusMap as any)[params.value] || params.value;
+    
+    // 根据状态添加不同颜色
+    const getStatusColor = (status:any) => {
+      if (status === "50") return '#52c41a'; // 确认报告
+      if (status === "0" || status === "3") return '#ff4d4f'; // 取消/退费
+      if (status === "44") return '#faad14'; // 审核未通过
+      return '#1890ff'; // 其他状态
+    };
+    
+    return `<span style="color: ${getStatusColor(params.value)}">${statusText}</span>`;
+  } },
     { field: 'risNo', headerName: '检查流水号', width: 100 },
     { field: 'patientLocalId', headerName: '影像号', width: 100, tooltipField: 'patientLocalId', },
     { field: 'modality', headerName: '检查类别', width: 80 },
@@ -179,12 +209,14 @@ export class ReportAssignmentComponent implements OnInit {
   gridOptions: GridOptions = {
     localeText: this.localeText,
     rowModelType: 'infinite',
-    enableCellTextSelection: true,
+    enableCellTextSelection: false,
     suppressRowClickSelection: true,
     rowSelection: 'multiple',
+    rowMultiSelectWithClick: false,
     pagination: true,
     paginationPageSize: this.pageSize,
     cacheBlockSize: this.pageSize,
+    suppressPaginationPanel: false,
     maxConcurrentDatasourceRequests: 1,
     infiniteInitialRowCount: 1,
     getRowNodeId: (data: any) => {
@@ -304,6 +336,7 @@ export class ReportAssignmentComponent implements OnInit {
       examItemsstr:[''],
       patientSource: [''],
       doctorId: [''],
+      reportStatus: [[] as string[]],
       status: [''],
       assignType: [''],
       onlySystemAssigned: [false],
@@ -320,6 +353,7 @@ export class ReportAssignmentComponent implements OnInit {
       }
     };
   }
+
   // 添加获取状态颜色的方法
   getStatusColor(preliminaryDoctorId: string | undefined, reviewDoctorId: string | undefined): string {
     if (!preliminaryDoctorId && !reviewDoctorId) {
@@ -349,7 +383,7 @@ export class ReportAssignmentComponent implements OnInit {
   
   ngOnInit(): void {
     const resolverData = this.route.snapshot.data['resolverData'];
-    this.doctorList = resolverData.doctorList.data;
+    this.doctorList = resolverData.doctorList;
     this.loadData();
   }
 
@@ -425,12 +459,16 @@ export class ReportAssignmentComponent implements OnInit {
     this.pageIndex = pageIndex;
     this.loadData();
   }
-
   onPageSizeChange(pageSize: number): void {
     this.pageSize = pageSize;
-    this.pageIndex = 1; // 页码重置为第一页
-    this.loadData();
+    this.gridApi.paginationSetPageSize(pageSize); // AG Grid 26.x 方法
+    this.gridApi.purgeInfiniteCache(); // 重新加载数据
   }
+  // onPageSizeChange(pageSize: number): void {
+  //   this.pageSize = pageSize;
+  //   this.pageIndex = 1; // 页码重置为第一页
+  //   this.loadData();
+  // }
   /*
   根据选中表格里的患者信息，生成召回sumarry，并允许去掉一些记录:没有分配记录，不允许召回
   如果ResultStatus大于等于审核报告，不允许召回，
@@ -513,6 +551,7 @@ export class ReportAssignmentComponent implements OnInit {
       patientSource: formValue.patientSource,
       doctorId: formValue.doctorId,
       status: formValue.status,
+      reportStatus: formValue.reportStatus,
       assignType: formValue.assignType,
       startDate: formValue.examDateRange ? formValue.examDateRange[0] : this.yesterday,
       endDate: formValue.examDateRange ? formValue.examDateRange[1] : this.today,

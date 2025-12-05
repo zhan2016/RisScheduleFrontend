@@ -18,6 +18,7 @@ export interface ReportAssignmentQueryDTO {
     assignType?: string;
     startDate?: Date;
     endDate?: Date;
+    reportStatus?: string[];
     sortModel?: SortModel[]; // 修改为支持多字段排序
     pageIndex: number;
     pageSize: number;
@@ -80,6 +81,7 @@ export interface AssignmentHistoryDTO {
     assignmentStatus: string;
     assignmentCreateUser: string;
     assignmentCreateTime?: Date;
+    assignType?: string;
     
     // 报告状态
     reportCreateUser?: string;

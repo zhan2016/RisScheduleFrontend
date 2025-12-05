@@ -72,6 +72,11 @@
                         <div class="summary-header">
                           <span class="shift-name">{{summary.shiftTypeName}}</span>
                           <span class="shift-time">{{summary.startTime}}-{{summary.endTime}}</span>
+                           <i nz-icon nzType="plus-circle" nzTheme="outline" 
+                            class="batch-schedule-icon"
+                            nzTooltip="批量排班"
+                            (click)="showBatchScheduleFromCell($event, day.dateLocal, shift, summary.doctors)">
+                          </i>
                         </div>
                         <div class="summary-info">
                           <span class="doctor-count">排班人数: {{summary.doctorCount}}</span>
