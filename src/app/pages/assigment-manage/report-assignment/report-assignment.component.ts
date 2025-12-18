@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { ExamUser } from 'src/app/core/models/common-models';
+import { ExamUser, statusMap } from 'src/app/core/models/common-models';
 import { ASSIGNMENT_STATUS, ASSIGNMENT_STATUS_TEXT, BatchAssignDTO, ReportAssignmentDTO, ReportAssignmentQueryDTO } from 'src/app/core/models/report-assignment';
 import { ReportAssignmentService } from 'src/app/core/services/report-assignment.service';
 import { TransferModalComponent } from '../transfer-modal/transfer-modal.component';
@@ -15,20 +15,7 @@ import { ColDef, GridApi } from 'ag-grid-enterprise';
 import { CellClickedEvent, GridOptions, GridReadyEvent, ICellRendererParams, IDatasource, IGetRowsParams } from 'ag-grid-community';
 import { StatusTagComponent } from '../status-tag/status-tag.component';
 import { AG_GRID_LOCALE_INTERNATIONALIZATION } from '../aggrid-internationalization';
-const statusMap = {
-  '0': '取消检查',
-  '3': '报告退费',
-  '10': '申请预约',
-  '20': '预约确认',
-  '25': '已叫号',
-  '30': '检查确认',
-  '35': '检查完成',
-  '38': '未写报告',
-  '40': '初步报告',
-  '44': '审核未通过报告',
-  '45': '审核报告',
-  '50': '确认报告'
-};
+
 @Component({
   selector: 'app-report-assignment',
   templateUrl: './report-assignment.component.html',
@@ -336,6 +323,7 @@ export class ReportAssignmentComponent implements OnInit {
       examItemsstr:[''],
       patientSource: [''],
       doctorId: [''],
+      assignedDoctorId: [''],
       reportStatus: [[] as string[]],
       status: [''],
       assignType: [''],
@@ -550,6 +538,7 @@ export class ReportAssignmentComponent implements OnInit {
       examItemsstr: formValue.examItemsstr,
       patientSource: formValue.patientSource,
       doctorId: formValue.doctorId,
+      assignedDoctorId: formValue.assignedDoctorId,
       status: formValue.status,
       reportStatus: formValue.reportStatus,
       assignType: formValue.assignType,

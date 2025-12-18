@@ -33,6 +33,9 @@ export class ShiftTypeListComponent implements OnInit {
       shiftTypeName: ['', [Validators.required]],
       startTime: [null, [Validators.required]],
       endTime: [null, [Validators.required]],
+      excludeBreakTime: [false], 
+      breakStartTime: [null], // 休息开始时间
+      breakEndTime: [null],   // 休息结束时间
       workHours: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0)]], // 设置为自动计算
       weight: [1.0, [Validators.required, Validators.min(0)]],
       description: [''],
@@ -44,27 +47,73 @@ export class ShiftTypeListComponent implements OnInit {
     this.editForm.get('endTime')?.valueChanges.subscribe(() => {
       this.calculateWorkHours();
     });
+    this.editForm.get('excludeBreakTime')?.valueChanges.subscribe((value) => {
+      this.onExcludeBreakTimeChange(value);
+    });
+    this.editForm.get('breakStartTime')?.valueChanges.subscribe(() => {
+      this.calculateWorkHours();
+    });
+    this.editForm.get('breakEndTime')?.valueChanges.subscribe(() => {
+      this.calculateWorkHours();
+    });
   }
-  // 计算两个时间之间的工作时长
+  onExcludeBreakTimeChange(value: boolean): void {
+    if (value) {
+      // 启用时设置为必填
+      this.editForm.get('breakStartTime')?.setValidators([Validators.required]);
+      this.editForm.get('breakEndTime')?.setValidators([Validators.required]);
+    } else {
+      // 禁用时清除必填和值
+      this.editForm.get('breakStartTime')?.clearValidators();
+      this.editForm.get('breakEndTime')?.clearValidators();
+      this.editForm.patchValue({
+        breakStartTime: null,
+        breakEndTime: null
+      });
+    }
+    this.editForm.get('breakStartTime')?.updateValueAndValidity();
+    this.editForm.get('breakEndTime')?.updateValueAndValidity();
+    this.calculateWorkHours();
+  }
   calculateWorkHours(): void {
     const startTime = this.editForm.get('startTime')?.value;
     const endTime = this.editForm.get('endTime')?.value;
+    const excludeBreakTime = this.editForm.get('excludeBreakTime')?.value;
+    const breakStartTime = this.editForm.get('breakStartTime')?.value;
+    const breakEndTime = this.editForm.get('breakEndTime')?.value;
     
     if (startTime && endTime) {
       const start = new Date(startTime);
       const end = new Date(endTime);
       
-      // 计算时间差（毫秒）
       let diffMs = end.getTime() - start.getTime();
       
-      // 如果结束时间小于开始时间，说明是跨天的情况，需要加上24小时
+      // 处理跨天情况
       if (diffMs < 0) {
         diffMs += 24 * 60 * 60 * 1000;
       }
       
-      // 转换为小时，保留一位小数
-      const hours = Number((diffMs / (1000 * 60 * 60)).toFixed(1));
-      this.editForm.patchValue({ workHours: hours }, { emitEvent: false });
+      let hours = diffMs / (1000 * 60 * 60);
+      
+      // 扣除休息时间
+      if (excludeBreakTime && breakStartTime && breakEndTime) {
+        const breakStart = new Date(breakStartTime);
+        const breakEnd = new Date(breakEndTime);
+        
+        let breakDiffMs = breakEnd.getTime() - breakStart.getTime();
+        
+        // 处理休息时间跨天情况
+        if (breakDiffMs < 0) {
+          breakDiffMs += 24 * 60 * 60 * 1000;
+        }
+        
+        const breakHours = breakDiffMs / (1000 * 60 * 60);
+        hours = Math.max(0, hours - breakHours);
+      }
+      
+      this.editForm.patchValue({ 
+        workHours: Number(hours.toFixed(1)) 
+      }, { emitEvent: false });
     }
   }
   ngOnInit(): void {
@@ -99,7 +148,9 @@ export class ShiftTypeListComponent implements OnInit {
       const today = new Date();
       let startTime: Date | null = null;
       let endTime: Date | null = null;
-      
+      let breakStartTime: Date | null = null;
+      let breakEndTime: Date | null = null;
+
       if (shiftType.startTime) {
         const [startHours, startMinutes] = shiftType.startTime.split(':');
         startTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 
@@ -117,13 +168,27 @@ export class ShiftTypeListComponent implements OnInit {
         }
         endTime = endDate;
       }
-
+      if (shiftType.breakStartTime) {
+        const [breakStartHours, breakStartMinutes] = shiftType.breakStartTime.split(':');
+        breakStartTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 
+          parseInt(breakStartHours), parseInt(breakStartMinutes));
+      }
+      
+      // 解析休息结束时间
+      if (shiftType.breakEndTime) {
+        const [breakEndHours, breakEndMinutes] = shiftType.breakEndTime.split(':');
+        breakEndTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 
+          parseInt(breakEndHours), parseInt(breakEndMinutes));
+      }
       this.editingShiftType = { ...shiftType };
       this.editForm.patchValue({
         shiftTypeCode: shiftType.shiftTypeCode,
         shiftTypeName: shiftType.shiftTypeName,
         startTime: startTime,
         endTime: endTime,
+         excludeBreakTime: shiftType.excludeBreakTime || false,
+        breakStartTime: breakStartTime,
+        breakEndTime: breakEndTime,
         workHours: shiftType.workHours,
         weight: shiftType.weight,
         description: shiftType.description,
@@ -134,7 +199,8 @@ export class ShiftTypeListComponent implements OnInit {
       this.editForm.reset({
         isActive: '1',
         weight: 1.0,
-        workHours: 0
+        workHours: 0,
+        excludeBreakTime: false
       });
     }
     this.visible = true;
@@ -163,6 +229,13 @@ export class ShiftTypeListComponent implements OnInit {
       if (formValue.endTime) {
         formValue.endTime = formatDate(formValue.endTime, 'HH:mm', 'en');
       }
+      if (formValue.breakStartTime) {
+        formValue.breakStartTime = formatDate(formValue.breakStartTime, 'HH:mm', 'en');
+      }
+      if (formValue.breakEndTime) {
+        formValue.breakEndTime = formatDate(formValue.breakEndTime, 'HH:mm', 'en');
+      }
+    
       formValue.workHours = this.editForm.get('workHours')?.value;
       if (this.checkCrossingDay(formValue.startTime, formValue.endTime)) {
         this.modal.confirm({

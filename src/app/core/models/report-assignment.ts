@@ -14,6 +14,7 @@ export interface ReportAssignmentQueryDTO {
     examItemsstr?: string; //检查项目
     patientSource?: string; // 检查来源
     doctorId?: string;
+    assignedDoctorId?: string; //被派发医生
     status?: string;
     assignType?: string;
     startDate?: Date;

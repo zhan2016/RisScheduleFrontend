@@ -40,6 +40,7 @@
                             <th>班次名称</th>
                             <th>时间</th>
                             <th>工作时长</th>
+                            <th>休息时间</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,6 +51,12 @@
                             <td>{{ shift.shiftTypeName }}</td>
                             <td>{{ shift.startTime }} - {{ shift.endTime }}</td>
                             <td>{{ shift.workHours }}小时</td>
+                              <td>
+                                <span *ngIf="shift.excludeBreakTime && shift.breakStartTime && shift.breakEndTime">
+                                  {{ shift.breakStartTime }}-{{ shift.breakEndTime }}
+                                </span>
+                                <span *ngIf="!shift.excludeBreakTime">无</span>
+                              </td>
                         </tr>
                     </tbody>
                 </nz-table>

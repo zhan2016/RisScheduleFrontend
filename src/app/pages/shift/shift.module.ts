@@ -18,6 +18,7 @@ import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     NzPopconfirmModule,
     NzTimePickerModule,
     NzInputNumberModule,
+    NzSwitchModule,
     NzRadioModule,
     ReactiveFormsModule
   ]

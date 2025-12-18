@@ -57,7 +57,25 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-          
+          <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label>被派发医生</nz-form-label>
+            <nz-form-control>
+              <nz-select 
+                formControlName="assignedDoctorId" 
+                nzAllowClear 
+                nzShowSearch
+                nzPlaceHolder="请选择被派发医生">
+                <nz-option 
+                  *ngFor="let doctor of doctorList" 
+                  [nzValue]="doctor.userId" 
+                  [nzLabel]="doctor.userName">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+                  
           <div nz-col [nzSpan]="6">
             <nz-form-item>
               <nz-form-label>分配来源</nz-form-label>
