@@ -671,7 +671,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
     // 计算工作时长
     const startTime = new Date(`2000-01-01 ${shift.startTime}`);
     const endTime = new Date(`2000-01-01 ${shift.endTime}`);
-    const workHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+    const workHours = shift.workHours;
   
     return {
       shiftTypeId: shift.shiftTypeId,

@@ -1,0 +1,8 @@
+[
+  { "label": "CT", "value": "CT" },
+  { "label": "MRI", "value": "MRI" },
+  { "label": "DR", "value": "DR" },
+  { "label": "US", "value": "US" },
+  { "label": "DSA", "value": "DSA" },
+{ "label": "DX", "value": "DX" }
+]

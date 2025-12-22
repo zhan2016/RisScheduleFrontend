@@ -15,6 +15,7 @@ import { ColDef, GridApi } from 'ag-grid-enterprise';
 import { CellClickedEvent, GridOptions, GridReadyEvent, ICellRendererParams, IDatasource, IGetRowsParams } from 'ag-grid-community';
 import { StatusTagComponent } from '../status-tag/status-tag.component';
 import { AG_GRID_LOCALE_INTERNATIONALIZATION } from '../aggrid-internationalization';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-report-assignment',
@@ -36,6 +37,7 @@ export class ReportAssignmentComponent implements OnInit {
   initDateRangeValue = [this.yesterday, this.today];
   public localeText = AG_GRID_LOCALE_INTERNATIONALIZATION;
   private gridApi!: GridApi;
+  public modalities: { label: string; value: string }[] = [];
   columnDefs: ColDef[] = [
     {
       headerName: '',
@@ -236,7 +238,25 @@ export class ReportAssignmentComponent implements OnInit {
     const sortModel = this.gridApi.getSortModel();
     localStorage.setItem(this.SORT_STATE_KEY, JSON.stringify(sortModel));
   }
-
+  loadModalities() {
+    this.http.get<{ label: string; value: string }[]>('assets/dictionaries/modalities.json')
+      .subscribe({
+        next: (data) => {
+          this.modalities = data;
+        },
+        error: (err) => {
+          console.error('Failed to load modalities:', err);
+          // 失败时使用默认值
+          this.modalities = [
+            { label: 'CT', value: 'CT' },
+            { label: 'MR', value: 'MR' },
+            { label: 'DR', value: 'DR' },
+            { label: 'US', value: 'US' },
+            { label: 'DSA', value: 'DSA' }
+          ];
+        }
+      });
+  }
   // 从localStorage加载排序状态
   private loadSortState(): void {
     try {
@@ -313,7 +333,8 @@ export class ReportAssignmentComponent implements OnInit {
     private message: NzMessageService,
     private modal: NzModalService,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {
     this.searchForm = this.fb.group({
       patientName: [''],
@@ -372,6 +393,7 @@ export class ReportAssignmentComponent implements OnInit {
   ngOnInit(): void {
     const resolverData = this.route.snapshot.data['resolverData'];
     this.doctorList = resolverData.doctorList;
+    this.loadModalities();
     this.loadData();
   }
 

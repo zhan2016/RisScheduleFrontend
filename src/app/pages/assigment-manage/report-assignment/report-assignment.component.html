@@ -93,9 +93,12 @@
             <nz-form-item>
               <nz-form-label>检查类别</nz-form-label>
               <nz-form-control>
-                <nz-select formControlName="modality" nzAllowClear nzPlaceHolder="请选择检查类别">
-                  <nz-option nzValue="CT" nzLabel="CT"></nz-option>
-                  <nz-option nzValue="MRI" nzLabel="MRI"></nz-option>
+                   <nz-select formControlName="modality" nzAllowClear nzPlaceHolder="请选择检查类别">
+                  <nz-option 
+                    *ngFor="let modality of modalities" 
+                    [nzValue]="modality.value" 
+                    [nzLabel]="modality.label">
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
