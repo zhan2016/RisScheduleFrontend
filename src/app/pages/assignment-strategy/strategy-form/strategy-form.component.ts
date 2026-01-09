@@ -20,6 +20,10 @@ export class StrategyFormComponent implements OnInit {
     { label: '平均模式', value: '1' },
     { label: '绩效模式', value: '2' }
   ];
+  calWorkloadByExamItems = [
+    { label: '是', value: '1' },
+    { label: '否', value: '0' }
+  ];
 
   triggerPoints = [
     { label: '登记完成后', value: '1' },
@@ -62,6 +66,7 @@ export class StrategyFormComponent implements OnInit {
       isActive: [true],
       description: [null],
       workloadMode: ['1'],
+      calWorkloadByExamItem: ['0'],
       preliminaryWeight: [1.0],
       reviewWeight: [1.0]
     });
@@ -104,6 +109,7 @@ export class StrategyFormComponent implements OnInit {
         onlineOnly: formValue.onlineOnly ? '1' : '0',
         description: formValue.description || '',         // null转为空字符串
         workloadMode: formValue.workloadMode || '1',
+        calWorkloadByExamItem: formValue.calWorkloadByExamItem || '0', 
         preliminaryWeight: formValue.preliminaryWeight || 1.0,
         reviewWeight: formValue.reviewWeight || 0.8
       };

@@ -1,0 +1,362 @@
+<!-- user-leave-request.component.html -->
+<div class="leave-request-container">
+  <!-- 搜索表单 -->
+  <div class="search-form">
+    <form nz-form [nzLayout]="'inline'">
+      <nz-form-item>
+        <nz-form-label>申请人</nz-form-label>
+        <nz-form-control>
+          <input nz-input 
+                 [(ngModel)]="searchParams.applicantName" 
+                 name="applicantName" 
+                 placeholder="请输入申请人姓名" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>假期类型</nz-form-label>
+        <nz-form-control>
+          <nz-select 
+            [(ngModel)]="searchParams.leaveType" 
+            name="leaveType"
+            nzAllowClear
+            nzPlaceHolder="请选择假期类型"
+            style="width: 150px;">
+            <nz-option nzValue="年假" nzLabel="年假"></nz-option>
+            <nz-option nzValue="病假" nzLabel="病假"></nz-option>
+            <nz-option nzValue="事假" nzLabel="事假"></nz-option>
+            <nz-option nzValue="调休" nzLabel="调休"></nz-option>
+            <nz-option nzValue="哺乳假" nzLabel="哺乳假"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>假期类别</nz-form-label>
+        <nz-form-control>
+          <nz-select 
+            [(ngModel)]="searchParams.isFullDay" 
+            name="isFullDay"
+            nzAllowClear
+            nzPlaceHolder="请选择假期类别"
+            style="width: 120px;">
+            <nz-option [nzValue]="true" nzLabel="全天"></nz-option>
+            <nz-option [nzValue]="false" nzLabel="时间段"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>状态</nz-form-label>
+        <nz-form-control>
+          <nz-select 
+            [(ngModel)]="searchParams.status" 
+            name="status"
+            nzAllowClear
+            nzPlaceHolder="请选择状态"
+            style="width: 120px;">
+            <nz-option nzValue="PENDING" nzLabel="待审批"></nz-option>
+            <nz-option nzValue="APPROVED" nzLabel="已通过"></nz-option>
+            <nz-option nzValue="REJECTED" nzLabel="已拒绝"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>日期范围</nz-form-label>
+        <nz-form-control>
+         <nz-range-picker 
+            [(ngModel)]="dateRange" 
+            name="dateRange"
+            nzFormat="yyyy-MM-dd"
+            nzAllowClear="true"
+            (ngModelChange)="onDateRangeChange($event)"
+            style="width: 100%;">
+            </nz-range-picker>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button nzType="primary" (click)="search()">
+            <i nz-icon nzType="search"></i>查询
+          </button>
+          <button nz-button (click)="resetSearch()" class="ml-8">
+            <i nz-icon nzType="redo"></i>重置
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+
+  <!-- 操作栏 -->
+  <div class="operation-bar">
+    <button nz-button nzType="primary" (click)="showCreateModal()">
+      <i nz-icon nzType="plus"></i>新增假期
+    </button>
+  </div>
+
+  <!-- 数据表格 -->
+  <nz-table
+    #basicTable
+    [nzData]="leaveRequests"
+    [nzLoading]="loading"
+    [nzShowSizeChanger]="true"
+    [nzShowPagination]="true"
+    [nzFrontPagination]="false"
+    [nzTotal]="total"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)"
+    [nzShowTotal]="totalTemplate">
+    <thead>
+      <tr>
+        <th nzWidth="120px">申请人</th>
+        <th nzWidth="100px">假期类型</th>
+        <th nzWidth="80px">类别</th>
+        <th nzWidth="120px">开始日期</th>
+        <th nzWidth="120px">结束日期</th>
+        <th nzWidth="130px">时间段</th>
+        <th nzWidth="100px">时长</th>
+        <th>申请理由</th>
+        <th nzWidth="100px">状态</th>
+        <th nzWidth="120px">审批人</th>
+        <th nzWidth="150px">申请时间</th>
+        <th nzWidth="200px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of basicTable.data">
+        <td>{{ item.applicantName }}</td>
+        <td>
+          <nz-tag [nzColor]="getLeaveTypeColor(item.leaveType)">
+            {{ item.leaveType }}
+          </nz-tag>
+        </td>
+        <td>
+          <nz-tag [nzColor]="item.isFullDay ? 'blue' : 'orange'">
+            {{ item.isFullDay ? '全天' : '时间段' }}
+          </nz-tag>
+        </td>
+        <td>{{ item.startDate | date: 'yyyy-MM-dd' }}</td>
+        <td>{{ item.endDate | date: 'yyyy-MM-dd' }}</td>
+        <td>
+          <span *ngIf="!item.isFullDay">
+            {{ item.startTime }} - {{ item.endTime }}
+          </span>
+          <span *ngIf="item.isFullDay">-</span>
+        </td>
+        <td>
+          <span *ngIf="item.isFullDay">{{ item.totalDays?.toFixed(1) }} 天</span>
+          <span *ngIf="!item.isFullDay">
+            {{ item.totalHours?.toFixed(1) }} 小时
+            <br/>
+            <small class="text-gray">({{ item.totalDays?.toFixed(2) }} 天)</small>
+          </span>
+        </td>
+        <td>
+          <span nz-tooltip [nzTooltipTitle]="item.reason">
+             {{ item.reason?.slice(0, 15) }}{{ (item.reason?.length ?? 0) > 15 ? '...' : '' }}
+          </span>
+        </td>
+        <td>
+          <nz-tag [nzColor]="getStatusColor(item.status)">
+            {{ getStatusText(item.status) }}
+          </nz-tag>
+        </td>
+        <td>{{ item.approverName || '-' }}</td>
+        <td>{{ item.applyTime | date: 'yyyy-MM-dd HH:mm' }}</td>
+        <td>
+          <a (click)="viewDetail(item)" class="mr-8">
+            <i nz-icon nzType="eye"></i> 查看
+          </a>
+          <a (click)="showEditModal(item)" class="mr-8" *ngIf="item.status === 'PENDING'">
+            <i nz-icon nzType="edit"></i> 编辑
+          </a>
+          <a nz-popconfirm 
+             nzPopconfirmTitle="确定要删除这条假期记录吗？" 
+             (nzOnConfirm)="deleteLeaveRequest(item.serialNo)"
+             nzOkText="确定"
+             nzCancelText="取消">
+            <i nz-icon nzType="delete"></i> 删除
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- 新增/编辑弹窗 -->
+  <!-- 新增/编辑弹窗 -->
+<nz-modal
+  [(nzVisible)]="modalVisible"
+  [nzTitle]="isEditMode ? '编辑假期' : '新增假期'"
+  (nzOnCancel)="modalVisible = false"
+  (nzOnOk)="handleSubmit()"
+  [nzWidth]="700">
+    <ng-container *nzModalContent>
+        <form nz-form [nzLayout]="'horizontal'" [formGroup]="leaveForm">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>申请人ID</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <input nz-input formControlName="applicantId" placeholder="请输入申请人ID" />
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>申请人姓名</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <input nz-input formControlName="applicantName" placeholder="请输入申请人姓名" />
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>假期类型</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <nz-select 
+                formControlName="leaveType"
+                (ngModelChange)="onLeaveTypeChange($event)"
+                nzPlaceHolder="请选择假期类型">
+                <nz-option nzValue="年假" nzLabel="年假"></nz-option>
+                <nz-option nzValue="病假" nzLabel="病假"></nz-option>
+                <nz-option nzValue="事假" nzLabel="事假"></nz-option>
+                <nz-option nzValue="调休" nzLabel="调休"></nz-option>
+                <nz-option nzValue="哺乳假" nzLabel="哺乳假"></nz-option>
+            </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>假期类别</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <nz-radio-group formControlName="isFullDay">
+                <label nz-radio [nzValue]="true">全天假期</label>
+                <label nz-radio [nzValue]="false">时间段假期</label>
+            </nz-radio-group>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>日期范围</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <nz-range-picker 
+                formControlName="dateRange"
+                nzFormat="yyyy-MM-dd"
+                style="width: 100%;">
+            </nz-range-picker>
+            </nz-form-control>
+        </nz-form-item>
+
+        <!-- 时间段选择（仅当非全天时显示） -->
+        <nz-form-item *ngIf="!leaveForm.get('isFullDay')?.value">
+            <nz-form-label [nzSpan]="6" nzRequired>时间段</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+                <nz-row [nzGutter]="8">
+                    <nz-col [nzSpan]="11">
+                    <nz-time-picker 
+                        formControlName="startTime"
+                        nzFormat="HH:mm"
+                        nzPlaceHolder="开始时间"
+                        style="width: 100%;">
+                    </nz-time-picker>
+                    </nz-col>
+                    <nz-col [nzSpan]="2" style="text-align: center;">
+                    <span>至</span>
+                    </nz-col>
+                    <nz-col [nzSpan]="11">
+                    <nz-time-picker 
+                        formControlName="endTime"
+                        nzFormat="HH:mm"
+                        nzPlaceHolder="结束时间"
+                        style="width: 100%;">
+                    </nz-time-picker>
+                    </nz-col>
+                </nz-row>
+                <small class="text-gray">
+                    <i nz-icon nzType="info-circle"></i> 
+                    例如：哺乳假可设置为每天 08:00 - 09:00
+                </small>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">申请理由</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <textarea nz-input 
+                        formControlName="reason"
+                        [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                        placeholder="请输入申请理由">
+            </textarea>
+            </nz-form-control>
+        </nz-form-item>
+        </form>
+    </ng-container>
+    </nz-modal>
+
+  <!-- 详情弹窗 -->
+  <nz-modal
+    [(nzVisible)]="detailVisible"
+    nzTitle="假期详情"
+    (nzOnCancel)="detailVisible = false"
+    [nzFooter]="null"
+    [nzWidth]="650">
+    <ng-container *nzModalContent>
+      <nz-descriptions nzBordered [nzColumn]="2">
+        <nz-descriptions-item nzTitle="申请人" [nzSpan]="1">
+          {{ detailData?.applicantName }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="假期类型" [nzSpan]="1">
+          <nz-tag [nzColor]="getLeaveTypeColor(detailData!.leaveType)">
+            {{ detailData?.leaveType }}
+          </nz-tag>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="假期类别" [nzSpan]="2">
+          <nz-tag [nzColor]="detailData?.isFullDay ? 'blue' : 'orange'">
+            {{ detailData?.isFullDay ? '全天假期' : '时间段假期' }}
+          </nz-tag>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="开始日期" [nzSpan]="1">
+          {{ detailData?.startDate | date: 'yyyy-MM-dd' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="结束日期" [nzSpan]="1">
+          {{ detailData?.endDate | date: 'yyyy-MM-dd' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="时间段" [nzSpan]="2" *ngIf="!detailData?.isFullDay">
+          {{ detailData?.startTime }} - {{ detailData?.endTime }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="假期时长" [nzSpan]="2">
+          <span *ngIf="detailData?.isFullDay">
+            {{ detailData?.totalDays?.toFixed(1) }} 天
+          </span>
+          <span *ngIf="!detailData?.isFullDay">
+            {{ detailData?.totalHours?.toFixed(1) }} 小时 (约 {{ detailData?.totalDays?.toFixed(2) }} 天)
+          </span>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="申请理由" [nzSpan]="2">
+          {{ detailData?.reason || '-' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="状态" [nzSpan]="2">
+          <nz-tag [nzColor]="getStatusColor(detailData!.status)">
+            {{ getStatusText(detailData!.status) }}
+          </nz-tag>
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="申请时间" [nzSpan]="2">
+          {{ detailData?.applyTime | date: 'yyyy-MM-dd HH:mm:ss' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="审批人" [nzSpan]="1">
+          {{ detailData?.approverName || '-' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="审批时间" [nzSpan]="1">
+          {{ detailData?.approveTime ? (detailData!.approveTime | date: 'yyyy-MM-dd HH:mm:ss') : '-' }}
+        </nz-descriptions-item>
+        <nz-descriptions-item nzTitle="备注" [nzSpan]="2">
+          {{ detailData?.remark || '-' }}
+        </nz-descriptions-item>
+      </nz-descriptions>
+    </ng-container>
+  </nz-modal>
+</div>
+
+<ng-template #totalTemplate let-total let-range="range">
+  共 {{ total }} 条，当前显示 {{ range[0] }}-{{ range[1] }} 条
+</ng-template>

@@ -58,6 +58,18 @@ const routes: Routes = [
         canActivate: [AuthGuard, AdminGuard]
       },
       {
+        path: 'exam-item-dict',
+        loadChildren: () => import('./pages/exam-item-bonus/exam-item-bonus.module')
+        .then(m => m.ExamItemBonusModule),
+        canActivate: [AuthGuard, AdminGuard]
+      },
+       {
+        path: 'user-leave',
+        loadChildren: () => import('./pages/leave-management/leave-management.module')
+        .then(m => m.LeaveManagementModule),
+        canActivate: [AuthGuard, AdminGuard]
+      },
+      {
         path: 'assignmentStrategy',
         loadChildren: () => import('./pages/assignment-strategy/assignment-strategy.module')
         .then(m => m.AssignmentStrategyModule),

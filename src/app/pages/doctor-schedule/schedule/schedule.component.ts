@@ -415,7 +415,8 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       nzOnOk: (componentInstance: AddScheduleModalComponent) => {
         if (componentInstance.scheduleForm.valid) {
           const formValue = componentInstance.getFormValue();
-          formValue.scheduleDate = DateUtils.formatLocalDate(formValue.scheduleDate)
+          const dateObj = new Date(formValue.scheduleDate);
+          formValue.scheduleDate = DateUtils.formatLocalDate(dateObj)
           return new Promise((resolve, reject) => {
             this.scheduleService.saveSchedule(formValue).subscribe({
               next: (res) => {
@@ -452,7 +453,7 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       nzOnOk: () => {
         this.scheduleService.deleteSchedule(scheduleId).subscribe({
           next: (res) => {
-            if (res.code === 200) {
+            if (res) {
               //this.message.success('删除成功');
               this.loadSchedules();
             } else {

@@ -19,7 +19,8 @@
           <th>仅在线分配</th>
           <th>触发时机</th>
           <th>报告范围</th>
-          <th>工作量计算</th>
+          <th>初步与审核工作量计算</th>
+          <th>根据检查项目计算工作量</th>
           <th>重试次数</th>
           <th>重试间隔(秒)</th>
           <th>是否默认</th>
@@ -49,6 +50,7 @@
               </i>
             </ng-container>
           </td>
+          <td>{{ data.calWorkloadByExamItem === '1' ? '是' : '否'}}</td>
           <td>{{ data.retryCount }}</td>
           <td>{{ data.retryInterval }}</td>
           <td>{{ data.isDefault === '1' ? '是' : '否' }}</td>

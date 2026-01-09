@@ -77,7 +77,16 @@
             </nz-radio-group>
           </nz-form-control>
         </nz-form-item>
-  
+      <nz-form-item>
+          <nz-form-label [nzSpan]="6" nzRequired>根据检查项目计算工作量</nz-form-label>
+          <nz-form-control [nzSpan]="14" nzExtra="根据检查项目计算工作量，否的话，一个申请对应一个工作量，是的话，一个申请对应所有检查项目字典工作量之和" class="flex items-center gap-2">
+            <nz-radio-group formControlName="calWorkloadByExamItem">
+              <label nz-radio-button *ngFor="let mode of calWorkloadByExamItems" [nzValue]="mode.value">
+                {{mode.label}}
+              </label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="6" nzRequired>重试次数</nz-form-label>
           <nz-form-control [nzSpan]="14" nzErrorTip="请输入0-10之间的数字">

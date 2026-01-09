@@ -1,0 +1,221 @@
+<div class="exam-item-dict">
+  <!-- 搜索表单 -->
+  <div class="search-form">
+    <form nz-form [nzLayout]="'inline'">
+      <nz-form-item>
+        <nz-form-label>项目编码</nz-form-label>
+        <nz-form-control>
+          <input nz-input 
+                 [(ngModel)]="searchParams.descriptionCode" 
+                 name="descriptionCode" 
+                 placeholder="请输入项目编码" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>项目名称</nz-form-label>
+        <nz-form-control>
+          <input nz-input 
+                 [(ngModel)]="searchParams.description" 
+                 name="description" 
+                 placeholder="请输入项目名称" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>工作量范围</nz-form-label>
+        <nz-form-control>
+          <nz-input-group nzCompact>
+            <nz-input-number 
+              [(ngModel)]="searchParams.minWorkload" 
+              name="minWorkload"
+              [nzMin]="0"
+              [nzStep]="0.5"
+              [nzPrecision]="1"
+              nzPlaceHolder="最小值"
+              style="width: 120px">
+            </nz-input-number>
+            <span style="padding: 0 8px; line-height: 32px;">~</span>
+            <nz-input-number 
+              [(ngModel)]="searchParams.maxWorkload" 
+              name="maxWorkload"
+              [nzMin]="0"
+              [nzStep]="0.5"
+              [nzPrecision]="1"
+              nzPlaceHolder="最大值"
+              style="width: 120px">
+            </nz-input-number>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <button nz-button [nzType]="'primary'" (click)="search()">
+            <i nz-icon nzType="search"></i>查询
+          </button>
+          <button nz-button (click)="resetSearch()" class="ml-8">
+            <i nz-icon nzType="redo"></i>重置
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+
+  <!-- 操作栏 -->
+  <div class="operation-bar">
+    <button nz-button 
+            nzType="primary" 
+            (click)="showBatchUpdateModal()"
+            [disabled]="setOfCheckedId.size === 0">
+      <i nz-icon nzType="edit"></i>
+      批量更新工作量 
+      <span *ngIf="setOfCheckedId.size > 0">({{ setOfCheckedId.size }})</span>
+    </button>
+  </div>
+
+  <!-- 数据表格 -->
+  <nz-table
+    #basicTable
+    [nzData]="examItems"
+    [nzLoading]="loading"
+    [nzShowSizeChanger]="true"
+    [nzShowPagination]="true"
+    [nzFrontPagination]="false"
+    [nzTotal]="total"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)"
+    [nzShowTotal]="totalTemplate">
+    <thead>
+      <tr>
+        <th
+          nzWidth="60px"
+          [(nzChecked)]="checked"
+          [nzIndeterminate]="indeterminate"
+          (nzCheckedChange)="onAllChecked($event)">
+        </th>
+        <th nzWidth="150px">项目编码</th>
+        <th>项目名称</th>
+        <th nzWidth="150px">报告工作量</th>
+        <th nzWidth="180px">更新时间</th>
+        <th nzWidth="120px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of basicTable.data">
+        <td
+          [nzChecked]="setOfCheckedId.has(item.serialNo)"
+          (nzCheckedChange)="onItemChecked(item.serialNo, $event)">
+        </td>
+        <td>
+          <span nz-tooltip [nzTooltipTitle]="item.descriptionCode">
+            {{ item.descriptionCode }}
+          </span>
+        </td>
+        <td>
+          <span nz-tooltip [nzTooltipTitle]="item.description">
+            {{ item.description }}
+          </span>
+        </td>
+        <td>
+          <nz-tag [nzColor]="getWorkloadColor(item.reportWorkload)">
+            {{ item.reportWorkload }}
+          </nz-tag>
+        </td>
+        <td>{{ item.updateTime | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>
+          <a (click)="showEditModal(item)">
+            <i nz-icon nzType="edit"></i> 编辑
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <!-- 编辑弹窗 -->
+    <nz-modal
+    [(nzVisible)]="visible"
+    nzTitle="编辑检查项目工作量"
+    (nzOnCancel)="visible = false"
+    (nzOnOk)="handleOk()"
+    [nzWidth]="600">
+    <ng-container *nzModalContent>
+        <form nz-form [nzLayout]="'horizontal'">
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">项目编码</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <input nz-input 
+                    [ngModel]="editingItem?.descriptionCode"
+                    name="descriptionCode"
+                    disabled />
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6">项目名称</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <input nz-input 
+                    [ngModel]="editingItem?.description"
+                    name="description"
+                    disabled />
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="6" nzRequired>报告工作量</nz-form-label>
+            <nz-form-control [nzSpan]="16">
+            <nz-input-number
+                [(ngModel)]="editingItem!.reportWorkload"
+                name="reportWorkload"
+                [nzMin]="0"
+                [nzMax]="100"
+                [nzStep]="0.5"
+                [nzPrecision]="1"
+                style="width: 100%">
+            </nz-input-number>
+            <div class="help-text">
+                <i nz-icon nzType="info-circle"></i>
+                建议范围：0.5 - 10.0，数值越大表示工作量越大
+            </div>
+            </nz-form-control>
+        </nz-form-item>
+        </form>
+    </ng-container>
+    </nz-modal>
+
+  <!-- 批量更新弹窗 -->
+  <nz-modal
+    [(nzVisible)]="batchVisible"
+    nzTitle="批量更新工作量"
+    (nzOnCancel)="batchVisible = false"
+    (nzOnOk)="handleBatchUpdate()"
+    [nzWidth]="500">
+    <ng-container *nzModalContent>
+      <form nz-form [nzLayout]="'horizontal'">
+        <div style="padding: 12px; background: #e6f7ff; border: 1px solid #91d5ff; border-radius: 4px; margin-bottom: 16px;">
+            已选择 <strong>{{setOfCheckedId.size}}</strong> 条记录，将统一更新为指定的工作量值
+        </div>
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="8" nzRequired>工作量值</nz-form-label>
+          <nz-form-control [nzSpan]="14">
+            <nz-input-number
+              [(ngModel)]="batchWorkload"
+              name="batchWorkload"
+              [nzMin]="0"
+              [nzMax]="100"
+              [nzStep]="0.5"
+              [nzPrecision]="1"
+              style="width: 100%">
+            </nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>
+<ng-template #totalTemplate let-total let-range="range">
+  共 {{ total }} 条，当前显示 {{ range[0] }}-{{ range[1] }} 条
+</ng-template>

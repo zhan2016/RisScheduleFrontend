@@ -13,6 +13,7 @@ export interface AssignmentStrategy {
     isActive: string;           // '0' | '1'
     description?: string;        // 空字符串代替null
     workloadMode: string;
+    calWorkloadByExamItem: string;
     preliminaryWeight?: number;
     reviewWeight?: number;
   }

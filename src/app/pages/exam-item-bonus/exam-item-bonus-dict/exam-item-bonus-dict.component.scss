@@ -1,0 +1,45 @@
+.exam-item-dict {
+  padding: 20px;
+  background: #fff;
+  min-height: calc(100vh - 64px);
+
+  .search-form {
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 4px;
+    margin-bottom: 16px;
+
+    .ml-8 {
+      margin-left: 8px;
+    }
+  }
+
+  .operation-bar {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .help-text {
+    margin-top: 8px;
+    color: #999;
+    font-size: 12px;
+
+    i {
+      margin-right: 4px;
+    }
+  }
+
+  ::ng-deep {
+    .ant-table {
+      font-size: 14px;
+    }
+
+    .ant-tag {
+      font-weight: 500;
+      min-width: 50px;
+      text-align: center;
+    }
+  }
+}
