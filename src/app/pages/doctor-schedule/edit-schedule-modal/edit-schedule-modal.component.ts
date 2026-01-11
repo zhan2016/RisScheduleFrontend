@@ -5,6 +5,7 @@ import { ScheduleService } from 'src/app/core/services/schedule.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ShiftType } from 'src/app/core/models/shift';
 import { ScheduleView } from 'src/app/core/models/doctor-shedule';
+import { DateUtils } from 'src/app/core/utils/date-utils';
 
 @Component({
   selector: 'app-edit-schedule-modal',
@@ -47,7 +48,7 @@ export class EditScheduleModalComponent implements OnInit {
 
       this.scheduleForm.patchValue({
         scheduleId: this.doctor.scheduleId,
-        scheduleDate: scheduleDate,
+        scheduleDate: DateUtils.formatLocalDate(scheduleDate!),
         doctorId: this.doctor.doctorId,
         shiftTypeId: this.doctor.shiftTypeId,
         weight: this.doctor.weight || 1.0,

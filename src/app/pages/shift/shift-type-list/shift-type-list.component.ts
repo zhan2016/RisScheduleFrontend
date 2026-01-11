@@ -33,7 +33,7 @@ export class ShiftTypeListComponent implements OnInit {
       shiftTypeName: ['', [Validators.required]],
       startTime: [null, [Validators.required]],
       endTime: [null, [Validators.required]],
-      excludeBreakTime: [false], 
+      excludeBreakTime: ['0'],
       breakStartTime: [null], // 休息开始时间
       breakEndTime: [null],   // 休息结束时间
       workHours: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0)]], // 设置为自动计算
@@ -57,13 +57,11 @@ export class ShiftTypeListComponent implements OnInit {
       this.calculateWorkHours();
     });
   }
-  onExcludeBreakTimeChange(value: boolean): void {
-    if (value) {
-      // 启用时设置为必填
+  onExcludeBreakTimeChange(value: string): void {
+    if (value === '1') { // ✅ 改为字符串比较
       this.editForm.get('breakStartTime')?.setValidators([Validators.required]);
       this.editForm.get('breakEndTime')?.setValidators([Validators.required]);
     } else {
-      // 禁用时清除必填和值
       this.editForm.get('breakStartTime')?.clearValidators();
       this.editForm.get('breakEndTime')?.clearValidators();
       this.editForm.patchValue({
@@ -96,7 +94,7 @@ export class ShiftTypeListComponent implements OnInit {
       let hours = diffMs / (1000 * 60 * 60);
       
       // 扣除休息时间
-      if (excludeBreakTime && breakStartTime && breakEndTime) {
+     if (excludeBreakTime === '1' && breakStartTime && breakEndTime) {
         const breakStart = new Date(breakStartTime);
         const breakEnd = new Date(breakEndTime);
         
@@ -186,7 +184,7 @@ export class ShiftTypeListComponent implements OnInit {
         shiftTypeName: shiftType.shiftTypeName,
         startTime: startTime,
         endTime: endTime,
-         excludeBreakTime: shiftType.excludeBreakTime || false,
+        excludeBreakTime: shiftType.excludeBreakTime || '0',
         breakStartTime: breakStartTime,
         breakEndTime: breakEndTime,
         workHours: shiftType.workHours,
@@ -200,7 +198,7 @@ export class ShiftTypeListComponent implements OnInit {
         isActive: '1',
         weight: 1.0,
         workHours: 0,
-        excludeBreakTime: false
+        excludeBreakTime: '0'
       });
     }
     this.visible = true;
