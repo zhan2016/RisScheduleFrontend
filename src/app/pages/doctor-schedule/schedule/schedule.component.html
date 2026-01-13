@@ -160,6 +160,12 @@
                 <div nz-col [nzSpan]="16" class="text-right">
                   <button nz-button [nzType]="'primary'" (click)="search()">搜索</button>
                   <button nz-button (click)="reset()" class="ml-2">重置</button>
+                  <ng-container *ngIf="viewMode === 'table'">
+                    <button nz-button (click)="refreshTableView()"  nzTooltip="刷新">
+                      <i nz-icon nzType="reload"></i>
+                      刷新
+                    </button>
+                  </ng-container>
                 </div>
               </div>
             </form>
@@ -169,6 +175,7 @@
               [nzFrontPagination] = "false"
               [nzTotal]="total"
               [nzPageIndex]="pageIndex"
+              [nzScroll]="{ y: 'calc(100vh - 450px)' }"
               [nzPageSize]="pageSize"
               [nzShowSizeChanger]="true"
               [nzShowQuickJumper]="true"

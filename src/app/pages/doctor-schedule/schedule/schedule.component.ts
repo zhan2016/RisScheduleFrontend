@@ -756,7 +756,15 @@ export class ScheduleComponent implements OnInit, OnDestroy  {
       }
     });
   }
-  
+    /**
+   * 刷新表格视图
+   */
+  refreshTableView(): void {
+    this.loading = true;
+    this.loadTableData();
+    this.message.success('刷新成功');
+  }
+
 }
 
 

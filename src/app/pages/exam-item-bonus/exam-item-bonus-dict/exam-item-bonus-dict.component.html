@@ -85,6 +85,7 @@
     [nzTotal]="total"
     [(nzPageIndex)]="pageIndex"
     [(nzPageSize)]="pageSize"
+    [nzScroll]="{ y: 'calc(100vh - 450px)' }"
     (nzPageIndexChange)="onPageIndexChange($event)"
     (nzPageSizeChange)="onPageSizeChange($event)"
     [nzShowTotal]="totalTemplate">
